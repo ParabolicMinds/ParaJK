@@ -173,3 +173,22 @@ pip-log.txt
 #############
 *.o
 *.so
+*.a
+
+#############
+## Internal
+#############
+testbed
+CMakeFiles
+CMakeCache.txt
+*.cmake
+*x86_64
+Makefile
+*.cbp
+*.user
+*.autosave
+build.sh
+doxy
+Doxyfile
+!CMakeModules/*
+!tools/Ibize/Makefile

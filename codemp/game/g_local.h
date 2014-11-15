@@ -22,14 +22,14 @@ extern vec3_t gPainPoint;
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	"OpenJK"
+#define	GAMEVERSION	"ParaJK"
 
 #define SECURITY_LOG "security.log"
 
 #define BODY_QUEUE_SIZE		8
 
 #ifndef INFINITE
-#define INFINITE			1000000
+#define INFINITE			1<<28
 #endif
 
 #define	FRAMETIME			100					// msec

@@ -4,6 +4,7 @@
 #include "qcommon/MiniHeap.h"
 #include "qcommon/stringed_ingame.h"
 #include "sv_gameapi.h"
+#include "sv_para.h"
 
 /*
 ===============
@@ -916,6 +917,8 @@ void SV_Init (void) {
 	Cvar_Get ("duel_fraglimit", "10", CVAR_SERVERINFO);
 	Cvar_Get ("g_forceBasedTeams", "0", CVAR_SERVERINFO);
 	Cvar_Get ("g_duelWeaponDisable", "1", CVAR_SERVERINFO);
+
+	SV_PARA_INIT();
 
 	sv_gametype = Cvar_Get ("g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH );
 	sv_needpass = Cvar_Get ("g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM );

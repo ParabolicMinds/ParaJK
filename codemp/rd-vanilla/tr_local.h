@@ -144,7 +144,7 @@ typedef enum {
 } shaderSort_t;
 
 
-#define MAX_SHADER_STAGES 8
+#define MAX_SHADER_STAGES 64
 
 typedef enum {
 	GF_NONE,

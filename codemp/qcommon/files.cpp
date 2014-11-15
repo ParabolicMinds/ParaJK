@@ -3340,6 +3340,12 @@ void FS_Startup( const char *gameName ) {
 	if (fs_basepath->string[0]) {
 		FS_AddGameDirectory( fs_basepath->string, gameName );
 	}
+	if (fs_cdpath->string[0]) {
+		FS_AddGameDirectory( fs_cdpath->string, PARAGAME );
+	}
+	if (fs_basepath->string[0]) {
+		FS_AddGameDirectory( fs_basepath->string, PARAGAME );
+	}
 
 #ifdef MACOS_X
 	fs_apppath = Cvar_Get ("fs_apppath", Sys_DefaultAppPath(), CVAR_INIT|CVAR_PROTECTED );

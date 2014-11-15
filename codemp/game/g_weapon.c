@@ -8,6 +8,7 @@
 #include "bg_saga.h"
 #include "ghoul2/G2.h"
 #include "qcommon/q_shared.h"
+#include "g_para.h"
 
 static vec3_t forward, vright, up;
 static vec3_t muzzle;
@@ -539,6 +540,9 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	gentity_t	*traceEnt, *tent;
 	float		shotRange = 8192;
 	int			ignore, traces;
+
+	if (Para_Disrupt_IK())
+		damage = INFINITE;
 
 	if ( level.gametype == GT_SIEGE )
 	{
@@ -2033,7 +2037,7 @@ void thermalDetonatorExplode( gentity_t *ent )
 
 void thermalThinkStandard(gentity_t *ent)
 {
-	if (ent->genericValue5 < level.time)
+	if (ent->genericValue5 < level.time && !Para_ThermalGolf())
 	{
 		ent->think = thermalDetonatorExplode;
 		ent->nextthink = level.time;

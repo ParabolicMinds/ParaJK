@@ -27,7 +27,6 @@ if(BuildMPRdVanilla)
 	add_subdirectory("${MPDir}/rd-vanilla")
 endif(BuildMPRdVanilla)
 
-
 #    Common things between Engine and Dedicated Server
 if(BuildMPEngine OR BuildMPDed)
 
@@ -79,6 +78,7 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/server/server.h"
 		"${MPDir}/game/surfaceflags.h"
 		"${MPDir}/qcommon/tags.h"
+                "${MPDir}/qcommon/q_para.h"
 		)
 	source_group("Header Files" FILES ${MPBotlibHeaderFiles})
 	set(MPBotlibSourceFiles
@@ -295,6 +295,8 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/server/sv_world.cpp"
 		"${MPDir}/server/sv_gameapi.cpp"
 		"${MPDir}/server/sv_gameapi.h"
+		"${MPDir}/server/sv_para.h"
+		"${MPDir}/server/sv_para.cpp"
 		)
 	source_group("server" FILES ${MPEngineAndDedServerFiles})
 	set(MPEngineAndDedFiles ${MPEngineAndDedFiles} ${MPEngineAndDedServerFiles})

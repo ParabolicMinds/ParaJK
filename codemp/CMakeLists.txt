@@ -78,8 +78,6 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/server/server.h"
 		"${MPDir}/game/surfaceflags.h"
 		"${MPDir}/qcommon/tags.h"
-                "${MPDir}/qcommon/q_para.h"
-                "${MPDir}/qcommon/q_para.c"
 		)
 	source_group("Header Files" FILES ${MPBotlibHeaderFiles})
 	set(MPBotlibSourceFiles
@@ -238,6 +236,8 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/qcommon/timing.h"
 		"${MPDir}/qcommon/vm.cpp"
 		"${MPDir}/qcommon/z_memman_pc.cpp"
+		"${MPDir}/qcommon/q_para.h"
+		"${MPDir}/qcommon/q_para.c"
 		)
 	if(WIN32)
 		set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles})

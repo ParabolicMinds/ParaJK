@@ -120,6 +120,8 @@ set(MPGameGameFiles
 	"${MPDir}/game/surfaceflags.h"
 	"${MPDir}/game/teams.h"
 	"${MPDir}/game/w_saber.h"
+	"${MPDir}/game/bg_para.h"
+	"${MPDir}/game/bg_para.c"
 	"${MPDir}/game/g_para.h"
         "${MPDir}/game/g_para.c"
 	)

@@ -4,6 +4,7 @@
 
 #include "b_local.h"
 #include "bg_saga.h"
+#include "g_para.h"
 
 extern int G_ShipSurfaceForSurfName( const char *surfaceName );
 extern qboolean G_FlyVehicleDestroySurface( gentity_t *veh, int surface );
@@ -4846,6 +4847,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 		if ( (targ->flags & FL_GODMODE) && targ->s.eType != ET_NPC ) {
 			return;
 		}
+
+		if ( mod == MOD_DET_PACK_SPLASH && para_w_detpacklaunch)
+			return;
 
 		if (targ && targ->client && (targ->client->ps.eFlags & EF_INVULNERABLE) &&
 			attacker && attacker->client && targ != attacker)

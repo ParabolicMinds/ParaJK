@@ -31,6 +31,8 @@ set(MPCGameGameFiles
 	"${MPDir}/game/bg_saga.h"
 	"${MPDir}/game/bg_weapons.h"
 	"${MPDir}/game/surfaceflags.h"
+	"${MPDir}/game/bg_para.h"
+	"${MPDir}/game/bg_para.c"
 	)
 source_group("game" FILES ${MPCGameGameFiles})
 set(MPCGameFiles ${MPCGameFiles} ${MPCGameGameFiles})

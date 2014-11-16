@@ -8,6 +8,8 @@
 #include "bg_local.h"
 #include "ghoul2/G2.h"
 
+#include "bg_para.h"
+
 #ifdef _GAME
 	#include "g_local.h"
 #elif _CGAME
@@ -3821,7 +3823,7 @@ static void PM_CrashLand( void ) {
 
 	pm->ps->inAirAnim = qfalse;
 
-	if (pm->ps->ignoreFallDamage) return; //No fall damage if... well... obviously.
+	if (!para_d_falldamage) return; //No fall damage if... well... obviously.
 
 	if (pm->ps->m_iVehicleNum)
 	{ //don't do fall stuff while on a vehicle

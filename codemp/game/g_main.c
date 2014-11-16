@@ -2908,6 +2908,9 @@ void G_RunFrame( int levelTime ) {
 	void		*timer_Queues;
 #endif
 
+	//Update ParaJK CVars.
+	Para_Update_Cvars();
+
 	if (level.gametype == GT_SIEGE &&
 		g_siegeRespawn.integer &&
 		g_siegeRespawnCheck < level.time)
@@ -3303,12 +3306,9 @@ void G_RunFrame( int levelTime ) {
 
 			trap->ICARUS_MaintainTaskManager(ent->s.number);
 
-			if (Para_Cvar_FallDamage())		ent->client->ps.ignoreFallDamage = qfalse;
-			else							ent->client->ps.ignoreFallDamage = qtrue;
-
 			G_RunClient( ent );
 
-			if (Para_Cvar_InfForce()) ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax;
+			if (para_f_infforce) ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax;
 			continue;
 		}
 		else if (ent->s.eType == ET_NPC)

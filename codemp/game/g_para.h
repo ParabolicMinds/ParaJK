@@ -1,6 +1,9 @@
 #include "qcommon/q_shared.h"
+#include "bg_para.h"
 
-qboolean Para_Cvar_Disrupt_IK();
-qboolean Para_Cvar_ThermalGolf();
-qboolean Para_Cvar_InfForce();
-qboolean Para_Cvar_FallDamage();
+void Para_Update_Cvars();
+
+extern qboolean para_w_disrpt_ik;
+extern qboolean para_w_thermalgolf;
+extern qboolean para_f_infforce;
+extern qboolean para_w_detpacklaunch;

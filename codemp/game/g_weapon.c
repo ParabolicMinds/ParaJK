@@ -541,7 +541,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	float		shotRange = 8192;
 	int			ignore, traces;
 
-	if (Para_Disrupt_IK())
+	if (Para_Cvar_Disrupt_IK())
 		damage = INFINITE;
 
 	if ( level.gametype == GT_SIEGE )
@@ -2037,7 +2037,7 @@ void thermalDetonatorExplode( gentity_t *ent )
 
 void thermalThinkStandard(gentity_t *ent)
 {
-	if (ent->genericValue5 < level.time && !Para_ThermalGolf())
+	if (ent->genericValue5 < level.time && !Para_Cvar_ThermalGolf())
 	{
 		ent->think = thermalDetonatorExplode;
 		ent->nextthink = level.time;

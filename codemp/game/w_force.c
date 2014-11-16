@@ -2,6 +2,7 @@
 #include "w_saber.h"
 #include "ai_main.h"
 #include "ghoul2/G2.h"
+#include "g_para.h"
 
 #define METROID_JUMP 1
 
@@ -37,6 +38,7 @@ gentity_t *G_PreDefSound(vec3_t org, int pdSound)
 
 	return te;
 }
+
 const int forcePowerMinRank[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] = //0 == neutral
 {
 	{
@@ -827,6 +829,10 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 
 void WP_ForcePowerRegenerate( gentity_t *self, int overrideAmt )
 { //called on a regular interval to regenerate force power.
+	if (Para_Cvar_InfForce()) {
+		self->client->ps.fd.forcePower = self->client->ps.fd.forcePowerMax;
+		return;
+	}
 	if ( !self->client )
 	{
 		return;
@@ -852,6 +858,7 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 	int	duration = 0;
 	qboolean hearable = qfalse;
 	float hearDist = 0;
+
 
 	if (!WP_ForcePowerAvailable( self, forcePower, overrideAmt ))
 	{
@@ -1947,7 +1954,7 @@ void ForceDrainDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec3_t 
 
 				if (dmg)
 				{
-					traceEnt->client->ps.fd.forcePower -= (dmg);
+					traceEnt->client->ps.fd.forcePower -= dmg;
 				}
 				if (traceEnt->client->ps.fd.forcePower < 0)
 				{

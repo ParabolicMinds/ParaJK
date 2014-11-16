@@ -3821,6 +3821,8 @@ static void PM_CrashLand( void ) {
 
 	pm->ps->inAirAnim = qfalse;
 
+	if (pm->ps->ignoreFallDamage) return; //No fall damage if... well... obviously.
+
 	if (pm->ps->m_iVehicleNum)
 	{ //don't do fall stuff while on a vehicle
 		return;

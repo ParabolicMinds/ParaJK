@@ -6,6 +6,7 @@
 #include "g_nav.h"
 #include "bg_saga.h"
 #include "b_local.h"
+#include "g_para.h"
 
 level_locals_t	level;
 
@@ -3302,7 +3303,12 @@ void G_RunFrame( int levelTime ) {
 
 			trap->ICARUS_MaintainTaskManager(ent->s.number);
 
+			if (Para_Cvar_FallDamage())		ent->client->ps.ignoreFallDamage = qfalse;
+			else							ent->client->ps.ignoreFallDamage = qtrue;
+
 			G_RunClient( ent );
+
+			if (Para_Cvar_InfForce()) ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax;
 			continue;
 		}
 		else if (ent->s.eType == ET_NPC)

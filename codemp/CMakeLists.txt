@@ -79,6 +79,7 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/game/surfaceflags.h"
 		"${MPDir}/qcommon/tags.h"
                 "${MPDir}/qcommon/q_para.h"
+                "${MPDir}/qcommon/q_para.c"
 		)
 	source_group("Header Files" FILES ${MPBotlibHeaderFiles})
 	set(MPBotlibSourceFiles

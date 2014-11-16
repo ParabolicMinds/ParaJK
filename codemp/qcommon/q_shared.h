@@ -1805,6 +1805,9 @@ typedef struct playerState_s {
 	int			deltaOneBits;
 	int			deltaNumBits;
 #endif
+
+	//Para player vars.
+	qboolean	ignoreFallDamage;
 } playerState_t;
 
 typedef struct siegePers_s

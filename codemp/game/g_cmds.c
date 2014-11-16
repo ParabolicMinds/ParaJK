@@ -5,6 +5,8 @@
 
 #include "ui/menudef.h"			// for the voice chats
 
+#include "qcommon/q_para.h"
+
 //rww - for getting bot commands...
 int AcceptBotCommand(char *cmd, gentity_t *pl);
 //end rww
@@ -3361,6 +3363,10 @@ void Cmd_AddBot_f( gentity_t *ent ) {
 	trap->SendServerCommand( ent-g_entities, va( "print \"%s.\n\"", G_GetStringEdString( "MP_SVGAME", "ONLY_ADD_BOTS_AS_SERVER" ) ) );
 }
 
+void Cmd_Para_Test( gentity_t *ent ) {
+	trap->Print("testing...");
+}
+
 /*
 =================
 ClientCommand
@@ -3425,6 +3431,11 @@ command_t commands[] = {
 };
 static const size_t numCommands = ARRAY_LEN( commands );
 
+command_t commands_para[] = {
+	{ PARA_CMD_TEST,		Cmd_Para_Test,				CMD_ALIVE|CMD_NOINTERMISSION },
+};
+static const size_t numCommandsPara = ARRAY_LEN( commands_para );
+
 void ClientCommand( int clientNum ) {
 	gentity_t	*ent = NULL;
 	char		cmd[MAX_TOKEN_CHARS] = {0};
@@ -3444,6 +3455,7 @@ void ClientCommand( int clientNum ) {
 	//end rww
 
 	command = (command_t *)bsearch( cmd, commands, numCommands, sizeof( commands[0] ), cmdcmp );
+	if (!command) command = (command_t *)bsearch( cmd, commands_para, numCommandsPara, sizeof( commands_para[0] ), cmdcmp );
 	if ( !command )
 	{
 		trap->SendServerCommand( clientNum, va( "print \"Unknown command %s\n\"", cmd ) );

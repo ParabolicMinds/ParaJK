@@ -2,7 +2,12 @@
 #include "qcommon/q_para.h"
 #include "sv_para.h"
 
+
+//Cvars are setup here. This is also where default values are set.
 void SV_PARA_INIT() {
-	Cvar_Get(PARA_CVAR_THERMAL_GOLF, "1", CVAR_SERVERINFO);
-	Cvar_Get(PARA_CVAR_DISRUPTOR_INSTAKILL, "1", CVAR_SERVERINFO);
+	pcvar_t const * cv;
+	int cvn;
+	for (cvn = 0; cvn <= paraCvarsNum; cv = &paraCvars[cvn], cvn++) {
+		Cvar_Get(cv->name, cv->defval, cv->cvarFlags);
+	}
 }

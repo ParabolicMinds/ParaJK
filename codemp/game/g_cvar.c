@@ -1,5 +1,7 @@
 #include "g_local.h"
 
+#include "g_para.h"
+
 //
 // Cvar callbacks
 //

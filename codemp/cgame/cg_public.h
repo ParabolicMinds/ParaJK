@@ -1,3 +1,4 @@
+#include "qcommon/q_shared.h"
 #pragma once
 
 // Copyright (C) 1999-2000 Id Software, Inc.
@@ -12,7 +13,7 @@
 // needs to be larger than PACKET_BACKUP
 
 
-#define	MAX_ENTITIES_IN_SNAPSHOT	256
+#define	MAX_ENTITIES_IN_SNAPSHOT	MAX_GENTITIES
 
 // snapshots are a view of the server at a given time
 

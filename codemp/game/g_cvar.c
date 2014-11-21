@@ -1,6 +1,6 @@
 #include "g_local.h"
-
 #include "g_para.h"
+#include "qcommon/q_para.h"
 
 //
 // Cvar callbacks
@@ -35,12 +35,19 @@ static const cvarTable_t gameCvarTable[] = {
 		#include "g_xcvar.h"
 	#undef XCVAR_LIST
 };
+
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 void G_RegisterCvars( void ) {
 	size_t i = 0;
-	const cvarTable_t *cv = NULL;
 
+	pcvar_t * pcv = NULL;
+	for (pcv=pjk_g_cvars; i < pjk_g_num; i++, pcv++) {
+		trap->Cvar_Register( &pcv->vmc, pcv->name, pcv->defval, pcv->cvarFlags );
+	}
+
+
+	cvarTable_t const * cv = NULL;
 	for ( i=0, cv=gameCvarTable; i<gameCvarTableSize; i++, cv++ ) {
 		trap->Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 		if ( cv->update )
@@ -50,6 +57,17 @@ void G_RegisterCvars( void ) {
 
 void G_UpdateCvars( void ) {
 	size_t i = 0;
+	pcvar_t * pcv = NULL;
+
+	for ( i=0, pcv=pjk_g_cvars; i<pjk_g_num; i++, pcv++ ) {
+		int modCount = pcv->vmc.modificationCount;
+		trap->Cvar_Update( &pcv->vmc );
+		if ( pcv->vmc.modificationCount != modCount ) {
+			if ( pcv->announce )
+				trap->SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"", pcv->name, pcv->vmc.string ) );
+		}
+	}
+
 	const cvarTable_t *cv = NULL;
 
 	for ( i=0, cv=gameCvarTable; i<gameCvarTableSize; i++, cv++ ) {

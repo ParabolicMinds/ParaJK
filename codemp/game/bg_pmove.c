@@ -1877,10 +1877,11 @@ static qboolean PM_CheckJump( void )
 			{//holding jump in air
 				float curHeight = pm->ps->origin[2] - pm->ps->fd.forceJumpZStart;
 				//check for max force jump level and cap off & cut z vel
-				if ( ( curHeight<=forceJumpHeight[0] ||//still below minimum jump height
-						(pm->ps->fd.forcePower&&pm->cmd.upmove>=10) ) &&////still have force power available and still trying to jump up
-					curHeight < forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]] &&
-					pm->ps->fd.forceJumpZStart)//still below maximum jump height
+				if ( ( ( curHeight<=forceJumpHeight[0] ||//still below minimum jump height
+							(pm->ps->fd.forcePower&&pm->cmd.upmove>=10) ) && //still have force power available and still trying to jump up
+						curHeight < forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]] &&
+						pm->ps->fd.forceJumpZStart) || //still below maximum jump height
+					 para_f_infjump)
 				{//can still go up
 					if ( curHeight > forceJumpHeight[0] )
 					{//passed normal jump height  *2?
@@ -2008,6 +2009,9 @@ static qboolean PM_CheckJump( void )
 					pm->ps->velocity[2] = (forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]]-curHeight)/forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]]*forceJumpStrength[pm->ps->fd.forcePowerLevel[FP_LEVITATION]];//JUMP_VELOCITY;
 					pm->ps->velocity[2] /= 10;
 					pm->ps->velocity[2] += JUMP_VELOCITY;
+					if (para_f_infjump && pm->ps->velocity[2] < JUMP_VELOCITY) {
+						pm->ps->velocity[2] = JUMP_VELOCITY;
+					}
 					pm->ps->pm_flags |= PMF_JUMP_HELD;
 				}
 				else if ( curHeight > forceJumpHeight[0] && curHeight < forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]] - forceJumpHeight[0] )

@@ -2,3 +2,4 @@
 
 qboolean para_d_falldamage;
 qboolean para_f_infjump;
+float para_m_massmodifier;

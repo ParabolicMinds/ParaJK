@@ -5,6 +5,7 @@
 #include "g_local.h"
 #include "bg_saga.h"
 #include "qcommon/q_shared.h"
+#include "g_para.h"
 
 typedef struct shaderRemap_s {
   char oldShader[MAX_QPATH];
@@ -932,6 +933,12 @@ void G_FreeEntity( gentity_t *ed ) {
 
 	if ( ed->neverFree ) {
 		return;
+	}
+
+	//Update Golf Balls Array
+	int player;
+	for (player = 0; player < MAX_CLIENTS; player++) {
+		if (par_golfBalls[player] == ed) par_golfBalls[player] = NULL;
 	}
 
 	//rww - this may seem a bit hackish, but unfortunately we have no access

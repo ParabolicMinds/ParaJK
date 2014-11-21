@@ -1,5 +1,6 @@
 #include "server.h"
 #include "qcommon/cm_public.h"
+#include "sv_para.h"
 
 /*
 =============================================================================
@@ -316,7 +317,20 @@ static int QDECL SV_QsortEntityNumbers( const void *a, const void *b ) {
 SV_AddEntToSnapshot
 ===============
 */
+
+
+static const char * nosnaps[] = {
+//	"target_",
+};
+static const size_t nosnapsNum = ARRAY_LEN(nosnaps);
+
 static void SV_AddEntToSnapshot( svEntity_t *svEnt, sharedEntity_t *gEnt, snapshotEntityNumbers_t *eNums ) {
+	size_t ns;
+	for (ns = 0; ns < nosnapsNum; ns++) {
+		if (!strncmp(gEnt->classname, nosnaps[ns],strlen(nosnaps[ns]))) {
+			return;
+		}
+	}
 	// if we have already added this entity to this snapshot, don't add again
 	if ( svEnt->snapshotCounter == sv.snapshotCounter ) {
 		return;

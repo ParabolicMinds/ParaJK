@@ -2061,6 +2061,12 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 
 	bolt = G_Spawn();
 
+	if (para_w_thermalgolf && ent->client) {
+		gentity_t * oldBall = par_golfBalls[ent->client->ps.clientNum];
+		if (oldBall) G_FreeEntity(oldBall);
+		par_golfBalls[ent->client->ps.clientNum] = bolt;
+	}
+
 	bolt->physicsObject = qtrue;
 
 	bolt->classname = "thermal_detonator";
@@ -2104,13 +2110,16 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 		bolt->s.pos.trDelta[2] += 120;
 	}
 
-	if ( !altFire )
+	if ( !altFire || para_w_thermalgolf )
 	{
 		bolt->flags |= FL_BOUNCE_HALF;
 	}
 
-	bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
-	bolt->s.loopIsSoundset = qfalse;
+	if (!para_w_thermalgolf)
+	{
+		bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+		bolt->s.loopIsSoundset = qfalse;
+	}
 
 	bolt->damage = TD_DAMAGE;
 	bolt->dflags = 0;

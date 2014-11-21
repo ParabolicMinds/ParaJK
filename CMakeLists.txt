@@ -167,6 +167,8 @@ else()
 	endif()
 endif()
 
+set(CMAKE_BUILD_TYPE "DEBUG")
+
 if (NOT CMAKE_BUILD_TYPE)
 	message("No build type selected, default to RELEASE")
 	set(CMAKE_BUILD_TYPE "RELEASE")

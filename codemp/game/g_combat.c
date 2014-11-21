@@ -2978,7 +2978,7 @@ void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback )
 	if ( targ->physicsBounce > 0 )	//overide the mass
 		mass = targ->physicsBounce;
 	else
-		mass = 200;
+		mass = 200 * para_m_massmodifier;
 
 	if ( g_gravity.value > 0 )
 	{
@@ -4646,7 +4646,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 		vec3_t	kvel;
 		float	mass;
 
-		mass = 200;
+		mass = 200 * para_m_massmodifier;
 
 		if (mod == MOD_SABER)
 		{

@@ -1497,6 +1497,21 @@ void SP_worldspawn( void )
 	g_entities[ENTITYNUM_NONE].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ENTITYNUM_NONE].classname = "nothing";
 
+	//New in ParaJK, maps can set cvars!
+	/*TODO
+	G_SpawnString( "cvars", "", &text );
+	char* token;
+	char* string;
+	char* tofree;
+	string = strdup(text);
+	if (string != NULL) {
+		tofree = string;
+		while ((token = strsep(&string, ";")) != NULL) {
+			printf("%s\n", token);
+		}
+		free(tofree);
+	}*/
+
 	// see if we want a warmup time
 	trap->SetConfigstring( CS_WARMUP, "" );
 	if ( g_restarted.integer ) {

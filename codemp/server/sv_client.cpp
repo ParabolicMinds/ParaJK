@@ -794,6 +794,7 @@ void SV_WriteDownloadToClient(client_t *cl, msg_t *msg)
 	char errorMessage[1024];
 	char pakbuf[MAX_QPATH], *pakptr;
 	int numRefPaks;
+	qboolean forbidden = qfalse;
 
 	if (!*cl->downloadName)
 		return;	// Nothing being downloaded
@@ -837,16 +838,23 @@ void SV_WriteDownloadToClient(client_t *cl, msg_t *msg)
 					}
 				}
 			}
+			if(!Q_stricmp(pakptr + 1, "cfg")) {
+				forbidden = qtrue;
+			}
 		}
 
 		cl->download = 0;
 
 		// We open the file here
 		if ( !sv_allowDownload->integer ||
-			idPack || unreferenced ||
+			idPack || unreferenced || forbidden ||
 			( cl->downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &cl->download ) ) < 0 ) {
 			// cannot auto-download file
-			if(unreferenced)
+			if (forbidden) {
+				Com_Printf("clientDownload: %d : \"%s\" is a forbidden file and cannot be downloaded.\n", (int) (cl - svs.clients), cl->downloadName);
+				Com_sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" is a forbidden file and cannot be downloaded.", cl->downloadName);
+			}
+			if (unreferenced)
 			{
 				Com_Printf("clientDownload: %d : \"%s\" is not referenced and cannot be downloaded.\n", (int) (cl - svs.clients), cl->downloadName);
 				Com_sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" is not referenced and cannot be downloaded.", cl->downloadName);

@@ -22,18 +22,17 @@
 #define PARA_CMD_TEST "partest"
 
 typedef struct pcvar_s {
-	vmCvar_t	vmc;
 	char*		name;
 	char*		defval;
 	int			cvarFlags;
 	qboolean	announce; //Only used with Game and BGame vars
 } pcvar_t;
 
-extern pcvar_t pjk_g_cvars[];
+extern const pcvar_t pjk_g_cvars[];
 extern const size_t pjk_g_num;
-extern pcvar_t pjk_cg_cvars[];
+extern const pcvar_t pjk_cg_cvars[];
 extern const size_t pjk_cg_num;
-extern pcvar_t pjk_bg_cvars[];
+extern const pcvar_t pjk_bg_cvars[];
 extern const size_t pjk_bg_num;
-extern pcvar_t pjk_sv_cvars[];
+extern const pcvar_t pjk_sv_cvars[];
 extern const size_t pjk_sv_num;

@@ -1503,5 +1503,6 @@ void Svcmd_ToggleAllowVote_f( void );
 #undef XCVAR_PROTO
 void G_RegisterCvars( void );
 void G_UpdateCvars( void );
+void G_ShutdownCvars( void );
 
 extern gameImport_t *trap;

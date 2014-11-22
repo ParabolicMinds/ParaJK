@@ -38,16 +38,26 @@ static const cvarTable_t gameCvarTable[] = {
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
+static vmCvar_t * pjkVm;
+
 void G_RegisterCvars( void ) {
 	size_t i = 0;
 
-	pcvar_t * pcv = NULL;
-	for (pcv=pjk_g_cvars; i < pjk_g_num; i++, pcv++) {
-		trap->Cvar_Register( &pcv->vmc, pcv->name, pcv->defval, pcv->cvarFlags );
+	if (pjkVm) {
+		free(pjkVm);
+	}
+	pjkVm = calloc(pjk_g_num + pjk_bg_num, sizeof(vmCvar_t));
+	vmCvar_t * pcvm;
+	pcvar_t const * pcv;
+	for ( i=0, pcvm = pjkVm, pcv = pjk_g_cvars; i < pjk_g_num; i++, pcv++, pcvm++ ) {
+		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->cvarFlags );
+	}
+	for ( pcv = pjk_bg_cvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++ ) {
+		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->cvarFlags );
 	}
 
-
 	cvarTable_t const * cv = NULL;
+
 	for ( i=0, cv=gameCvarTable; i<gameCvarTableSize; i++, cv++ ) {
 		trap->Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 		if ( cv->update )
@@ -57,14 +67,23 @@ void G_RegisterCvars( void ) {
 
 void G_UpdateCvars( void ) {
 	size_t i = 0;
-	pcvar_t * pcv = NULL;
 
-	for ( i=0, pcv=pjk_g_cvars; i<pjk_g_num; i++, pcv++ ) {
-		int modCount = pcv->vmc.modificationCount;
-		trap->Cvar_Update( &pcv->vmc );
-		if ( pcv->vmc.modificationCount != modCount ) {
+	vmCvar_t * pcvm;
+	pcvar_t const * pcv;
+	for ( i=0, pcvm = pjkVm, pcv = pjk_g_cvars; i < pjk_g_num; i++, pcv++, pcvm++ ) {
+		int modCount = pcvm->modificationCount;
+		trap->Cvar_Update( pcvm );
+		if ( pcvm->modificationCount != modCount ) {
 			if ( pcv->announce )
-				trap->SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"", pcv->name, pcv->vmc.string ) );
+				trap->SendServerCommand( -1, va("print \"Server: PJK Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
+		}
+	}
+	for ( pcv = pjk_bg_cvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++ ) {
+		int modCount = pcvm->modificationCount;
+		trap->Cvar_Update( pcvm );
+		if ( pcvm->modificationCount != modCount ) {
+			if ( pcv->announce )
+				trap->SendServerCommand( -1, va("print \"Server: PJK Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
 		}
 	}
 
@@ -79,8 +98,15 @@ void G_UpdateCvars( void ) {
 					cv->update();
 
 				if ( cv->trackChange )
-					trap->SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string ) );
+					trap->SendServerCommand( -1, va("print \"Server: Base Cvar %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string ) );
 			}
 		}
 	}
+}
+
+void G_ShutdownCvars( void ) {
+	if (pjkVm) {
+		free(pjkVm);
+	}
+	pjkVm = NULL;
 }

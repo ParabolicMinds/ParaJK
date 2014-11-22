@@ -8,6 +8,7 @@
 static char * parmm = NULL;
 
 static float Cvar_FloatValue(char const * name) {
+	memset(parmm, 0x00, PARA_STRBUF_LEN);
 	trap->Cvar_VariableStringBuffer(name, parmm, PARA_STRBUF_LEN);
 	float f = strtof(parmm, NULL);
 	if (f == HUGE_VALF) para_m_massmodifier = FLT_MAX;

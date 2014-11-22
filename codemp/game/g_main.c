@@ -480,6 +480,8 @@ void G_ShutdownGame( int restart ) {
 		BotAIShutdown( restart );
 	}
 
+	G_ShutdownCvars();
+
 	B_CleanupAlloc(); //clean up all allocations made with B_Alloc
 }
 

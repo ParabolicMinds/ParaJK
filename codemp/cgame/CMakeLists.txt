@@ -90,6 +90,10 @@ set(MPCGameCommonFiles
 	"${MPDir}/qcommon/q_platform.h"
 	"${MPDir}/qcommon/qfiles.h"
 	"${MPDir}/qcommon/tags.h"
+	"${MPDir}/pcommon/q_para.h"
+	"${MPDir}/pcommon/q_para.c"
+	"${MPDir}/pcommon/q_parastate.h"
+	"${MPDir}/pcommon/q_parastate.cpp"
 	)
 source_group("common" FILES ${MPCGameCommonFiles})
 set(MPCGameFiles ${MPCGameFiles} ${MPCGameCommonFiles})

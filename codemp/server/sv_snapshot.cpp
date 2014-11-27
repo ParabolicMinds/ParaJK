@@ -1,6 +1,6 @@
 #include "server.h"
 #include "qcommon/cm_public.h"
-#include "sv_para.h"
+#include "sv_para.hpp"
 
 /*
 =============================================================================
@@ -322,9 +322,7 @@ char const * tgstr = "target_";
 char const * tgstr_spk = "target_speaker";
 
 static void SV_AddEntToSnapshot( svEntity_t *svEnt, sharedEntity_t *gEnt, snapshotEntityNumbers_t *eNums ) {
-	size_t ns;
-
-	if (!Cvar_VariableIntegerValue(PJK_SERV_SENDTARGETS) && !strncmp(gEnt->classname, tgstr,strlen(tgstr))) {
+	if (!pjkCvarIntValue(PJK_SERV_SENDTARGETS_CVAR) && !strncmp(gEnt->classname, tgstr,strlen(tgstr))) {
 		if (strcmp(gEnt->classname, tgstr_spk))
 			return;
 	}

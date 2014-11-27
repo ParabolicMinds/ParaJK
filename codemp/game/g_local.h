@@ -1164,6 +1164,9 @@ extern int gGAvoidDismember;
 #define DAMAGE_SABER_KNOCKBACK2		0x00020000	// Check the attacker's second saber for a knockbackScale
 #define DAMAGE_SABER_KNOCKBACK1_B2	0x00040000	// Check the attacker's first saber for a knockbackScale2
 #define DAMAGE_SABER_KNOCKBACK2_B2	0x00080000	// Check the attacker's second saber for a knockbackScale2
+//ParaJK Flags
+#define DAMAGE_FORCE_DEATH			0x00100000	// If the target is to receive any damage at all, die.
+#define DAMAGE_ALWAYS				0x00200000	// No getting out of the damage, never.
 //
 // g_exphysics.c
 //

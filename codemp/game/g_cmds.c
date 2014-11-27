@@ -5,7 +5,7 @@
 
 #include "ui/menudef.h"			// for the voice chats
 
-#include "qcommon/q_para.h"
+#include "pcommon/q_para.h"
 
 //rww - for getting bot commands...
 int AcceptBotCommand(char *cmd, gentity_t *pl);
@@ -1872,6 +1872,11 @@ void Cmd_Where_f( gentity_t *ent ) {
 	//trap->SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos( ent->s.origin ) ) );
 }
 
+void Cmd_PTest_f( gentity_t *ent ) {
+	gentity_t * e = G_Spawn();
+	G_SpawnItem(e, BG_FindItemForWeapon(WP_THERMAL));
+}
+
 static const char *gameNames[] = {
 	"Free For All",
 	"Holocron FFA",
@@ -3428,13 +3433,9 @@ command_t commands[] = {
 	{ "voice_cmd",			Cmd_VoiceCommand_f,			CMD_NOINTERMISSION },
 	{ "vote",				Cmd_Vote_f,					CMD_NOINTERMISSION },
 	{ "where",				Cmd_Where_f,				CMD_NOINTERMISSION },
+	{ "ztest",				Cmd_PTest_f,				CMD_ALIVE|CMD_NOINTERMISSION },
 };
 static const size_t numCommands = ARRAY_LEN( commands );
-
-command_t commands_para[] = {
-	{ PARA_CMD_TEST,		Cmd_Para_Test,				CMD_ALIVE|CMD_NOINTERMISSION },
-};
-static const size_t numCommandsPara = ARRAY_LEN( commands_para );
 
 void ClientCommand( int clientNum ) {
 	gentity_t	*ent = NULL;
@@ -3455,7 +3456,6 @@ void ClientCommand( int clientNum ) {
 	//end rww
 
 	command = (command_t *)bsearch( cmd, commands, numCommands, sizeof( commands[0] ), cmdcmp );
-	if (!command) command = (command_t *)bsearch( cmd, commands_para, numCommandsPara, sizeof( commands_para[0] ), cmdcmp );
 	if ( !command )
 	{
 		trap->SendServerCommand( clientNum, va( "print \"Unknown command %s\n\"", cmd ) );

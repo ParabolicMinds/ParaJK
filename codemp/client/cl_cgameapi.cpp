@@ -1623,6 +1623,26 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 // Stub function for old RMG system.
 static void RE_InitRendererTerrain ( const char * /*info*/ ) {}
 
+#include "pcommon/q_parastate_clsv.h"
+
+/*
+paraState_t const *		(*PJK_GetExternalParaState)		(int clientNum);
+paraState_t *			(*PJK_GetClientParaState)		();
+void					(*PJK_SendClientParaState)		();
+*/
+
+paraState_t const * CL_GetExternalParaState (int clientNum) {
+	return CLSV_ParaStates + clientNum;
+}
+
+paraState_t * CL_GetClientParaState () {
+	return &CL_ParaState;
+}
+
+void CL_SendClientParaState () {
+	clc.shouldSendClientParaState = qtrue;
+}
+
 void CL_BindCGame( void ) {
 	static cgameImport_t cgi;
 	cgameExport_t		*ret;
@@ -1837,6 +1857,10 @@ void CL_BindCGame( void ) {
 		cgi.G2API_CleanEntAttachments			= CL_G2API_CleanEntAttachments;
 		cgi.G2API_OverrideServer				= CL_G2API_OverrideServer;
 		cgi.G2API_GetSurfaceName				= CL_G2API_GetSurfaceName;
+		//ParaJK
+		cgi.PJK_GetExternalParaState            = CL_GetExternalParaState;
+		cgi.PJK_GetClientParaState				= CL_GetClientParaState;
+		cgi.PJK_SendClientParaState				= CL_SendClientParaState;
 
 		GetCGameAPI = (GetCGameAPI_t)cgvm->GetModuleAPI;
 		ret = GetCGameAPI( CGAME_API_VERSION, &cgi );

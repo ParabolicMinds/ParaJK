@@ -6,8 +6,6 @@
 #include "cg_local.h"
 #include "game/bg_saga.h"
 
-#include "qcommon/q_para.h"
-
 /*
 =================
 CG_TargetCommand_f
@@ -348,11 +346,6 @@ static const char *gcmds[] = {
 };
 static const size_t numgcmds = ARRAY_LEN( gcmds );
 
-static const char *gcmds_para[] = {
-	PARA_CMD_TEST,
-};
-static const size_t numgcmdspara = ARRAY_LEN( gcmds_para );
-
 /*
 =================
 CG_InitConsoleCommands
@@ -373,6 +366,4 @@ void CG_InitConsoleCommands( void ) {
 	//
 	for( i = 0; i < numgcmds; i++ )
 		trap->AddCommand( gcmds[i] );
-	for( i = 0; i < numgcmdspara; i++ )
-		trap->AddCommand( gcmds_para[i] );
 }

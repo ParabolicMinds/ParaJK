@@ -236,8 +236,12 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/qcommon/timing.h"
 		"${MPDir}/qcommon/vm.cpp"
 		"${MPDir}/qcommon/z_memman_pc.cpp"
-		"${MPDir}/qcommon/q_para.h"
-		"${MPDir}/qcommon/q_para.c"
+		"${MPDir}/pcommon/q_para.h"
+		"${MPDir}/pcommon/q_para.c"
+		"${MPDir}/pcommon/q_parastate.h"
+		"${MPDir}/pcommon/q_parastate.cpp"
+		"${MPDir}/pcommon/q_parastate_clsv.h"
+		"${MPDir}/pcommon/q_parastate_clsv.cpp"
 		)
 	if(WIN32)
 		set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles})
@@ -296,7 +300,7 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/server/sv_world.cpp"
 		"${MPDir}/server/sv_gameapi.cpp"
 		"${MPDir}/server/sv_gameapi.h"
-		"${MPDir}/server/sv_para.h"
+		"${MPDir}/server/sv_para.hpp"
 		"${MPDir}/server/sv_para.cpp"
 		)
 	source_group("server" FILES ${MPEngineAndDedServerFiles})

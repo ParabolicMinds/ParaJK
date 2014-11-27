@@ -11,7 +11,6 @@ vec4_t		colorBlack	= {0, 0, 0, 1};
 vec4_t		colorRed	= {1, 0, 0, 1};
 vec4_t		colorGreen	= {0, 1, 0, 1};
 vec4_t		colorBlue	= {0, 0, 1, 1};
-vec4_t		colorYellow	= {1, 1, 0, 1};
 vec4_t		colorOrange = {1, 0.5, 0, 1};
 vec4_t		colorMagenta= {1, 0, 1, 1};
 vec4_t		colorCyan	= {0, 1, 1, 1};
@@ -34,6 +33,7 @@ vec4_t g_color_table[Q_COLOR_BITS+1] = {
 	{ 1.0, 1.0, 1.0, 1.0 },	// white
 	{ 1.0, 0.5, 0.0, 1.0 }, // orange
 	{ 0.5, 0.5, 0.5, 1.0 },	// md.grey
+	{ 0.5, 0.0, 1.0, 1.0 },	// violet
 };
 
 vec3_t	bytedirs[NUMVERTEXNORMALS] =

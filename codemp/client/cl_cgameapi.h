@@ -1,4 +1,5 @@
 #pragma once
+#include "qcommon/qcommon.h"
 
 void			CGVM_Init					( int serverMessageNum, int serverCommandSequence, int clientNum );
 void			CGVM_Shutdown				( void );

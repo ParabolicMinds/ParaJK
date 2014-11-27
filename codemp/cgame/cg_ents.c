@@ -2618,6 +2618,8 @@ Ghoul2 Insert End
 			ent.axis[0][2] = 1;
 		}
 
+
+
 		// spin as it moves
 		if ( s1->pos.trType != TR_STATIONARY )
 		{

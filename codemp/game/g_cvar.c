@@ -1,6 +1,6 @@
 #include "g_local.h"
 #include "g_para.h"
-#include "qcommon/q_para.h"
+#include "pcommon/q_para.h"
 
 //
 // Cvar callbacks
@@ -46,14 +46,21 @@ void G_RegisterCvars( void ) {
 	if (pjkVm) {
 		free(pjkVm);
 	}
+	if (pbgcvars) {
+		free(pbgcvars);
+	}
 	pjkVm = calloc(pjk_g_num + pjk_bg_num, sizeof(vmCvar_t));
+	pbgcvars = calloc(pjk_bg_num, sizeof(pbgcvar_t));
 	vmCvar_t * pcvm;
 	pcvar_t const * pcv;
 	for ( i=0, pcvm = pjkVm, pcv = pjk_g_cvars; i < pjk_g_num; i++, pcv++, pcvm++ ) {
-		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->cvarFlags );
+		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->flags );
 	}
-	for ( pcv = pjk_bg_cvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++ ) {
-		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->cvarFlags );
+	pbgcvar_t * pbgc;
+	for ( pcv = pjk_bg_cvars, pbgc = pbgcvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++, pbgc++ ) {
+		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->flags );
+		pbgc->name = pcv->name;
+		pbgc->value = pjkGCvarStringValue(pcv->name);
 	}
 
 	cvarTable_t const * cv = NULL;
@@ -75,15 +82,18 @@ void G_UpdateCvars( void ) {
 		trap->Cvar_Update( pcvm );
 		if ( pcvm->modificationCount != modCount ) {
 			if ( pcv->announce )
-				trap->SendServerCommand( -1, va("print \"Server: PJK Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
+				trap->SendServerCommand( -1, va("print \"Server: PJK G Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
 		}
 	}
-	for ( pcv = pjk_bg_cvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++ ) {
+	pbgcvar_t * pbgc;
+	for ( pcv = pjk_bg_cvars, pbgc = pbgcvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++, pbgc++ ) {
 		int modCount = pcvm->modificationCount;
 		trap->Cvar_Update( pcvm );
 		if ( pcvm->modificationCount != modCount ) {
+			if (pbgc->value) free(pbgc->value);
+			pbgc->value = strdup(pcvm->string);
 			if ( pcv->announce )
-				trap->SendServerCommand( -1, va("print \"Server: PJK Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
+				trap->SendServerCommand( -1, va("print \"Server: PJK BG Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
 		}
 	}
 

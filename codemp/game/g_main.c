@@ -2910,9 +2910,6 @@ void G_RunFrame( int levelTime ) {
 	void		*timer_Queues;
 #endif
 
-	//Update ParaJK CVars.
-	Para_Update_Cvars();
-
 	if (level.gametype == GT_SIEGE &&
 		g_siegeRespawn.integer &&
 		g_siegeRespawnCheck < level.time)
@@ -3310,7 +3307,7 @@ void G_RunFrame( int levelTime ) {
 
 			G_RunClient( ent );
 
-			if (para_f_infforce) ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax;
+			if (pjkGCvarIntValue(PJK_GAME_INFINITE_FORCE_CVAR)) ent->client->ps.fd.forcePower = ent->client->ps.fd.forcePowerMax;
 			continue;
 		}
 		else if (ent->s.eType == ET_NPC)

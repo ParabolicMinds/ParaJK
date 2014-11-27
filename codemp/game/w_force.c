@@ -829,7 +829,7 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 
 void WP_ForcePowerRegenerate( gentity_t *self, int overrideAmt )
 { //called on a regular interval to regenerate force power.
-	if (para_f_infforce) {
+	if (pjkGCvarIntValue(PJK_GAME_INFINITE_FORCE_CVAR)) {
 		self->client->ps.fd.forcePower = self->client->ps.fd.forcePowerMax;
 		return;
 	}

@@ -134,8 +134,10 @@ set(MPGameCommonFiles
 	"${MPDir}/qcommon/disablewarnings.h"
 	"${MPDir}/qcommon/q_shared.h"
 	"${MPDir}/qcommon/q_platform.h"
-	"${MPDir}/qcommon/q_para.h"
-	"${MPDir}/qcommon/q_para.c"
+	"${MPDir}/pcommon/q_para.h"
+	"${MPDir}/pcommon/q_para.c"
+	"${MPDir}/pcommon/q_parastate.h"
+	"${MPDir}/pcommon/q_parastate.cpp"
 	"${MPDir}/qcommon/tags.h"
 	)
 source_group("common" FILES ${MPGameCommonFiles})

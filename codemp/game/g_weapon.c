@@ -87,11 +87,11 @@ static vec3_t muzzle;
 
 // Personal Rocket Launcher
 //---------
-#define	ROCKET_VELOCITY				900
+//DISOWNED	#define	ROCKET_VELOCITY				900 //DISOWNED IN FAVOR OF CVAR PJK_GAME_ROCKETVEL_CVAR
 #define	ROCKET_DAMAGE				100
 #define	ROCKET_SPLASH_DAMAGE		100
 #define	ROCKET_SPLASH_RADIUS		160
-#define ROCKET_SIZE					3
+//DISOWNED	#define ROCKET_SIZE					3 //DISOWNED IN FAVOR OF PJK_GAME_ROCKETSIZE_CVAR
 #define ROCKET_ALT_THINK_TIME		100
 
 // Concussion Rifle
@@ -541,7 +541,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	float		shotRange = 8192;
 	int			ignore, traces;
 
-	if (para_w_disrpt_ik)
+	if (pjkGCvarIntValue(PJK_GAME_DISRUPTOR_INSTAKILL_CVAR))
 		damage = INFINITE;
 
 	if ( level.gametype == GT_SIEGE )
@@ -654,7 +654,11 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 				ent->client->accuracy_hits++;
 			}
 
-			G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
+			if (pjkGCvarIntValue(PJK_GAME_DISRUPTOR_INSTAKILL_CVAR)) {
+				G_Damage( traceEnt, ent, ent, forward, tr.endpos, INFINITE, DAMAGE_FORCE_DEATH | DAMAGE_ALWAYS, MOD_DISRUPTOR_SNIPER );
+			} else {
+				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
+			}
 
 			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
 			tent->s.eventParm = DirToByte( tr.plane.normal );
@@ -1722,7 +1726,7 @@ void rocketThink( gentity_t *ent )
 	vec3_t	org;
 	float dot, dot2, dis;
 	int i;
-	float vel = (ent->spawnflags&1)?ent->speed:ROCKET_VELOCITY;
+	float vel = (ent->spawnflags&1)?ent->speed:pjkGCvarFloatValue(PJK_GAME_ROCKETVEL_CVAR);
 
 	if ( ent->genericValue1 && ent->genericValue1 < level.time )
 	{//time's up, we're done, remove us
@@ -1893,14 +1897,14 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
 	int	damage	= ROCKET_DAMAGE;
-	int	vel = ROCKET_VELOCITY;
+	int	vel = pjkGCvarFloatValue(PJK_GAME_ROCKETVEL_CVAR);
 	int dif = 0;
 	float rTime;
 	gentity_t *missile;
 
 	if ( altFire )
 	{
-		vel *= 0.5f;
+		vel *= pjkGCvarFloatValue(PJK_GAME_ROCKETALTVELMOD_CVAR);
 	}
 
 	missile = CreateMissile( muzzle, forward, vel, 30000, ent, altFire );
@@ -1922,7 +1926,8 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 		}
 
 		//It's 10 even though it locks client-side at 8, because we want them to have a sturdy lock first, and because there's a slight difference in time between server and client
-		if ( dif >= 10 && rTime != -1 )
+		//Bad JA devs, back to 8. -ParaJK
+		if ( dif >= 8 && rTime != -1 )
 		{
 			missile->enemy = &g_entities[ent->client->ps.rocketLockIndex];
 
@@ -1943,7 +1948,9 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 	missile->s.weapon = WP_ROCKET_LAUNCHER;
 
 	// Make it easier to hit things
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	float rSize = pjkGCvarFloatValue(PJK_GAME_ROCKETSIZE_CVAR);
+	VectorSet( missile->r.maxs, rSize, rSize, rSize );
+	VectorSet( missile->modelScale, rSize/3.0f, rSize/3.0f, rSize/3.0f );
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 
 	missile->damage = damage;
@@ -2037,8 +2044,14 @@ void thermalDetonatorExplode( gentity_t *ent )
 
 void thermalThinkStandard(gentity_t *ent)
 {
-	if (ent->genericValue5 < level.time && !para_w_thermalgolf)
-	{
+	if (ent->genericValue5 < level.time) {
+		if (pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR)) {
+			gentity_t * const * tge;
+			size_t i;
+			for (i = 0, tge = par_golfBalls; i < MAX_CLIENTS; i++, tge++) {
+				if (ent == *tge) return;
+			}
+		}
 		ent->think = thermalDetonatorExplode;
 		ent->nextthink = level.time;
 		return;
@@ -2061,7 +2074,7 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 
 	bolt = G_Spawn();
 
-	if (para_w_thermalgolf && ent->client) {
+	if (pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR) && ent->client) {
 		gentity_t * oldBall = par_golfBalls[ent->client->ps.clientNum];
 		if (oldBall) G_FreeEntity(oldBall);
 		par_golfBalls[ent->client->ps.clientNum] = bolt;
@@ -2110,12 +2123,12 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 		bolt->s.pos.trDelta[2] += 120;
 	}
 
-	if ( !altFire || para_w_thermalgolf )
+	if ( !altFire || pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR) )
 	{
 		bolt->flags |= FL_BOUNCE_HALF;
 	}
 
-	if (!para_w_thermalgolf)
+	if (!pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR))
 	{
 		bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
 		bolt->s.loopIsSoundset = qfalse;
@@ -3359,7 +3372,9 @@ static void WP_FireConcussion( gentity_t *ent )
 	missile->mass = 10;
 
 	// Make it easier to hit things
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	float rSize = pjkGCvarFloatValue(PJK_GAME_ROCKETSIZE_CVAR);
+	VectorSet( missile->r.maxs, rSize, rSize, rSize );
+	VectorSet( missile->modelScale, rSize/3.0f, rSize/3.0f, rSize/3.0f );
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 
 	missile->damage = damage;

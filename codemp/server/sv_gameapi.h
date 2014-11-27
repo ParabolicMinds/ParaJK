@@ -45,3 +45,6 @@ void SV_BindGame( void );
 void SV_UnbindGame( void );
 void SV_InitGame( qboolean restart );
 void SV_RestartGame( void );
+
+void SV_SendUpdatedParaStates(int clientDest, int clientState);
+void SV_SendClientPGameInit( client_t * clientDest );

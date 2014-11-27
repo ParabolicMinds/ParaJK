@@ -3,6 +3,7 @@
 #include "client.h"
 #include "cl_cgameapi.h"
 #include "qcommon/stringed_ingame.h"
+#include "pcommon/q_parastate_clsv.h"
 #include "zlib/zlib.h"
 
 static char hiddenCvarVal[128];
@@ -593,7 +594,6 @@ void CL_ParseGamestate( msg_t *msg ) {
 	Cvar_Set( "cl_paused", "0" );
 }
 
-
 //=====================================================================
 
 /*
@@ -843,6 +843,13 @@ void CL_ParseServerMessage( msg_t *msg ) {
 		case svc_mapchange:
 			if ( cls.cgameStarted )
 				CGVM_MapChange();
+			break;
+		case svc_pgamesnap:
+			CLSV_ParseParaState( msg );
+			break;
+		case svc_pgameinit:
+			CLSV_PGameInit( msg );
+			clc.shouldSendClientParaState = qtrue;
 			break;
 		}
 	}

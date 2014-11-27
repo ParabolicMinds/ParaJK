@@ -94,7 +94,7 @@ NET
 
 #define	MAX_PACKET_USERCMDS		32		// max number of usercmd_t in a packet
 
-#define	MAX_SNAPSHOT_ENTITIES	256
+#define	MAX_SNAPSHOT_ENTITIES	MAX_GENTITIES
 
 #define	PORT_ANY			-1
 
@@ -140,7 +140,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_messag
 void		NET_Sleep(int msec);
 
 
-#define	MAX_MSGLEN				49152		// max length of a message, which may
+#define	MAX_MSGLEN				(1<<16)		// max length of a message, which may
 											// be fragmented into multiple packets
 
 //rww - 6/28/02 - Changed from 16384 to match sof2's. This does seem rather huge, but I guess it doesn't really hurt anything.
@@ -223,6 +223,8 @@ enum svc_ops_e {
 	svc_snapshot,
 	svc_setgame,
 	svc_mapchange,
+	svc_pgamesnap,
+	svc_pgameinit,
 	svc_EOF
 };
 
@@ -236,6 +238,7 @@ enum clc_ops_e {
 	clc_move,				// [[usercmd_t]
 	clc_moveNoDelta,		// [[usercmd_t]
 	clc_clientCommand,		// [string] message
+	clc_pgamesnap,
 	clc_EOF
 };
 

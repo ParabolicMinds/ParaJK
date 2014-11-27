@@ -1881,7 +1881,7 @@ static qboolean PM_CheckJump( void )
 							(pm->ps->fd.forcePower&&pm->cmd.upmove>=10) ) && //still have force power available and still trying to jump up
 						curHeight < forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]] &&
 						pm->ps->fd.forceJumpZStart) || //still below maximum jump height
-					 para_f_infjump)
+					 pjkBGCvarIntValue(PJK_BGAME_INFINITE_JUMP_CVAR))
 				{//can still go up
 					if ( curHeight > forceJumpHeight[0] )
 					{//passed normal jump height  *2?
@@ -2009,7 +2009,7 @@ static qboolean PM_CheckJump( void )
 					pm->ps->velocity[2] = (forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]]-curHeight)/forceJumpHeight[pm->ps->fd.forcePowerLevel[FP_LEVITATION]]*forceJumpStrength[pm->ps->fd.forcePowerLevel[FP_LEVITATION]];//JUMP_VELOCITY;
 					pm->ps->velocity[2] /= 10;
 					pm->ps->velocity[2] += JUMP_VELOCITY;
-					if (para_f_infjump && pm->ps->velocity[2] < JUMP_VELOCITY) {
+					if (pjkBGCvarIntValue(PJK_BGAME_INFINITE_JUMP_CVAR) && pm->ps->velocity[2] < JUMP_VELOCITY) {
 						pm->ps->velocity[2] = JUMP_VELOCITY;
 					}
 					pm->ps->pm_flags |= PMF_JUMP_HELD;
@@ -3827,7 +3827,7 @@ static void PM_CrashLand( void ) {
 
 	pm->ps->inAirAnim = qfalse;
 
-	if (!para_d_falldamage) return; //No fall damage if... well... obviously.
+	if (!pjkBGCvarIntValue(PJK_BGAME_FALLDAMAGE_CVAR)) return; //No fall damage if... well... obviously.
 
 	if (pm->ps->m_iVehicleNum)
 	{ //don't do fall stuff while on a vehicle

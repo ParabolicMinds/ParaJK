@@ -2978,7 +2978,7 @@ void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback )
 	if ( targ->physicsBounce > 0 )	//overide the mass
 		mass = targ->physicsBounce;
 	else
-		mass = 200 * para_m_massmodifier;
+		mass = 200 * pjkGCvarFloatValue(PJK_GAME_MASSMOD_CVAR);
 
 	if ( g_gravity.value > 0 )
 	{
@@ -4419,6 +4419,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 	int			take, asave, max, subamt = 0, knockback;
 	float		famt = 0, hamt = 0, shieldAbsorbed = 0;
 
+	if (dflags & DAMAGE_ALWAYS) {
+		dflags |= DAMAGE_NO_PROTECTION;
+		dflags |= DAMAGE_NO_SELF_PROTECTION;
+		dflags |= DAMAGE_NO_ARMOR;
+		dflags |= DAMAGE_NO_TEAM_PROTECTION;
+	}
+
+	if (targ && (targ->flags & FL_GODMODE)) //GODMODE means *GOD* mode. What on earth made them think it was ok for gods to receive damage? -ParaJK
+		return;
+
 	if (!targ)
 		return;
 
@@ -4518,8 +4528,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 	{
 		if (mod == MOD_DEMP2 ||
 			mod == MOD_DEMP2_ALT ||
-			mod == MOD_BRYAR_PISTOL ||
-			mod == MOD_BRYAR_PISTOL_ALT ||
 			mod == MOD_MELEE)
 		{ //these don't damage bbrushes.. ever
 			if ( mod != MOD_MELEE || !G_HeavyMelee( attacker ) )
@@ -4646,7 +4654,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 		vec3_t	kvel;
 		float	mass;
 
-		mass = 200 * para_m_massmodifier;
+		mass = 200 * pjkGCvarFloatValue(PJK_GAME_MASSMOD_CVAR);
 
 		if (mod == MOD_SABER)
 		{
@@ -4787,11 +4795,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 
 		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
 		// if the attacker was on the same team
-		if ( targ != attacker)
+		if ( targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION))
 		{
 			if (OnSameTeam (targ, attacker))
 			{
-				if ( !g_friendlyFire.integer )
+				if ( !g_friendlyFire.integer)
 				{
 					return;
 				}
@@ -4848,7 +4856,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 			return;
 		}
 
-		if ( mod == MOD_DET_PACK_SPLASH && para_w_detpacklaunch)
+		if ( mod == MOD_DET_PACK_SPLASH && pjkGCvarIntValue(PJK_GAME_DETPACK_LAUNCH_CVAR))
 			return;
 
 		if (targ && targ->client && (targ->client->ps.eFlags & EF_INVULNERABLE) &&
@@ -5457,6 +5465,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 		{ //if this is non-zero this guy should be updated his s.health to send to the client
 			G_ScaleNetHealth(targ);
 		}
+
+		if (dflags & DAMAGE_FORCE_DEATH)
+			targ->health = -999;
 
 		if ( targ->health <= 0 ) {
 			if ( client )

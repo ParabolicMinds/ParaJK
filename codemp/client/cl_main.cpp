@@ -12,8 +12,6 @@
 #include "cl_lan.h"
 #include "snd_local.h"
 
-#include "pcommon/q_parastate_clsv.h"
-
 #ifndef _WIN32
 #include "sys/sys_loadlib.h"
 #include "sys/sys_local.h"
@@ -794,10 +792,6 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		SCR_UpdateScreen( );
 		CL_CloseAVI( );
 	}
-
-	//Wipe the para states.
-	CLSV_CleanupParaStates();
-
 	CL_UpdateGUID( NULL, 0 );
 
 }
@@ -2656,8 +2650,6 @@ void CL_Init( void ) {
 
 	CL_InitInput ();
 
-	CLSV_InitializeParaStates();
-
 	//
 	// register our variables
 	//
@@ -2885,8 +2877,6 @@ void CL_Shutdown( void ) {
 	Cvar_Set( "cl_running", "0" );
 
 	recursive = qfalse;
-
-	CLSV_CleanupParaStates();
 
 	Key_SetCatcher( 0 );
 

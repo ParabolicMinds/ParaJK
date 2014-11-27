@@ -8,6 +8,8 @@ void CLSV_InitializeParaStates() {
 	for (i = 0, ps = CLSV_ParaStates; i < MAX_CLIENTS; i++, ps++) {
 		ps->msg = new char[PJK_PARASTATE_MSG_SIZE]();
 	}
+
+	if (!CL_ParaState.msg) CL_ParaState.msg = new char[PJK_PARASTATE_MSG_SIZE]();
 }
 
 void CLSV_CleanupParaStates() {

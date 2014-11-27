@@ -2876,7 +2876,6 @@ void SV_BindGame( void ) {
 
 	memset( &gi, 0, sizeof( gi ) );
 
-	CLSV_CleanupParaStates();
 	CLSV_InitializeParaStates();
 
 	gvm = VM_Create( VM_GAME );

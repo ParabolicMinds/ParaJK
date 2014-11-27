@@ -1547,7 +1547,8 @@ void SV_SendClientParaState( client_t * clientDest, int clientNum )
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
-	MSG_WriteLong( &msg, clientDest->lastClientCommand );
+	int t = clientDest->lastClientCommand;
+	MSG_WriteLong( &msg,  t);
 
 	// send any server commands waiting to be sent first.
 	// we have to do this cause we send the client->reliableSequence
@@ -1593,7 +1594,7 @@ void SV_SendClientPGameInit( client_t * clientDest )
 
 void SV_SendUpdatedParaStates(int clientDest, int clientState) {
 	client_t * cl;
-	size_t i, j;
+	int i;
 
 	if (clientDest >= 0) {
 		if (clientState >= 0) {
@@ -1603,12 +1604,16 @@ void SV_SendUpdatedParaStates(int clientDest, int clientState) {
 		}
 	} else {
 		if (clientState >= 0) {
-			for (i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++) {
-				SV_SendClientParaState(cl, clientState);
+			for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
+				if (cl) {
+					SV_SendClientParaState(cl, clientState);
+				}
 			}
 		} else {
-			for (i = 0; i < MAX_CLIENTS; i++) {
-				SV_SendClientPGameInit(svs.clients + i);
+			for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
+				if (cl) {
+					SV_SendClientPGameInit(cl);
+				}
 			}
 		}
 	}

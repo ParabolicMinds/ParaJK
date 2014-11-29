@@ -1,4 +1,6 @@
 #include "cg_local.h"
+#include "pcommon/q_para.h"
+#include "cg_para.h"
 
 //
 // Cvar callbacks
@@ -43,6 +45,11 @@ typedef struct cvarTable_s {
 	uint32_t	cvarFlags;
 } cvarTable_t;
 
+typedef struct vmPcvarCG_s {
+	vmCvar_t	vm;
+	void		(*update)( void );
+} vmPcvarCG_t;
+
 #define XCVAR_DECL
 	#include "cg_xcvar.h"
 #undef XCVAR_DECL
@@ -54,8 +61,47 @@ static const cvarTable_t cvarTable[] = {
 };
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
 
+static vmPcvarCG_t * pjkVm;
+
 void CG_RegisterCvars( void ) {
-	size_t i = 0;
+	size_t i, j;
+
+	if (pjkVm) {
+		free(pjkVm);
+	}
+	if (pbgcvars) {
+		free(pbgcvars);
+	}
+
+	//Initialize pjkVm size to hold all CG and BG Cvars.
+	pjkVm = calloc(pjk_cg_num + pjk_bg_num, sizeof(vmPcvarCG_t));
+	//Initialize the local BG cvar store
+	pbgcvars = calloc(pjk_bg_num, sizeof(pbgcvar_t));
+
+	vmPcvarCG_t * pcvm;
+	pcvar_t const * pcv;
+	vmPcvarfunc_t const * vmpcf;
+
+	for ( i=0, pcvm = pjkVm, pcv = pjk_cg_cvars; i < pjk_cg_num; i++, pcv++, pcvm++ ) {
+		trap->Cvar_Register( &pcvm->vm, pcv->name, pcv->defval, pcv->flags );
+		for (j=0, vmpcf=vmCvarCGFuncs; j < vmCvarCGFuncsLen; j++, vmpcf++) {
+			if (!strcmp(vmpcf->name, pcv->name)) {
+				pcvm->update = vmpcf->update;
+			}
+		}
+	}
+	pbgcvar_t * pbgc;
+	for ( pcv = pjk_bg_cvars, pbgc = pbgcvars; i < pjk_cg_num + pjk_bg_num; i++, pcv++, pcvm++, pbgc++ ) {
+		trap->Cvar_Register( &pcvm->vm, pcv->name, pcv->defval, pcv->flags );
+		for (j=0, vmpcf=vmCvarCGFuncs; j < vmCvarCGFuncsLen; j++, vmpcf++) {
+			if (!strcmp(vmpcf->name, pcv->name)) {
+				pcvm->update = vmpcf->update;
+			}
+		}
+		pbgc->name = pcv->name;
+		pbgc->value = pjkCGCvarStringValue(pcv->name);
+	}
+
 	const cvarTable_t *cv = NULL;
 
 	for ( i=0, cv=cvarTable; i<cvarTableSize; i++, cv++ ) {
@@ -67,6 +113,27 @@ void CG_RegisterCvars( void ) {
 
 void CG_UpdateCvars( void ) {
 	size_t i = 0;
+
+	vmPcvarCG_t * pcvm;
+	pcvar_t const * pcv;
+	for ( i=0, pcvm = pjkVm, pcv = pjk_cg_cvars; i < pjk_cg_num; i++, pcv++, pcvm++ ) {
+		int modCount = pcvm->vm.modificationCount;
+		trap->Cvar_Update( &pcvm->vm );
+		if ( pcvm->vm.modificationCount != modCount ) {
+			if (pcvm->update) pcvm->update();
+		}
+	}
+	pbgcvar_t * pbgc;
+	for ( pcv = pjk_bg_cvars, pbgc = pbgcvars; i < pjk_cg_num + pjk_bg_num; i++, pcv++, pcvm++, pbgc++ ) {
+		int modCount = pcvm->vm.modificationCount;
+		trap->Cvar_Update( &pcvm->vm );
+		if ( pcvm->vm.modificationCount != modCount ) {
+			if (pcvm->update) pcvm->update();
+			if (pbgc->value) free(pbgc->value);
+			pbgc->value = strdup(pcvm->vm.string);
+		}
+	}
+
 	const cvarTable_t *cv = NULL;
 
 	for ( i=0, cv=cvarTable; i<cvarTableSize; i++, cv++ ) {
@@ -79,4 +146,11 @@ void CG_UpdateCvars( void ) {
 			}
 		}
 	}
+}
+
+void CG_ShutdownCvars( void ) {
+	if (pjkVm) {
+		free(pjkVm);
+	}
+	pjkVm = NULL;
 }

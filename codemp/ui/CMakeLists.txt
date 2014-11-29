@@ -23,6 +23,8 @@ set(MPUIGameFiles
 	"${MPDir}/game/bg_saga.h"
 	"${MPDir}/game/bg_weapons.h"
 	"${MPDir}/game/surfaceflags.h"
+	"${MPDir}/game/bg_para.h"
+	"${MPDir}/game/bg_para.c"
 	)
 source_group("game" FILES ${MPUIGameFiles})
 set(MPUIFiles ${MPUIFiles} ${MPUIGameFiles})
@@ -36,6 +38,8 @@ set(MPUICommonFiles
 	"${MPDir}/qcommon/q_platform.h"
 	"${MPDir}/qcommon/qfiles.h"
 	"${MPDir}/qcommon/tags.h"
+	"${MPDir}/pcommon/q_para.h"
+	"${MPDir}/pcommon/q_para.c"
 	)
 source_group("common" FILES ${MPUICommonFiles})
 set(MPUIFiles ${MPUIFiles} ${MPUICommonFiles})
@@ -56,6 +60,8 @@ set(MPUIUIFiles
 	"${MPDir}/ui/ui_public.h"
 	"${MPDir}/ui/ui_shared.h"
 	"${MPDir}/ui/ui_xcvar.h"
+	"${MPDir}/ui/ui_para.h"
+	"${MPDir}/ui/ui_para.c"
 	)
 source_group("ui" FILES ${MPUIUIFiles})
 set(MPUIFiles ${MPUIFiles} ${MPUIUIFiles})

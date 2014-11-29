@@ -3,7 +3,6 @@
 #include "client.h"
 #include "cl_cgameapi.h"
 #include "cl_uiapi.h"
-#include "pcommon/q_parastate_clsv.h"
 #ifndef _WIN32
 #include <cmath>
 #endif
@@ -1530,13 +1529,6 @@ void CL_WritePacket( void ) {
 	if ( count > MAX_PACKET_USERCMDS ) {
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf("MAX_PACKET_USERCMDS\n");
-	}
-
-	// send new paraState if there has been a change --TODO: NOT MAKE IT SEND EVERY FRAME.
-
-	if (clc.shouldSendClientParaState) {
-		MSG_WriteByte(&buf, clc_pgamesnap);
-		CLSV_SendParaState(&buf, clc.clientNum);
 	}
 
 	if ( count >= 1 ) {

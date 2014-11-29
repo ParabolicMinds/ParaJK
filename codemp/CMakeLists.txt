@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 2.8.8)
 
+
 # Make sure the user is not executing this script directly
 if(NOT InOpenJK)
 	message(FATAL_ERROR "Use the top-level cmake script!")
 endif(NOT InOpenJK)
+
+find_package(PkgConfig)
+pkg_check_modules (MONO mono-2)
 
 set(MPSharedDefines ${SharedDefines})
 
@@ -238,10 +242,6 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/qcommon/z_memman_pc.cpp"
 		"${MPDir}/pcommon/q_para.h"
 		"${MPDir}/pcommon/q_para.c"
-		"${MPDir}/pcommon/q_parastate.h"
-		"${MPDir}/pcommon/q_parastate.cpp"
-		"${MPDir}/pcommon/q_parastate_clsv.h"
-		"${MPDir}/pcommon/q_parastate_clsv.cpp"
 		)
 	if(WIN32)
 		set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles})
@@ -348,6 +348,9 @@ if(BuildMPEngine)
 	set(MPEngineDefines ${MPSharedDefines})
 
 	#    Dependencies
+
+	set(MPEngineLibraries ${MPEngineLibraries} ${MONO_LIBRARIES})
+	set(MPEngineIncludeDirectories ${MPEngineIncludeDirectories} ${MONO_INCLUDE_DIRS})
 
 	if (NOT WIN32)
 		# OpenGL
@@ -558,6 +561,9 @@ if(BuildMPDed)
 	set(MPDedIncludeDirectories ${MPEngineAndDedIncludeDirectories})
 	set(MPDedFiles ${MPEngineAndDedFiles})
 	set(MPDedDefines ${MPSharedDefines} "_CONSOLE" "DEDICATED")
+
+	set(MPDedLibraries ${MPEngineLibraries} ${MONO_LIBRARIES})
+	set(MPDedIncludeDirectories ${MPEngineIncludeDirectories} ${MONO_INCLUDE_DIRS})
 
 	# Dedicated renderer is compiled with the server.
 	set(MPDedicatedRendererFiles

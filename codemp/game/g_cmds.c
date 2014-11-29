@@ -5,7 +5,7 @@
 
 #include "ui/menudef.h"			// for the voice chats
 
-#include "pcommon/q_para.h"
+#include "g_para.h"
 
 //rww - for getting bot commands...
 int AcceptBotCommand(char *cmd, gentity_t *pl);
@@ -974,7 +974,8 @@ void StopFollowing( gentity_t *ent ) {
 	ent->client->ps.torsoTimer = 0;
 	ent->client->ps.isJediMaster = qfalse; // major exploit if you are spectating somebody and they are JM and you reconnect
 	ent->client->ps.cloakFuel = 100; // so that fuel goes away after stop following them
-	ent->client->ps.jetpackFuel = 100; // so that fuel goes away after stop following them
+	float pjkjetfuel = pjkGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR);
+	ent->client->ps.jetpackFuel = pjkjetfuel > 0 ? pjkjetfuel : 0; // so that fuel goes away after stop following them
 	ent->health = ent->client->ps.stats[STAT_HEALTH] = 100; // so that you don't keep dead angles if you were spectating a dead person
 	ent->client->ps.bobCycle = 0;
 	ent->client->ps.pm_type = PM_SPECTATOR;
@@ -1607,6 +1608,11 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 
 	switch ( mode ) {
 	default:
+	case SAY_Q:
+		G_LogPrintf( "say: %s: %s\n", "John de Lancie", text );
+		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", "John de Lancie", Q_COLOR_ESCAPE, COLOR_WHITE );
+		color = COLOR_GREEN;
+		break;
 	case SAY_ALL:
 		G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, text );
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
@@ -1870,11 +1876,6 @@ void Cmd_Where_f( gentity_t *ent ) {
 		trap->SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos( ent->s.origin ) ) );
 	}
 	//trap->SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos( ent->s.origin ) ) );
-}
-
-void Cmd_PTest_f( gentity_t *ent ) {
-	gentity_t * e = G_Spawn();
-	G_SpawnItem(e, BG_FindItemForWeapon(WP_THERMAL));
 }
 
 static const char *gameNames[] = {
@@ -3374,6 +3375,106 @@ void Cmd_Para_Test( gentity_t *ent ) {
 
 /*
 =================
+ParaJK Command Functions
+================
+*/
+
+void Cmd_PTest_f( gentity_t *ent ) {
+	trap->Print("^00^11^22^33^44^55^66^77^88^99\n");
+}
+
+void Cmd_Qui_f( gentity_t *ent ) {
+	char sarg[MAX_STRING_CHARS];
+	if (trap->Argc() > 1) {
+		trap->Argv(1, sarg, sizeof(sarg));
+		if (!strcmp(sarg, "gon")) {
+			if (trap->Argc() > 2) {
+				memset(sarg, 0x00, sizeof(sarg));
+				trap->Argv(2, sarg, sizeof(sarg));
+				if (!strcmp(sarg, "jinn")) {
+					trap->Print("Qui Gon Jinn! That's his name! I heard he died. I heard you died too.\n");
+					G_Kill(ent);
+					return;
+				}
+			}
+			trap->Print("Qui Gon who?\n");
+			return;
+		}
+	}
+	trap->Print("Qui who?\n");
+}
+
+/*
+=================
+Cmd_QQuote_f
+================
+*/
+
+static char const * const qecho = "What, is there an echo in here?";
+static char const * const qquotes[] = {
+	"I can't disappear....any more than you could win a beauty contest!",	//0
+	"Hey, I'm claustrophobic. I don't like it in here.", //1
+	"Your bedside manner is admirable, ^7%s^2. I'm sure your patients recover quickly, just to get away from you.", //2 SPECIAL
+	"I'll have ten chocolate sundaes.", //3
+	"It's difficult to work in a group when you're omnipotent.", //4
+	"Oh, very clever, ^7%s^2. Eat any good books lately?", //5 SPECIAL
+	"Ho ho....make sense, oh, what fun is there in making sense?", //6
+	"These aren't my colors!", //7
+	"I wasn't the one who 'misplaced' the entire Deltived asteroid belt!", //8
+	"Ah, ^7%s^2. I see Starfleet has shipped you back into exile.", //9 SPECIAL
+	"One creature's torment is another creature's delight.", // 10
+	"Oh, I'd forgotten how grim you can be, ^7%s^2. It's really quite booooo-rrring.", //11 SPECIAL
+	"Looks like we might be due for a big old storm of chaos.", //12
+	"Keep trying, ^7%s^2. Maybe the 'Magic of friendship' can help you. Now if you'll excuse me, I have some chaos to wreak.", //13 SPECIAL
+	"^7%s^2, you've got to see what I just did. It's priceless!", //14 SPECIAL
+	"Come now, ^7%s^2, you've got to get into the spirit of things. After all, this is your new home.", //15 SPECIAL
+	"If you can't take a little bloody nose, maybe you ought to go back home and crawl under your bed. It's not safe out here." //16
+	"Did anyone ever tell you you're angry when you're beautiful?" //17
+};
+static int const qquotes_len = ARRAY_LEN(qquotes);
+
+static int const qquote_specind[] = {
+	2,
+	5,
+	9,
+	11,
+	13,
+	14,
+	15,
+};
+static int const qquote_specind_len = ARRAY_LEN(qquote_specind);
+
+static int q_lindex = -1;
+
+static void Cmd_QQuote_f( gentity_t *ent ) {
+	int index = irand(1, qquotes_len) - 1;
+	qboolean isSpecial = qfalse;
+	int i;
+	int const * s;
+	for (i=0, s=qquote_specind; i < qquote_specind_len; i++, s++) {
+		if (*s == index) {
+			isSpecial = qtrue;
+			break;
+		}
+	}
+	if (isSpecial) {
+		gclient_t * cl = G_GetRandomConnectedClient();
+		G_Say( ent, NULL, SAY_Q, va(qquotes[index], cl ? cl->pers.netname : "Jean-Luc Picard") );
+	} else
+		G_Say( ent, NULL, SAY_Q, qquotes[index] );
+	if (index == q_lindex) {
+		G_Say( ent, NULL, SAY_Q, qecho);
+	}
+	q_lindex = index;
+}
+
+/*
+=================
+*/
+
+
+/*
+=================
 ClientCommand
 =================
 */
@@ -3419,6 +3520,8 @@ command_t commands[] = {
 	{ "noclip",				Cmd_Noclip_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "notarget",			Cmd_Notarget_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "npc",				Cmd_NPC_f,					CMD_CHEAT|CMD_ALIVE },
+	{ "q",					Cmd_QQuote_f,				0 },
+	{ "qui",				Cmd_Qui_f,					CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "say",				Cmd_Say_f,					0 },
 	{ "say_team",			Cmd_SayTeam_f,				0 },
 	{ "score",				Cmd_Score_f,				0 },
@@ -3433,7 +3536,8 @@ command_t commands[] = {
 	{ "voice_cmd",			Cmd_VoiceCommand_f,			CMD_NOINTERMISSION },
 	{ "vote",				Cmd_Vote_f,					CMD_NOINTERMISSION },
 	{ "where",				Cmd_Where_f,				CMD_NOINTERMISSION },
-	{ "ztest",				Cmd_PTest_f,				CMD_ALIVE|CMD_NOINTERMISSION },
+	{ "wrists",				Cmd_Kill_f,					CMD_ALIVE|CMD_NOINTERMISSION },
+	{ "zmonotest",			Cmd_PTest_f,				CMD_ALIVE|CMD_NOINTERMISSION },
 };
 static const size_t numCommands = ARRAY_LEN( commands );
 

@@ -3,6 +3,7 @@
 #include "g_local.h"
 #include "ghoul2/G2.h"
 #include "qcommon/q_shared.h"
+#include "g_para.h"
 
 /*
 
@@ -1231,8 +1232,7 @@ void ItemUse_Jetpack( gentity_t *ent )
 		return;
 	}
 
-	if (!ent->client->jetPackOn &&
-		ent->client->ps.jetpackFuel < 5)
+	if (!ent->client->jetPackOn && pjkGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR) > 0.0f && ent->client->ps.jetpackFuel <= 0.0f)
 	{ //too low on fuel to start it up
 		return;
 	}

@@ -2052,6 +2052,7 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
+	/* Seriously WTF is this block? It doesn't even work right. -ParaJK
 	if ( pm->ps->gravity <= 0 )
 	{//in low grav, you push in the dir you're facing as long as there is something behind you to shove off of
 		vec3_t	forward, back;
@@ -2068,6 +2069,17 @@ static qboolean PM_CheckJump( void )
 		}//else no surf close enough to push off of
 		pm->cmd.upmove = 0;
 	}
+	*/
+
+	/* TODO: Use this code for the "Unruly Jetpack".
+	if ( pm->ps->gravity <= 0 )
+	{//in low grav, you push in the dir you're facing as long as there is something behind you to shove off of
+		vec3_t	forward;
+		AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+		VectorMA( pm->ps->velocity, 5, forward, pm->ps->velocity );
+		PM_SetAnim(SETANIM_LEGS,BOTH_FORCEJUMP1,SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART);
+	}
+	*/
 	else if ( pm->cmd.upmove > 0 && pm->waterlevel < 2 &&
 		pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_0 &&
 		!(pm->ps->pm_flags&PMF_JUMP_HELD) &&

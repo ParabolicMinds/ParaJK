@@ -333,10 +333,6 @@ void G_Throw( gentity_t *targ, vec3_t newDir, float push )
 		VectorScale( newDir, g_knockback.value * (float)push / mass * 0.8, kvel );
 		kvel[2] = newDir[2] * g_knockback.value * (float)push / mass * 1.5;
 	}
-	else
-	{
-		VectorScale( newDir, g_knockback.value * (float)push / mass, kvel );
-	}
 
 	if ( targ->client )
 	{

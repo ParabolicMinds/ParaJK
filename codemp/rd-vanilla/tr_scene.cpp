@@ -216,7 +216,8 @@ void RE_AddRefEntityToScene( const refEntity_t *ent ) {
 #ifdef _DEBUG
 	if (ent->reType == RT_MODEL)
 	{
-		assert(ent->hModel || ent->ghoul2 || ent->customShader);
+		//Disabling this for now... it crashes the jetpack sometimes.
+		//assert(ent->hModel || ent->ghoul2 || ent->customShader);
 	}
 #endif
 

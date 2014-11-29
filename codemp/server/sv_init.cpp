@@ -5,7 +5,6 @@
 #include "qcommon/stringed_ingame.h"
 #include "sv_gameapi.h"
 #include "sv_para.hpp"
-#include "pcommon/q_parastate_clsv.h"
 
 /*
 ===============

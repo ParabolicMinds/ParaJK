@@ -4,7 +4,6 @@
 #include "qcommon/cm_public.h"
 #include "qcommon/game_version.h"
 #include "../server/NPCNav/navigator.h"
-#include "pcommon/q_parastate_clsv.h"
 
 #define	MAXPRINTMSG	4096
 
@@ -1134,9 +1133,6 @@ void Com_Init( char *commandLine ) {
 
 	try
 	{
-		// initialize paraStates
-		CLSV_InitializeParaStates();
-
 		// initialize the weak pseudo-random number generator for use later.
 		Com_InitRand();
 

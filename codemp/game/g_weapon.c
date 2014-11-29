@@ -2313,6 +2313,25 @@ qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, 
 	return qtrue;
 }
 
+void G_PJK_UpdateThermalGolfMode() {
+	int nMode = pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR);
+	gentity_t ** e;
+	int i;
+	switch(nMode) {
+	default:
+		for (i=0,e=par_golfBalls;i<MAX_CLIENTS;i++,e++) {
+			if (*e) {
+				(*e)->think = G_FreeEntity;
+				(*e)->nextthink = level.time;
+			}
+			par_golfBalls[i] = NULL;
+		}
+		break;
+	case 1:
+		break;
+	}
+}
+
 /*
 ======================================================================
 

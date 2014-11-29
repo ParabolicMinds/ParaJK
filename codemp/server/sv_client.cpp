@@ -4,7 +4,6 @@
 #include "qcommon/stringed_ingame.h"
 #include "zlib/zlib.h"
 #include "server/sv_gameapi.h"
-#include "pcommon/q_parastate_clsv.h"
 
 static void SV_CloseDownload( client_t *cl );
 
@@ -592,8 +591,6 @@ void SV_SendClientGameState( client_t *client ) {
 
 	// deliver this to the client
 	SV_SendMessageToClient( &msg, client );
-
-	SV_SendClientPGameInit(client);
 }
 
 
@@ -1538,87 +1535,6 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta ) {
 	}
 }
 
-void SV_SendClientParaState( client_t * clientDest, int clientNum )
-{
-	msg_t		msg;
-	byte		msgBuffer[MAX_MSGLEN];
-
-	MSG_Init( &msg, msgBuffer, sizeof( msgBuffer ) );
-
-	// NOTE, MRE: all server->client messages now acknowledge
-	// let the client know which reliable clientCommands we have received
-	int t = clientDest->lastClientCommand;
-	MSG_WriteLong( &msg,  t);
-
-	// send any server commands waiting to be sent first.
-	// we have to do this cause we send the client->reliableSequence
-	// with a gamestate and it sets the clc.serverCommandSequence at
-	// the client side
-	SV_UpdateServerCommandsToClient( clientDest, &msg );
-
-	// send the gamestate
-	MSG_WriteByte( &msg, svc_pgamesnap );
-	CLSV_SendParaState( &msg, clientNum);
-
-	// deliver this to the client
-	SV_SendMessageToClient( &msg, clientDest );
-}
-
-void SV_SendClientPGameInit( client_t * clientDest )
-{
-	msg_t		msg;
-	byte		msgBuffer[MAX_MSGLEN];
-
-	MSG_Init( &msg, msgBuffer, sizeof( msgBuffer ) );
-
-	// NOTE, MRE: all server->client messages now acknowledge
-	// let the client know which reliable clientCommands we have received
-	MSG_WriteLong( &msg, clientDest->lastClientCommand );
-
-	// send any server commands waiting to be sent first.
-	// we have to do this cause we send the client->reliableSequence
-	// with a gamestate and it sets the clc.serverCommandSequence at
-	// the client side
-	SV_UpdateServerCommandsToClient( clientDest, &msg );
-
-	// send the gamestate
-	MSG_WriteByte( &msg, svc_pgameinit );
-	size_t i;
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		CLSV_SendParaState( &msg, i);
-	}
-
-	// deliver this to the client
-	SV_SendMessageToClient( &msg, clientDest );
-}
-
-void SV_SendUpdatedParaStates(int clientDest, int clientState) {
-	client_t * cl;
-	int i;
-
-	if (clientDest >= 0) {
-		if (clientState >= 0) {
-			SV_SendClientParaState(svs.clients + clientDest, clientState);
-		} else {
-			SV_SendClientPGameInit(svs.clients + clientDest);
-		}
-	} else {
-		if (clientState >= 0) {
-			for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
-				if (cl) {
-					SV_SendClientParaState(cl, clientState);
-				}
-			}
-		} else {
-			for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
-				if (cl) {
-					SV_SendClientPGameInit(cl);
-				}
-			}
-		}
-	}
-}
-
 
 /*
 ===========================================================================
@@ -1713,13 +1629,6 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg ) {
 			return;	// disconnect command
 		}
 	} while ( 1 );
-
-	if (c == clc_pgamesnap) {
-		int clientOrig = CLSV_ParseParaState(msg);
-		assert(clientOrig == (svs.clients - cl));
-		SV_SendUpdatedParaStates(-1, clientOrig);
-		c = MSG_ReadByte( msg );
-	}
 
 	// read the usercmd_t
 	if ( c == clc_move ) {

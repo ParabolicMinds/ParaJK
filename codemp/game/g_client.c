@@ -3,6 +3,7 @@
 #include "g_local.h"
 #include "ghoul2/G2.h"
 #include "bg_saga.h"
+#include "g_para.h"
 
 // g_client.c -- client functions that don't happen every frame
 
@@ -3290,8 +3291,10 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->ps.duelIndex = ENTITYNUM_NONE;
 
+	float pjkjetfuel = pjkGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR);
+
 	//spawn with 100
-	client->ps.jetpackFuel = 100;
+	client->ps.jetpackFuel = pjkjetfuel > 0 ? pjkjetfuel : 0;
 	client->ps.cloakFuel = 100;
 
 	client->pers = saved;

@@ -4,6 +4,7 @@
 // active (after loading) gameplay
 
 #include "cg_local.h"
+#include "cg_para.h"
 
 #include "game/bg_saga.h"
 
@@ -6834,9 +6835,9 @@ void CG_DrawFlagStatus()
 }
 
 //draw meter showing jetpack fuel when it's not full
-#define JPFUELBAR_H			100.0f
-#define JPFUELBAR_W			20.0f
-#define JPFUELBAR_X			(SCREEN_WIDTH-JPFUELBAR_W-8.0f)
+#define JPFUELBAR_H			150.0f
+#define JPFUELBAR_W			10.0f
+#define JPFUELBAR_X			(SCREEN_WIDTH-JPFUELBAR_W-4.0f)
 #define JPFUELBAR_Y			260.0f
 void CG_DrawJetpackFuel(void)
 {
@@ -6844,7 +6845,7 @@ void CG_DrawJetpackFuel(void)
 	vec4_t cColor;
 	float x = JPFUELBAR_X;
 	float y = JPFUELBAR_Y;
-	float percent = ((float)cg.snap->ps.jetpackFuel/100.0f)*JPFUELBAR_H;
+	float percent = ((float)cg.snap->ps.jetpackFuel/pjkCGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR))*JPFUELBAR_H;
 
 	if (percent > JPFUELBAR_H)
 	{
@@ -6857,16 +6858,16 @@ void CG_DrawJetpackFuel(void)
 	}
 
 	//color of the bar
-	aColor[0] = 0.5f;
-	aColor[1] = 0.0f;
+	aColor[0] = 1.0f;
+	aColor[1] = 0.6f;
 	aColor[2] = 0.0f;
 	aColor[3] = 0.8f;
 
 	//color of greyed out "missing fuel"
 	cColor[0] = 0.5f;
-	cColor[1] = 0.5f;
-	cColor[2] = 0.5f;
-	cColor[3] = 0.1f;
+	cColor[1] = 0.0f;
+	cColor[2] = 0.0f;
+	cColor[3] = 0.4f;
 
 	//draw the background (black)
 	CG_DrawRect(x, y, JPFUELBAR_W, JPFUELBAR_H, 1.0f, colorTable[CT_BLACK]);
@@ -6903,7 +6904,8 @@ void CG_DrawEWebHealth(void)
 	}
 
 	//kind of hacky, need to pass a coordinate in here
-	if (cg.snap->ps.jetpackFuel < 100)
+	int pjkMaxJetFuel = pjkCGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR);
+	if (cg.snap->ps.jetpackFuel < pjkMaxJetFuel && pjkMaxJetFuel > 0)
 	{
 		x -= (JPFUELBAR_W+8.0f);
 	}
@@ -6952,7 +6954,9 @@ void CG_DrawCloakFuel(void)
 		return;
 	}
 
-	if ( cg.snap->ps.jetpackFuel < 100 )
+	int pjkMaxJetFuel = pjkCGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR);
+
+	if ( cg.snap->ps.jetpackFuel < pjkMaxJetFuel && pjkMaxJetFuel > 0 )
 	{//if drawing jetpack fuel bar too, then move this over...?
 		x -= (JPFUELBAR_W+8.0f);
 	}
@@ -7847,7 +7851,9 @@ static void CG_Draw2D( void ) {
 		CG_DrawActivePowers();
 	}
 
-	if (cg.snap->ps.jetpackFuel < 100)
+	int pjkMaxJetFuel = pjkCGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR);
+
+	if (cg.snap->ps.jetpackFuel < pjkMaxJetFuel && pjkMaxJetFuel > 0)
 	{ //draw it as long as it isn't full
         CG_DrawJetpackFuel();
 	}

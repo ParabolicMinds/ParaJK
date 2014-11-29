@@ -217,8 +217,6 @@ typedef struct clientConnection_s {
 	float		aviVideoFrameRemainder;
 	float		aviSoundFrameRemainder;
 
-	qboolean	shouldSendClientParaState;
-
 	// big stuff at end of structure so most offsets are 15 bits or less
 	netchan_t	netchan;
 } clientConnection_t;

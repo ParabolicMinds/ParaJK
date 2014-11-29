@@ -10,7 +10,6 @@
 #include "icarus/GameInterface.h"
 #include "qcommon/timing.h"
 #include "NPCNav/navigator.h"
-#include "pcommon/q_parastate_clsv.h"
 #include "sv_gameapi.h"
 
 botlib_export_t	*botlib_export;
@@ -2860,14 +2859,6 @@ void SV_InitGame( qboolean restart ) {
 	GVM_InitGame( sv.time, Com_Milliseconds(), restart );
 }
 
-paraState_t * SV_GetParaState(int clientNum) {
-	return CLSV_ParaStates + clientNum;
-}
-
-void SV_UpdateParaState(int clientNum) {
-	SV_SendUpdatedParaStates(-1, clientNum);
-}
-
 void SV_BindGame( void ) {
 	static gameImport_t gi;
 	gameExport_t		*ret;
@@ -2875,8 +2866,6 @@ void SV_BindGame( void ) {
 	char				dllName[MAX_OSPATH] = "jampgame"ARCH_STRING DLL_EXT;
 
 	memset( &gi, 0, sizeof( gi ) );
-
-	CLSV_InitializeParaStates();
 
 	gvm = VM_Create( VM_GAME );
 	if ( gvm && !gvm->isLegacy ) {
@@ -3189,9 +3178,6 @@ void SV_BindGame( void ) {
 		gi.G2API_CleanEntAttachments			= SV_G2API_CleanEntAttachments;
 		gi.G2API_OverrideServer					= SV_G2API_OverrideServer;
 		gi.G2API_GetSurfaceName					= SV_G2API_GetSurfaceName;
-		//ParaJK
-		gi.PJK_GetParaState						= SV_GetParaState;
-		gi.PJK_UpdateParaState					= SV_UpdateParaState;
 
 		GetGameAPI = (GetGameAPI_t)gvm->GetModuleAPI;
 		ret = GetGameAPI( GAME_API_VERSION, &gi );

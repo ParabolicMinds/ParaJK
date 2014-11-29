@@ -6,6 +6,8 @@
 #include "bg_local.h"
 #include "w_saber.h"
 
+#include "bg_para.h"
+
 #ifdef _GAME
 	#include "g_local.h"
 #elif _CGAME
@@ -385,6 +387,7 @@ void WP_SaberSetDefaults( saberInfo_t *saber ) {
 		saber->blade[i].color = SABER_RED;
 		saber->blade[i].radius = SABER_RADIUS_STANDARD;
 		saber->blade[i].lengthMax = 32;
+		saber->blade[i].lengthNormalMax = 32;
 	}
 
 	Q_strncpyz( saber->name, DEFAULT_SABER, sizeof( saber->name ) );
@@ -637,8 +640,10 @@ static void Saber_ParseSaberLength( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	for ( i=0; i<MAX_BLADES; i++ )
-		saber->blade[i].lengthMax = f;
+	for ( i=0; i<MAX_BLADES; i++ ) {
+		saber->blade[i].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+		saber->blade[i].lengthNormalMax = f;
+	}
 }
 static void Saber_ParseSaberLength2( saberInfo_t *saber, const char **p ) {
 	float f;
@@ -649,7 +654,8 @@ static void Saber_ParseSaberLength2( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	saber->blade[1].lengthMax = f;
+	saber->blade[1].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	saber->blade[1].lengthNormalMax = f;
 }
 static void Saber_ParseSaberLength3( saberInfo_t *saber, const char **p ) {
 	float f;
@@ -660,7 +666,8 @@ static void Saber_ParseSaberLength3( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	saber->blade[2].lengthMax = f;
+	saber->blade[2].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	saber->blade[2].lengthNormalMax = f;
 }
 static void Saber_ParseSaberLength4( saberInfo_t *saber, const char **p ) {
 	float f;
@@ -671,7 +678,8 @@ static void Saber_ParseSaberLength4( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	saber->blade[3].lengthMax = f;
+	saber->blade[3].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	saber->blade[3].lengthNormalMax = f;
 }
 static void Saber_ParseSaberLength5( saberInfo_t *saber, const char **p ) {
 	float f;
@@ -682,7 +690,8 @@ static void Saber_ParseSaberLength5( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	saber->blade[4].lengthMax = f;
+	saber->blade[4].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	saber->blade[4].lengthNormalMax = f;
 }
 static void Saber_ParseSaberLength6( saberInfo_t *saber, const char **p ) {
 	float f;
@@ -693,7 +702,8 @@ static void Saber_ParseSaberLength6( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	saber->blade[5].lengthMax = f;
+	saber->blade[5].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	saber->blade[5].lengthNormalMax = f;
 }
 static void Saber_ParseSaberLength7( saberInfo_t *saber, const char **p ) {
 	float f;
@@ -704,7 +714,8 @@ static void Saber_ParseSaberLength7( saberInfo_t *saber, const char **p ) {
 	if ( f < 4.0f )
 		f = 4.0f;
 
-	saber->blade[6].lengthMax = f;
+	saber->blade[6].lengthMax = f * pjkBGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	saber->blade[6].lengthNormalMax = f;
 }
 static void Saber_ParseSaberRadius( saberInfo_t *saber, const char **p ) {
 	int i=0;
@@ -2536,56 +2547,3 @@ void BG_SI_SetLengthGradual(saberInfo_t *saber, int time)
 		}
 	}
 }
-
-float BG_SI_Length(saberInfo_t *saber)
-{//return largest length
-	int len1 = 0;
-	int i;
-
-	for ( i = 0; i < saber->numBlades; i++ )
-	{
-		if ( saber->blade[i].length > len1 )
-		{
-			len1 = saber->blade[i].length;
-		}
-	}
-	return len1;
-}
-
-float BG_SI_LengthMax(saberInfo_t *saber)
-{
-	int len1 = 0;
-	int i;
-
-	for ( i = 0; i < saber->numBlades; i++ )
-	{
-		if ( saber->blade[i].lengthMax > len1 )
-		{
-			len1 = saber->blade[i].lengthMax;
-		}
-	}
-	return len1;
-}
-
-void BG_SI_ActivateTrail ( saberInfo_t *saber, float duration )
-{
-	int i;
-
-	for ( i = 0; i < saber->numBlades; i++ )
-	{
-		//saber->blade[i].ActivateTrail( duration );
-		BG_BLADE_ActivateTrail(&saber->blade[i], duration);
-	}
-}
-
-void BG_SI_DeactivateTrail ( saberInfo_t *saber, float duration )
-{
-	int i;
-
-	for ( i = 0; i < saber->numBlades; i++ )
-	{
-		//saber->blade[i].DeactivateTrail( duration );
-		BG_BLADE_DeactivateTrail(&saber->blade[i], duration);
-	}
-}
-

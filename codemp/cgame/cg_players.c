@@ -4,6 +4,7 @@
 #include "cg_local.h"
 #include "ghoul2/G2.h"
 #include "game/bg_saga.h"
+#include "cg_para.h"
 
 extern vmCvar_t	cg_thirdPersonAlpha;
 

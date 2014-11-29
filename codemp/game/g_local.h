@@ -1509,3 +1509,5 @@ void G_UpdateCvars( void );
 void G_ShutdownCvars( void );
 
 extern gameImport_t *trap;
+
+gclient_t * G_GetRandomConnectedClient();

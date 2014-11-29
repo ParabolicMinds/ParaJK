@@ -4,7 +4,6 @@
 //
 
 #include "qcommon/q_shared.h"
-#include "pcommon/q_parastate.h"
 
 #define	CGAME_API_VERSION		1
 
@@ -696,10 +695,6 @@ typedef struct cgameImport_s {
 	void			(*G2API_CleanEntAttachments)			( void );
 	qboolean		(*G2API_OverrideServer)					( void *serverInstance );
 	void			(*G2API_GetSurfaceName)					( void *ghoul2, int surfNumber, int modelIndex, char *fillBuf );
-	//ParaJK
-	paraState_t const *		(*PJK_GetExternalParaState)		(int clientNum);
-	paraState_t *			(*PJK_GetClientParaState)		();
-	void					(*PJK_SendClientParaState)		();
 } cgameImport_t;
 
 typedef struct cgameExport_s {

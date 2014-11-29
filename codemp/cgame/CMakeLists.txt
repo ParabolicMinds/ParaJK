@@ -78,6 +78,8 @@ set(MPCGameCgameFiles
 	"${MPDir}/cgame/cg_public.h"
 	"${MPDir}/cgame/cg_xcvar.h"
 	"${MPDir}/cgame/fx_local.h"
+	"${MPDir}/cgame/cg_para.h"
+	"${MPDir}/cgame/cg_para.c"
 	)
 source_group("cgame" FILES ${MPCGameCgameFiles})
 set(MPCGameFiles ${MPCGameFiles} ${MPCGameCgameFiles})
@@ -92,8 +94,6 @@ set(MPCGameCommonFiles
 	"${MPDir}/qcommon/tags.h"
 	"${MPDir}/pcommon/q_para.h"
 	"${MPDir}/pcommon/q_para.c"
-	"${MPDir}/pcommon/q_parastate.h"
-	"${MPDir}/pcommon/q_parastate.cpp"
 	)
 source_group("common" FILES ${MPCGameCommonFiles})
 set(MPCGameFiles ${MPCGameFiles} ${MPCGameCommonFiles})

@@ -3225,26 +3225,28 @@ void G_RunFrame( int levelTime ) {
 #define JETPACK_REFUEL_RATE		150 //seems fair
 			if (ent->client->jetPackOn)
 			{ //using jetpack, drain fuel
-				if (ent->client->jetPackDebReduce < level.time)
-				{
-					if (ent->client->pers.cmd.upmove > 0)
-					{ //take more if they're thrusting
-						ent->client->ps.jetpackFuel -= 2;
-					}
-					else
+				if (pjkGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR) >= 0.0f) {
+					if (ent->client->jetPackDebReduce < level.time)
 					{
-						ent->client->ps.jetpackFuel--;
-					}
+						if (ent->client->pers.cmd.upmove > 0)
+						{ //take more if they're thrusting
+							ent->client->ps.jetpackFuel -= 2;
+						}
+						else
+						{
+							ent->client->ps.jetpackFuel--;
+						}
 
-					if (ent->client->ps.jetpackFuel <= 0)
-					{ //turn it off
-						ent->client->ps.jetpackFuel = 0;
-						Jetpack_Off(ent);
+						if (ent->client->ps.jetpackFuel <= 0)
+						{ //turn it off
+							ent->client->ps.jetpackFuel = 0;
+							Jetpack_Off(ent);
+						}
+						ent->client->jetPackDebReduce = level.time + JETPACK_DEFUEL_RATE;
 					}
-					ent->client->jetPackDebReduce = level.time + JETPACK_DEFUEL_RATE;
 				}
 			}
-			else if (ent->client->ps.jetpackFuel < 100)
+			else if (ent->client->ps.jetpackFuel < pjkGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR))
 			{ //recharge jetpack
 				if (ent->client->jetPackDebRecharge < level.time)
 				{
@@ -3761,4 +3763,53 @@ Q_EXPORT intptr_t vmMain( int command, intptr_t arg0, intptr_t arg1, intptr_t ar
 	}
 
 	return -1;
+}
+
+void G_PJK_UpdateSaberLengths () {
+	gclient_t * cl;
+	int i, j, k;
+	saberInfo_t * sb;
+	bladeInfo_t * bi;
+	float sblen = pjkGCvarFloatValue(PJK_BGAME_SABER_LENGTH_CVAR);
+	for (i=0, cl = g_clients; i < MAX_CLIENTS; i++, cl++) {
+		if (cl && cl->saber) {
+			for (j=0,sb=cl->saber;j<MAX_SABERS;j++,sb++) {
+				if (sb && sb->blade) {
+					for (k=0,bi=sb->blade;k<MAX_BLADES;k++,bi++) {
+						if (bi) {
+							bi->lengthMax = bi->lengthNormalMax * sblen;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void G_PJK_UpdateJetpackTanks() {
+	gclient_t * cl;
+	int i;
+	float pjkJetFuel = pjkGCvarFloatValue(PJK_BGAME_JETPACK_FUEL_CVAR);
+	for (i=0, cl = g_clients; i < MAX_CLIENTS; i++, cl++) {
+		if (cl) {
+			if (cl->ps.jetpackFuel > pjkJetFuel)
+				cl->ps.jetpackFuel = pjkJetFuel;
+			if (cl->ps.jetpackFuel < 0)
+				cl->ps.jetpackFuel = 0;
+		}
+	}
+}
+
+gclient_t * G_GetRandomConnectedClient() {
+	int i, nc;
+	gclient_t * cla[MAX_CLIENTS];
+	gclient_t * cl;
+
+	for (i=0,cl=g_clients,nc=0;i<MAX_CLIENTS;i++,cl++)
+		if (cl->pers.connected == CON_CONNECTED) {
+			cla[nc] = cl;
+			nc++;
+		}
+	if (!nc) return NULL;
+	return cla[(irand(1, nc)-1)];
 }

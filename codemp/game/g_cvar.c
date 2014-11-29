@@ -2,21 +2,6 @@
 #include "g_para.h"
 #include "pcommon/q_para.h"
 
-//
-// Cvar callbacks
-//
-
-/*
-static void CVU_Derpity( void ) {
-	// ...
-}
-*/
-
-
-//
-// Cvar table
-//
-
 typedef struct cvarTable_s {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
@@ -25,6 +10,11 @@ typedef struct cvarTable_s {
 	uint32_t	cvarFlags;
 	qboolean	trackChange; // announce if value changes
 } cvarTable_t;
+
+typedef struct vmPcvarG_s {
+	vmCvar_t	vm;
+	void		(*update)( void );
+} vmPcvarG_t;
 
 #define XCVAR_DECL
 	#include "g_xcvar.h"
@@ -36,12 +26,13 @@ static const cvarTable_t gameCvarTable[] = {
 	#undef XCVAR_LIST
 };
 
+
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
-static vmCvar_t * pjkVm;
+static vmPcvarG_t * pjkVm;
 
 void G_RegisterCvars( void ) {
-	size_t i = 0;
+	size_t i, j;
 
 	if (pjkVm) {
 		free(pjkVm);
@@ -49,16 +40,31 @@ void G_RegisterCvars( void ) {
 	if (pbgcvars) {
 		free(pbgcvars);
 	}
-	pjkVm = calloc(pjk_g_num + pjk_bg_num, sizeof(vmCvar_t));
+	//Initialize pjkVm size to hold all G and BG Cvars.
+	pjkVm = calloc(pjk_g_num + pjk_bg_num, sizeof(vmPcvarG_t));
+	//Initialize the local BG cvar store
 	pbgcvars = calloc(pjk_bg_num, sizeof(pbgcvar_t));
-	vmCvar_t * pcvm;
+
+	vmPcvarG_t * pcvm;
 	pcvar_t const * pcv;
+	vmPcvarfunc_t const * vmpcf;
+
 	for ( i=0, pcvm = pjkVm, pcv = pjk_g_cvars; i < pjk_g_num; i++, pcv++, pcvm++ ) {
-		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->flags );
+		trap->Cvar_Register( &pcvm->vm, pcv->name, pcv->defval, pcv->flags );
+		for (j=0, vmpcf=vmCvarGFuncs; j < vmCvarGFuncsLen; j++, vmpcf++) {
+			if (!strcmp(vmpcf->name, pcv->name)) {
+				pcvm->update = vmpcf->update;
+			}
+		}
 	}
 	pbgcvar_t * pbgc;
 	for ( pcv = pjk_bg_cvars, pbgc = pbgcvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++, pbgc++ ) {
-		trap->Cvar_Register( pcvm, pcv->name, pcv->defval, pcv->flags );
+		trap->Cvar_Register( &pcvm->vm, pcv->name, pcv->defval, pcv->flags );
+		for (j=0, vmpcf=vmCvarGFuncs; j < vmCvarGFuncsLen; j++, vmpcf++) {
+			if (!strcmp(vmpcf->name, pcv->name)) {
+				pcvm->update = vmpcf->update;
+			}
+		}
 		pbgc->name = pcv->name;
 		pbgc->value = pjkGCvarStringValue(pcv->name);
 	}
@@ -75,25 +81,27 @@ void G_RegisterCvars( void ) {
 void G_UpdateCvars( void ) {
 	size_t i = 0;
 
-	vmCvar_t * pcvm;
+	vmPcvarG_t * pcvm;
 	pcvar_t const * pcv;
 	for ( i=0, pcvm = pjkVm, pcv = pjk_g_cvars; i < pjk_g_num; i++, pcv++, pcvm++ ) {
-		int modCount = pcvm->modificationCount;
-		trap->Cvar_Update( pcvm );
-		if ( pcvm->modificationCount != modCount ) {
+		int modCount = pcvm->vm.modificationCount;
+		trap->Cvar_Update( &pcvm->vm );
+		if ( pcvm->vm.modificationCount != modCount ) {
+			if (pcvm->update) pcvm->update();
 			if ( pcv->announce )
-				trap->SendServerCommand( -1, va("print \"Server: PJK G Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
+				trap->SendServerCommand( -1, va("print \"Server: PJK G Cvar %s changed to %s\n\"", pcv->name, pcvm->vm.string ) );
 		}
 	}
 	pbgcvar_t * pbgc;
 	for ( pcv = pjk_bg_cvars, pbgc = pbgcvars; i < pjk_g_num + pjk_bg_num; i++, pcv++, pcvm++, pbgc++ ) {
-		int modCount = pcvm->modificationCount;
-		trap->Cvar_Update( pcvm );
-		if ( pcvm->modificationCount != modCount ) {
+		int modCount = pcvm->vm.modificationCount;
+		trap->Cvar_Update( &pcvm->vm );
+		if ( pcvm->vm.modificationCount != modCount ) {
 			if (pbgc->value) free(pbgc->value);
-			pbgc->value = strdup(pcvm->string);
+			pbgc->value = strdup(pcvm->vm.string);
+			if (pcvm->update) pcvm->update();
 			if ( pcv->announce )
-				trap->SendServerCommand( -1, va("print \"Server: PJK BG Cvar %s changed to %s\n\"", pcv->name, pcvm->string ) );
+				trap->SendServerCommand( -1, va("print \"Server: PJK BG Cvar %s changed to %s\n\"", pcv->name, pcvm->vm.string ) );
 		}
 	}
 

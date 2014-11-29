@@ -1496,7 +1496,7 @@ typedef struct bladeInfo_s {
 	qboolean		active;
 	saber_colors_t	color;
 	float			radius;
-	float			length, lengthMax, lengthOld;
+	float			length, lengthMax, lengthOld, lengthNormalMax;
 	float			desiredLength;
 	vec3_t			muzzlePoint, muzzlePointOld;
 	vec3_t			muzzleDir, muzzleDirOld;

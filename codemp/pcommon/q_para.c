@@ -30,6 +30,8 @@ const size_t pjk_cg_num = ARRAY_LEN(pjk_cg_cvars);
 const pcvar_t pjk_bg_cvars[] = {
 	{ PJK_BGAME_FALLDAMAGE_CVAR,					PJK_BGAME_FALLDAMAGE_DVAL,						PJK_BGAME_FALLDAMAGE_FLAG,								qtrue },
 	{ PJK_BGAME_INFINITE_JUMP_CVAR,					PJK_BGAME_INFINITE_JUMP_DVAL,					PJK_BGAME_INFINITE_JUMP_FLAG,							qtrue },
+	{ PJK_BGAME_SABER_LENGTH_CVAR,					PJK_BGAME_SABER_LENGTH_DVAL,					PJK_BGAME_SABER_LENGTH_FLAG,							qtrue },
+	{ PJK_BGAME_JETPACK_FUEL_CVAR,					PJK_BGAME_JETPACK_FUEL_DVAL,					PJK_BGAME_JETPACK_FUEL_FLAG,							qtrue },
 };
 const size_t pjk_bg_num = ARRAY_LEN(pjk_bg_cvars);
 

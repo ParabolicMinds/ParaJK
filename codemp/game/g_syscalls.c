@@ -973,7 +973,7 @@ void trap_Bot_CalculatePaths(int rmg) {
 	Q_syscall(G_BOT_CALCULATEPATHS, rmg);
 }
 monoImport_t * trap_CreateMonoImport(void) {
-	Q_syscall(G_CREATEMONOIMPORT);
+	return Q_syscall(G_CREATEMONOIMPORT);
 }
 
 

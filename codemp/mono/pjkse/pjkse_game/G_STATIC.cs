@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace PJKSE {
-	static class GAME {
+static class GAME {
 
-		static int Test() {
-			return 5;
-		}
-
+	unsafe static void KillEntity(void * ent) {
+		GAME_IMPORT.GMono_Print ("TEST LOL\n");
+		GAME_IMPORT.GMono_Kill (ent);
 	}
+
 }

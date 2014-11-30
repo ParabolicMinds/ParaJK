@@ -17,12 +17,16 @@ TODO: Not leak memory when things fail.
 ================================
 */
 
-monoapidomain_t *	MonoAPI_Initialize(char * appDomainName, char const * assemblyFileName); //Returns a handle to the initialized domain. you need to keep this until shutdown. Returns NULL on failure.
-qboolean			MonoAPI_SetDomainActive(monoapidomain_t * mapi); //May fail, be sure to handle it.
+monoapihandle_t *	MonoAPI_Initialize(char const * assemblyFileName); //Returns a handle to the initialized domain. you need to keep this until shutdown. Returns NULL on failure.
 
-mono_class *		MonoAPI_GetClassData(monoapidomain_t * mapi, char const * _namespace, char const * name);
-void *				MonoAPI_GetMethodPtr(mono_class * _class, char const * method_name, int param_count);
-
+mono_class *		MonoAPI_GetClassData(monoapihandle_t * mapi, char const * _namespace, char const * name);
+void *				MonoAPI_GetMethodPtr(mono_class * _class, char const * method_name, int param_count); //Causes some Segfault problems... Dunno what the deal is, avoid for now.
+mono_method *		MonoAPI_GetStaticMethod(mono_class * _class, char const * method_name, int param_count);
+void *				MonoAPI_InvokeStaticMethod(mono_method * method, void ** params);
+void				MonoAPI_RegisterCMethod(char const * internalMethod, void const * cFunc);
+mono_string *		MonoAPI_CharPtrToString(char const * data);
+char *				MonoAPI_GetNewCharsFromString(mono_string * str);
+void				MonoAPI_FreeMonoObject(void * mono_obj);
 monoImport_t *		MonoAPI_CreateVMImport();
 
 #ifdef __cplusplus

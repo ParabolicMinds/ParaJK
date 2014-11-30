@@ -6,19 +6,15 @@
 
 static MonoDomain * homeDomain;
 
-monoapidomain_t * MonoAPI_Initialize(char * appDomainName, const char * assemblyFileName) {
+monoapihandle_t * MonoAPI_Initialize(const char * assemblyFileName) {
 	if (!homeDomain) {
 		homeDomain = mono_jit_init("PJKSE");
 		if (!homeDomain)
 			return NULL;
 	}
 
-	monoapidomain_t * mapi = malloc(sizeof(monoapidomain_t));
-	mapi->domainHandle = mono_domain_create_appdomain(appDomainName, NULL);
-	if (!mapi->domainHandle) {
-		return NULL;
-	}
-	mapi->assemblyHandle = mono_domain_assembly_open(mapi->domainHandle, assemblyFileName);
+	monoapihandle_t * mapi = malloc(sizeof(monoapihandle_t));
+	mapi->assemblyHandle = mono_domain_assembly_open(homeDomain, assemblyFileName);
 	if (!mapi->assemblyHandle) {
 		return NULL;
 	}
@@ -29,12 +25,9 @@ monoapidomain_t * MonoAPI_Initialize(char * appDomainName, const char * assembly
 	return mapi;
 }
 
-qboolean MonoAPI_SetDomainActive(monoapidomain_t * mapi) {
-	return mono_domain_set(mapi->domainHandle, 0);
-}
-
-mono_class * MonoAPI_GetClassData(monoapidomain_t * mapi, char const * _namespace, char const * name) {
-	return (void *) mono_class_from_name(mapi->imageHandle, _namespace, name);
+mono_class * MonoAPI_GetClassData(monoapihandle_t * mapi, char const * _namespace, char const * name) {
+	if (!mapi) return NULL;
+	return mono_class_from_name(mapi->imageHandle, _namespace, name);
 }
 
 void * MonoAPI_GetMethodPtr(mono_class * _class, char const * method_name, int param_count) {
@@ -45,12 +38,49 @@ void * MonoAPI_GetMethodPtr(mono_class * _class, char const * method_name, int p
 	return retval;
 }
 
+mono_method * MonoAPI_GetStaticMethod(mono_class * _class, char const * method_name, int param_count) {
+	if (!_class) return NULL;
+	return mono_class_get_method_from_name(_class, method_name, param_count);
+}
+
+void * MonoAPI_InvokeStaticMethod(mono_method * method, void ** params) {
+	if (!method) return NULL;
+	MonoObject * retval = mono_runtime_invoke(method, NULL, params, NULL);
+	if (!mono_type_is_void(mono_signature_get_return_type(mono_method_signature(method))))
+		return mono_object_unbox(retval);
+	else return NULL;
+}
+
+void MonoAPI_RegisterCMethod(char const * internalMethod, void const * cFunc) {
+	mono_add_internal_call(internalMethod, cFunc);
+}
+
+mono_string * MonoAPI_CharPtrToString(char const * data) {
+	return mono_string_new(homeDomain, data);
+
+}
+
+char * MonoAPI_GetNewCharsFromString(mono_string * str) {
+	if (!str) return NULL;
+	return mono_string_to_utf8(str);
+}
+
+void MonoAPI_FreeMonoObject(void * mono_obj) {
+	if (!mono_obj) return;
+	mono_free(mono_obj);
+}
+
 monoImport_t * MonoAPI_CreateVMImport() {
 	monoImport_t * mi;
 	mi = calloc(1, sizeof(monoImport_t));
-	mi->MonoAPI_GetClassData = MonoAPI_GetClassData;
-	mi->MonoAPI_GetMethodPtr = MonoAPI_GetMethodPtr;
-	mi->MonoAPI_Initialize = MonoAPI_Initialize;
-	mi->MonoAPI_SetDomainActive = MonoAPI_SetDomainActive;
+	mi->GetClassData = MonoAPI_GetClassData;
+	mi->GetMethodPtr = MonoAPI_GetMethodPtr;
+	mi->Initialize = MonoAPI_Initialize;
+	mi->RegisterCMethod = MonoAPI_RegisterCMethod;
+	mi->GetStaticMethod = MonoAPI_GetStaticMethod;
+	mi->InvokeStaticMethod = MonoAPI_InvokeStaticMethod;
+	mi->CharPtrToString = MonoAPI_CharPtrToString;
+	mi->GetNewCharsFromString = MonoAPI_GetNewCharsFromString;
+	mi->FreeMonoObject = MonoAPI_FreeMonoObject;
 	return mi;
 }

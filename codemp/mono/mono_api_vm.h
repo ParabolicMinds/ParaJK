@@ -3,19 +3,23 @@
 
 #include "qcommon/q_shared.h"
 
-typedef void mono_class;
+typedef void mono_class, mono_method, mono_string;
 
-typedef struct monoapidomain_s {
-	void * domainHandle;
+typedef struct monoapihandle_s {
 	void * assemblyHandle;
 	void * imageHandle;
-} monoapidomain_t;
+} monoapihandle_t;
 
 typedef struct monoImport_s {
-	monoapidomain_t *		(*MonoAPI_Initialize) (char * domain_name, char const * file_name);
-	qboolean				(*MonoAPI_SetDomainActive) (monoapidomain_t * mapi);
-	mono_class *			(*MonoAPI_GetClassData) (monoapidomain_t * mapi, char const * _namespace, char const * name);
-	void *					(*MonoAPI_GetMethodPtr) (mono_class * _class, char const * method_name, int param_count);
+	monoapihandle_t *		(*Initialize) (char const * file_name);
+	mono_class *			(*GetClassData) (monoapihandle_t * mapi, char const * _namespace, char const * name);
+	void *					(*GetMethodPtr) (mono_class * _class, char const * method_name, int param_count);
+	void					(*RegisterCMethod) (char const * internalMethod, void const * cFunc);
+	mono_method *			(*GetStaticMethod)(mono_class * _class, char const * method_name, int param_count);
+	void *					(*InvokeStaticMethod)(mono_method * method, void ** params);
+	mono_string *			(*CharPtrToString)(char const * data);
+	char *					(*GetNewCharsFromString)(mono_string * str);
+	void					(*FreeMonoObject)(void * mono_obj);
 } monoImport_t;
 
 

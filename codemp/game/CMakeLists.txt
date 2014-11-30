@@ -124,6 +124,8 @@ set(MPGameGameFiles
 	"${MPDir}/game/bg_para.c"
 	"${MPDir}/game/g_para.h"
         "${MPDir}/game/g_para.c"
+	"${MPDir}/game/g_mono.h"
+	"${MPDir}/game/g_mono.c"
 	)
 source_group("game" FILES ${MPGameGameFiles})
 set(MPGameFiles ${MPGameFiles} ${MPGameGameFiles})

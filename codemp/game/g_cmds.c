@@ -3468,28 +3468,11 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 	q_lindex = index;
 }
 
-#include "mono/mono_api_vm.h"
-
-static monoImport_t * mono;
-static monoapidomain_t * mapi;
-static mono_class * mcl;
-static int (*Test)(void);
+#include "g_mono.h"
 
 static void Cmd_Monotest_f (gentity_t * ent) {
-	if (!mono)
-		mono = trap->MonoCreateImport();
-	if (!mapi)
-		mapi = mono->MonoAPI_Initialize("PJKSE", "para/PJKSE_G.dll");
-	if (!mapi) goto critfail;
-	mono->MonoAPI_SetDomainActive(mapi);
-	mcl = mono->MonoAPI_GetClassData(mapi, "PJKSE", "GAME");
-	if (!mcl) goto critfail;
-	Test = mono->MonoAPI_GetMethodPtr(mcl, "Test", 0);
-	if (!Test) goto critfail;
-	trap->Print(va("Mono Test: %d\n", Test()));
-	return;
-	critfail:
-	trap->Print("Mono Test: CRITICAL FAILURE\n");
+	G_Mono_Initialize();
+	G_Mono_KillEntity(ent);
 }
 
 /*

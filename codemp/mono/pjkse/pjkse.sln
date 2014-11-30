@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pjkse", "pjkse.csproj", "{159B1811-CEA3-44BC-9764-1FCD134DB65E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pjkse_game", "pjkse_game\pjkse_game.csproj", "{AA95A634-71F5-482A-AD89-4E340267417E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pjkse_cgame", "pjkse_cgame\pjkse_cgame.csproj", "{6F4CF19F-32FF-4A63-908D-585D21DAF640}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +11,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{159B1811-CEA3-44BC-9764-1FCD134DB65E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{159B1811-CEA3-44BC-9764-1FCD134DB65E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{159B1811-CEA3-44BC-9764-1FCD134DB65E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{159B1811-CEA3-44BC-9764-1FCD134DB65E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F4CF19F-32FF-4A63-908D-585D21DAF640}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F4CF19F-32FF-4A63-908D-585D21DAF640}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F4CF19F-32FF-4A63-908D-585D21DAF640}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F4CF19F-32FF-4A63-908D-585D21DAF640}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA95A634-71F5-482A-AD89-4E340267417E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA95A634-71F5-482A-AD89-4E340267417E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA95A634-71F5-482A-AD89-4E340267417E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA95A634-71F5-482A-AD89-4E340267417E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = pjkse.csproj
+		StartupItem = pjkse_game\pjkse_game.csproj
 	EndGlobalSection
 EndGlobal

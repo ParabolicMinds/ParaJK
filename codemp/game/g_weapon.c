@@ -1976,7 +1976,13 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
 	missile->splashRadius = ROCKET_SPLASH_RADIUS;
 
-	missile->bounceCount = 0;
+	if (pjkGCvarIntValue(PJK_GAME_BOUNCYROCKETS_CVAR)) {
+		missile->flags |= FL_BOUNCE;
+		missile->bounceCount = INFINITE;
+	} else {
+		missile->bounceCount = 0;
+	}
+
 }
 
 /*

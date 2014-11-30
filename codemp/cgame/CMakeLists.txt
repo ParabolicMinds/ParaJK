@@ -98,6 +98,12 @@ set(MPCGameCommonFiles
 source_group("common" FILES ${MPCGameCommonFiles})
 set(MPCGameFiles ${MPCGameFiles} ${MPCGameCommonFiles})
 
+set(MPGameMonoFiles
+	"${MPDir}/mono/mono_api_vm.h"
+	)
+source_group("mono" FILES ${MPGameMonoFiles})
+set(MPGameFiles ${MPGameFiles} ${MPGameMonoFiles})
+
 set(MPCGameUiFiles
 	"${MPDir}/ui/ui_shared.c"
 	"${MPDir}/ui/keycodes.h"

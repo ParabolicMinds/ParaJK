@@ -1623,6 +1623,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 // Stub function for old RMG system.
 static void RE_InitRendererTerrain ( const char * /*info*/ ) {}
 
+#include "mono/mono_api.h"
+static monoImport_t * CL_MonoCreateImport() {
+	return MonoAPI_CreateVMImport();
+}
+
 void CL_BindCGame( void ) {
 	static cgameImport_t cgi;
 	cgameExport_t		*ret;
@@ -1837,6 +1842,7 @@ void CL_BindCGame( void ) {
 		cgi.G2API_CleanEntAttachments			= CL_G2API_CleanEntAttachments;
 		cgi.G2API_OverrideServer				= CL_G2API_OverrideServer;
 		cgi.G2API_GetSurfaceName				= CL_G2API_GetSurfaceName;
+		cgi.MonoCreateImport					= CL_MonoCreateImport;
 
 		GetCGameAPI = (GetCGameAPI_t)cgvm->GetModuleAPI;
 		ret = GetCGameAPI( CGAME_API_VERSION, &cgi );

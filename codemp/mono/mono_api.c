@@ -16,17 +16,14 @@ monoapidomain_t * MonoAPI_Initialize(char * appDomainName, const char * assembly
 	monoapidomain_t * mapi = malloc(sizeof(monoapidomain_t));
 	mapi->domainHandle = mono_domain_create_appdomain(appDomainName, NULL);
 	if (!mapi->domainHandle) {
-		MonoAPI_ShutdownDomain(mapi);
 		return NULL;
 	}
 	mapi->assemblyHandle = mono_domain_assembly_open(mapi->domainHandle, assemblyFileName);
 	if (!mapi->assemblyHandle) {
-		MonoAPI_ShutdownDomain(mapi);
 		return NULL;
 	}
 	mapi->imageHandle = mono_assembly_get_image(mapi->assemblyHandle);
 	if (!mapi->imageHandle) {
-		MonoAPI_ShutdownDomain(mapi);
 		return NULL;
 	}
 	return mapi;
@@ -34,21 +31,6 @@ monoapidomain_t * MonoAPI_Initialize(char * appDomainName, const char * assembly
 
 qboolean MonoAPI_SetDomainActive(monoapidomain_t * mapi) {
 	return mono_domain_set(mapi->domainHandle, 0);
-}
-
-void MonoAPI_ShutdownDomain(monoapidomain_t * mapi) {
-	if (mapi->domainHandle)
-		mono_domain_unload(mapi->domainHandle);
-	if (mapi->assemblyHandle)
-		mono_assembly_close(mapi->assemblyHandle);
-	if (mapi->imageHandle)
-		mono_image_close(mapi->imageHandle);
-	free(mapi);
-}
-
-void MonoAPI_ShutdownAPI() {
-	mono_jit_cleanup(homeDomain);
-	homeDomain = NULL;
 }
 
 mono_class * MonoAPI_GetClassData(monoapidomain_t * mapi, char const * _namespace, char const * name) {
@@ -70,6 +52,5 @@ monoImport_t * MonoAPI_CreateVMImport() {
 	mi->MonoAPI_GetMethodPtr = MonoAPI_GetMethodPtr;
 	mi->MonoAPI_Initialize = MonoAPI_Initialize;
 	mi->MonoAPI_SetDomainActive = MonoAPI_SetDomainActive;
-	mi->MonoAPI_ShutdownDomain = MonoAPI_ShutdownDomain;
 	return mi;
 }

@@ -3479,11 +3479,17 @@ static void Cmd_Monotest_f (gentity_t * ent) {
 	if (!mono)
 		mono = trap->MonoCreateImport();
 	if (!mapi)
-		mapi = mono->MonoAPI_Initialize("PJKSE", "para/pjkse.dll");
+		mapi = mono->MonoAPI_Initialize("PJKSE", "para/PJKSE_G.dll");
+	if (!mapi) goto critfail;
 	mono->MonoAPI_SetDomainActive(mapi);
-	mcl = mono->MonoAPI_GetClassData(mapi, "PJKSE", "PJKSE_STATIC");
+	mcl = mono->MonoAPI_GetClassData(mapi, "PJKSE", "GAME");
+	if (!mcl) goto critfail;
 	Test = mono->MonoAPI_GetMethodPtr(mcl, "Test", 0);
+	if (!Test) goto critfail;
 	trap->Print(va("Mono Test: %d\n", Test()));
+	return;
+	critfail:
+	trap->Print("Mono Test: CRITICAL FAILURE\n");
 }
 
 /*
@@ -3535,7 +3541,7 @@ command_t commands[] = {
 //	{ "kylesmash",			TryGrapple,					0 },
 	{ "levelshot",			Cmd_LevelShot_f,			CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "maplist",			Cmd_MapList_f,				CMD_NOINTERMISSION },
-	{ "monotest",			Cmd_Monotest_f,				0 },
+	{ "mono_g",				Cmd_Monotest_f,				0 },
 	{ "noclip",				Cmd_Noclip_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "notarget",			Cmd_Notarget_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "npc",				Cmd_NPC_f,					CMD_CHEAT|CMD_ALIVE },

@@ -262,6 +262,30 @@ void CG_PrintColors(void) {
 	trap->Print("^00^11^22^33^44^55^66^77^88^99\n");
 }
 
+#include "mono/mono_api_vm.h"
+
+static monoImport_t * mono;
+static monoapidomain_t * mapi;
+static mono_class * mcl;
+static float (*Test)(void);
+
+static void CG_Monotest_f (void) {
+	if (!mono)
+		mono = trap->MonoCreateImport();
+	if (!mapi)
+		mapi = mono->MonoAPI_Initialize("PJKSE", "para/PJKSE_CG.dll");
+	if (!mapi) goto critfail;
+	mono->MonoAPI_SetDomainActive(mapi);
+	mcl = mono->MonoAPI_GetClassData(mapi, "PJKSE", "CGAME");
+	if (!mcl) goto critfail;
+	Test = mono->MonoAPI_GetMethodPtr(mcl, "Test", 0);
+	if (!Test) goto critfail;
+	trap->Print(va("Mono CG Test: %f\n", Test()));
+	return;
+	critfail:
+	trap->Print("Mono CG Test: CRITICAL FAILURE\n");
+}
+
 /* This array MUST be sorted correctly by alphabetical name field */
 static consoleCommand_t	commands[] = {
 	{ "+scores",					CG_ScoresDown_f },
@@ -274,6 +298,7 @@ static consoleCommand_t	commands[] = {
 	{ "invnext",					CG_NextInventory_f },
 	{ "invprev",					CG_PrevInventory_f },
 	{ "loaddeferred",				CG_LoadDeferredPlayers },
+	{ "mono_cg",					CG_Monotest_f },
 	{ "nextframe",					CG_TestModelNextFrame_f },
 	{ "nextskin",					CG_TestModelNextSkin_f },
 	{ "prevframe",					CG_TestModelPrevFrame_f },

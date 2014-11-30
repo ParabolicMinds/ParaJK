@@ -1,13 +1,11 @@
 ﻿using System;
 
 namespace PJKSE {
-
-	class PJKSE_STATIC {
+	static class GAME {
 
 		static int Test() {
 			return 5;
 		}
 
-}
-
+	}
 }

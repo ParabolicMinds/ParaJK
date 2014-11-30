@@ -142,7 +142,7 @@ source_group("common" FILES ${MPGameCommonFiles})
 set(MPGameFiles ${MPGameFiles} ${MPGameCommonFiles})
 
 set(MPGameMonoFiles
-	"${MPDir}/mono/mono_api.h"
+	"${MPDir}/mono/mono_api_vm.h"
 	)
 source_group("mono" FILES ${MPGameMonoFiles})
 set(MPGameFiles ${MPGameFiles} ${MPGameMonoFiles})

@@ -4,6 +4,7 @@
 //
 
 #include "qcommon/q_shared.h"
+#include "mono/mono_api_vm.h"
 
 #define	CGAME_API_VERSION		1
 
@@ -417,7 +418,8 @@ typedef enum cgameImportLegacy_e {
 	CG_RE_INIT_RENDERER_TERRAIN,
 	CG_R_WEATHER_CONTENTS_OVERRIDE,
 	CG_R_WORLDEFFECTCOMMAND,
-	CG_WE_ADDWEATHERZONE
+	CG_WE_ADDWEATHERZONE,
+	CG_CREATEMONOIMPORT
 } cgameImportLegacy_t;
 
 typedef enum cgameExportLegacy_e {
@@ -695,6 +697,7 @@ typedef struct cgameImport_s {
 	void			(*G2API_CleanEntAttachments)			( void );
 	qboolean		(*G2API_OverrideServer)					( void *serverInstance );
 	void			(*G2API_GetSurfaceName)					( void *ghoul2, int surfNumber, int modelIndex, char *fillBuf );
+	monoImport_t *		(*MonoCreateImport)					( void );
 } cgameImport_t;
 
 typedef struct cgameExport_s {

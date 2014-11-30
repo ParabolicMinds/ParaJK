@@ -75,6 +75,10 @@ typedef struct vmPcvarfunc_s {
 #define PJK_GAME_ROCKETALTVELMOD_DVAL				"0.5"
 #define PJK_GAME_ROCKETALTVELMOD_FLAG				CVAR_SERVERINFO
 
+#define PJK_GAME_BOUNCYROCKETS_CVAR					"g_pjk_bouncyrockets"
+#define PJK_GAME_BOUNCYROCKETS_DVAL					"0"
+#define PJK_GAME_BOUNCYROCKETS_FLAG					CVAR_SERVERINFO
+
 extern const pcvar_t pjk_g_cvars[];
 extern const size_t pjk_g_num;
 

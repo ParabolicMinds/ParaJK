@@ -665,6 +665,9 @@ void trap_R_WorldEffectCommand(const char *cmd) {
 void trap_WE_AddWeatherZone( vec3_t mins, vec3_t maxs ) {
 	Q_syscall( CG_WE_ADDWEATHERZONE, mins, maxs );
 }
+monoImport_t * trap_CreateMonoImport( void ) {
+	return Q_syscall( CG_CREATEMONOIMPORT );
+}
 
 
 // Translate import table funcptrs to syscalls
@@ -915,4 +918,5 @@ static void TranslateSyscalls( void ) {
 	trap->G2API_CleanEntAttachments			= trap_G2API_CleanEntAttachments;
 	trap->G2API_OverrideServer				= trap_G2API_OverrideServer;
 	trap->G2API_GetSurfaceName				= trap_G2API_GetSurfaceName;
+	trap->MonoCreateImport                  = trap_CreateMonoImport;
 }

@@ -3468,6 +3468,24 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 	q_lindex = index;
 }
 
+#include "mono/mono_api_vm.h"
+
+static monoImport_t * mono;
+static monoapidomain_t * mapi;
+static mono_class * mcl;
+static int (*Test)(void);
+
+static void Cmd_Monotest_f (gentity_t * ent) {
+	if (!mono)
+		mono = trap->MonoCreateImport();
+	if (!mapi)
+		mapi = mono->MonoAPI_Initialize("PJKSE", "para/pjkse.dll");
+	mono->MonoAPI_SetDomainActive(mapi);
+	mcl = mono->MonoAPI_GetClassData(mapi, "PJKSE", "PJKSE_STATIC");
+	Test = mono->MonoAPI_GetMethodPtr(mcl, "Test", 0);
+	trap->Print(va("Mono Test: %d\n", Test()));
+}
+
 /*
 =================
 */
@@ -3517,6 +3535,7 @@ command_t commands[] = {
 //	{ "kylesmash",			TryGrapple,					0 },
 	{ "levelshot",			Cmd_LevelShot_f,			CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "maplist",			Cmd_MapList_f,				CMD_NOINTERMISSION },
+	{ "monotest",			Cmd_Monotest_f,				0 },
 	{ "noclip",				Cmd_Noclip_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "notarget",			Cmd_Notarget_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "npc",				Cmd_NPC_f,					CMD_CHEAT|CMD_ALIVE },

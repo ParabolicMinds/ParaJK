@@ -1976,7 +1976,6 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
 	missile->splashRadius = ROCKET_SPLASH_RADIUS;
 
-	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
 

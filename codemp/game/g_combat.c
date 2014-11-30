@@ -5468,6 +5468,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 
 		if (dflags & DAMAGE_FORCE_DEATH)
 			targ->health = -999;
+			if (targ->playerState)
+				targ->playerState->stats[STAT_HEALTH] = -999;
 
 		if ( targ->health <= 0 ) {
 			if ( client )

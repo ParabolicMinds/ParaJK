@@ -142,17 +142,10 @@ source_group("common" FILES ${MPGameCommonFiles})
 set(MPGameFiles ${MPGameFiles} ${MPGameCommonFiles})
 
 set(MPGameMonoFiles
-	"${MPDir}/mono/mono_common.h"
-	"${MPDir}/mono/mono_common.c"
 	"${MPDir}/mono/mono_api.h"
-	"${MPDir}/mono/mono_api.c"
-	"${MPDir}/mono/mono_backend.h"
-	"${MPDir}/mono/mono_backend.c"
 	)
 source_group("mono" FILES ${MPGameMonoFiles})
 set(MPGameFiles ${MPGameFiles} ${MPGameMonoFiles})
-
-set(MPGameIncludeDirectories ${MPDir} ${MONO_INCLUDE_DIRS})
 
 set(MPGameCgameFiles
 	"${MPDir}/cgame/animtable.h"

@@ -249,6 +249,16 @@ if(BuildMPEngine OR BuildMPDed)
 	source_group("common" FILES ${MPEngineAndDedCommonFiles})
 	set(MPEngineAndDedFiles ${MPEngineAndDedFiles} ${MPEngineAndDedCommonFiles})
 
+	set(MPMonoFiles
+		"${MPDir}/mono/mono_api.h"
+		"${MPDir}/mono/mono_api.c"
+		"${MPDir}/mono/mono_api_vm.h"
+		)
+	source_group("mono" FILES ${MPMonoFiles})
+	set(MPEngineAndDedFiles ${MPEngineAndDedFiles} ${MPMonoFiles})
+	set(MPEngineAndDedLibraries ${MPEngineAndDedLibraries} ${MONO_LIBRARIES})
+	set(MPEngineAndDedIncludeDirectories ${MPEngineAndDedIncludeDirectories} ${MONO_INCLUDE_DIRS})
+
 	set(MPEngineAndDedG2Files
 		"${MPDir}/ghoul2/G2.h"
 		"${MPDir}/ghoul2/G2_gore.h"
@@ -348,9 +358,6 @@ if(BuildMPEngine)
 	set(MPEngineDefines ${MPSharedDefines})
 
 	#    Dependencies
-
-	set(MPEngineLibraries ${MPEngineLibraries} ${MONO_LIBRARIES})
-	set(MPEngineIncludeDirectories ${MPEngineIncludeDirectories} ${MONO_INCLUDE_DIRS})
 
 	if (NOT WIN32)
 		# OpenGL

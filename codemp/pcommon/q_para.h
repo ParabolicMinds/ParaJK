@@ -71,7 +71,7 @@ typedef struct vmPcvarfunc_s {
 #define PJK_GAME_ROCKETSIZE_DVAL					"3.0"
 #define PJK_GAME_ROCKETSIZE_FLAG					CVAR_SERVERINFO
 
-#define PJK_GAME_ROCKETALTVELMOD_CVAR				"noni_g_pjk_rocketaltvelmod"
+#define PJK_GAME_ROCKETALTVELMOD_CVAR				"g_pjk_rocketaltvelmod"
 #define PJK_GAME_ROCKETALTVELMOD_DVAL				"0.5"
 #define PJK_GAME_ROCKETALTVELMOD_FLAG				CVAR_SERVERINFO
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mono/mono_api_vm.h"
+
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
@@ -692,7 +694,8 @@ typedef enum gameImportLegacy_e {
 	G_CM_REGISTER_TERRAIN,
 	G_RMG_INIT,
 	G_BOT_UPDATEWAYPOINTS,
-	G_BOT_CALCULATEPATHS
+	G_BOT_CALCULATEPATHS,
+	G_CREATEMONOIMPORT
 } gameImportLegacy_t;
 
 typedef enum gameExportLegacy_e {
@@ -1074,6 +1077,7 @@ typedef struct gameImport_s {
 	void		(*G2API_CleanEntAttachments)			( void );
 	qboolean	(*G2API_OverrideServer)					( void *serverInstance );
 	void		(*G2API_GetSurfaceName)					( void *ghoul2, int surfNumber, int modelIndex, char *fillBuf );
+	monoImport_t *		(*MonoCreateImport)				( void );
 } gameImport_t;
 
 typedef struct gameExport_s {

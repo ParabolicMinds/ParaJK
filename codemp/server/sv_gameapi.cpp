@@ -2859,6 +2859,11 @@ void SV_InitGame( qboolean restart ) {
 	GVM_InitGame( sv.time, Com_Milliseconds(), restart );
 }
 
+#include "mono/mono_api.h"
+static monoImport_t * SV_MonoCreateImport() {
+	return MonoAPI_CreateVMImport();
+}
+
 void SV_BindGame( void ) {
 	static gameImport_t gi;
 	gameExport_t		*ret;
@@ -3178,6 +3183,7 @@ void SV_BindGame( void ) {
 		gi.G2API_CleanEntAttachments			= SV_G2API_CleanEntAttachments;
 		gi.G2API_OverrideServer					= SV_G2API_OverrideServer;
 		gi.G2API_GetSurfaceName					= SV_G2API_GetSurfaceName;
+		gi.MonoCreateImport						= SV_MonoCreateImport;
 
 		GetGameAPI = (GetGameAPI_t)gvm->GetModuleAPI;
 		ret = GetGameAPI( GAME_API_VERSION, &gi );

@@ -16,7 +16,7 @@ typedef struct monoImport_s {
 	void *					(*GetMethodPtr) (mono_class * _class, char const * method_name, int param_count);
 	void					(*RegisterCMethod) (char const * internalMethod, void const * cFunc);
 	mono_method *			(*GetStaticMethod)(mono_class * _class, char const * method_name, int param_count);
-	void *					(*InvokeStaticMethod)(mono_method * method, void ** params);
+	void *					(*InvokeStaticMethod)(mono_method * method, void ** params, char ** exception);
 	mono_string *			(*CharPtrToString)(char const * data);
 	char *					(*GetNewCharsFromString)(mono_string * str);
 	void					(*FreeMonoObject)(void * mono_obj);

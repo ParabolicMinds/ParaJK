@@ -3472,7 +3472,7 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 
 static void Cmd_Monotest_f (gentity_t * ent) {
 	G_Mono_Initialize();
-	G_Mono_KillEntity(ent);
+	G_MonoApi_TestMono(ent);
 }
 
 /*

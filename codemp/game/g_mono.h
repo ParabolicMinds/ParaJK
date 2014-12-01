@@ -12,7 +12,7 @@ qboolean G_Mono_Initialize();
 //================================
 //G_Mono Export Methods
 //================================
-void G_Mono_KillEntity(gentity_t *);
+void G_MonoApi_TestMono(gentity_t *);
 //================================
 
 #endif //G_MONO_H

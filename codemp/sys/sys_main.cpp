@@ -559,6 +559,7 @@ int main ( int argc, char* argv[] )
 	int		i;
 	char	commandLine[ MAX_STRING_CHARS ] = { 0 };
 
+
 	// done before Com/Sys_Init since we need this for error output
 	//Sys_CreateConsole();
 

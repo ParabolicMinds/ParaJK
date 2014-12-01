@@ -666,7 +666,7 @@ void trap_WE_AddWeatherZone( vec3_t mins, vec3_t maxs ) {
 	Q_syscall( CG_WE_ADDWEATHERZONE, mins, maxs );
 }
 monoImport_t * trap_CreateMonoImport( void ) {
-	return Q_syscall( CG_CREATEMONOIMPORT );
+	return (void *) Q_syscall( CG_CREATEMONOIMPORT );
 }
 
 

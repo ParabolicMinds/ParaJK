@@ -14,10 +14,29 @@ G_Mono Export Methods
 ================================================
 */
 
-static mono_method * KillEntity_S;
-void G_Mono_KillEntity(gentity_t * ent) {
+/*
+========================================
+Exception Handler
+	Should be called in every Export method.
+========================================
+*/
+static char * mono_exception = NULL;
+static void HandleMonoException() {
+	if (mono_exception) {
+		trap->Print(va("Mono Error: %s\n", mono_exception));
+		mono->FreeMonoObject(mono_exception);
+		mono_exception = NULL;
+	}
+}
+/*
+========================================
+*/
+
+static mono_method * TestMono_M;
+void G_MonoApi_TestMono(gentity_t * ent) {
 	void * params[] = { ent };
-	mono->InvokeStaticMethod(KillEntity_S, params);
+	mono->InvokeStaticMethod(TestMono_M, params, &mono_exception);
+	HandleMonoException();
 }
 
 /*
@@ -33,6 +52,7 @@ G_Mono Import Methods
 */
 
 static void G_Mono_Kill(void * ent) {
+	if (!ent) return;
 	G_Kill(ent);
 }
 
@@ -56,17 +76,17 @@ qboolean G_Mono_Initialize() {
 	if (!mapi) goto critfail;
 
 	if (!mcl)
-		mcl = mono->GetClassData(mapi, "", "GAME");
+		mcl = mono->GetClassData(mapi, "", "GAME_INTERNAL_IMPORT");
 	if (!mcl) goto critfail;
 
 	//Nothing below here should fail.
 
 	//Setup C# Exports
-	KillEntity_S = mono->GetStaticMethod(mcl, "KillEntity", 1);
+	TestMono_M = mono->GetStaticMethod(mcl, "Test", 1);
 
 	//Setup C# Imports
-	mono->RegisterCMethod("GAME_IMPORT::GMono_Kill", G_Mono_Kill);
-	mono->RegisterCMethod("GAME_IMPORT::GMono_Print", G_Mono_Trap_Print);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Kill", G_Mono_Kill);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);
 
 	//Done
 	initialized = qtrue;

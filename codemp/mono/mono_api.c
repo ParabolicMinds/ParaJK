@@ -43,12 +43,22 @@ mono_method * MonoAPI_GetStaticMethod(mono_class * _class, char const * method_n
 	return mono_class_get_method_from_name(_class, method_name, param_count);
 }
 
-void * MonoAPI_InvokeStaticMethod(mono_method * method, void ** params) {
+void * MonoAPI_InvokeStaticMethod(mono_method * method, void ** params, char ** exception) {
 	if (!method) return NULL;
-	MonoObject * retval = mono_runtime_invoke(method, NULL, params, NULL);
-	if (!mono_type_is_void(mono_signature_get_return_type(mono_method_signature(method))))
-		return mono_object_unbox(retval);
-	else return NULL;
+	MonoObject * exc;
+	MonoObject * retval = mono_runtime_invoke(method, NULL, params, &exc);
+	if (exc) {
+		if (exception)
+			*exception = mono_string_to_utf8(mono_object_to_string(exc, NULL));
+		mono_free(retval);
+		return NULL;
+	}
+	void * retvalv;
+	if (!mono_type_is_void(mono_signature_get_return_type(mono_method_signature(method)))) {
+		retvalv = mono_object_unbox(retval);
+	} else retvalv = NULL;
+	mono_free(retval);
+	return retvalv;
 }
 
 void MonoAPI_RegisterCMethod(char const * internalMethod, void const * cFunc) {

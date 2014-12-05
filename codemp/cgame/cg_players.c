@@ -5226,28 +5226,33 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 
 static void CG_RGBForSaberColor( saber_colors_t color, vec3_t rgb )
 {
-	switch( color )
-	{
-		case SABER_RED:
-			VectorSet( rgb, 1.0f, 0.2f, 0.2f );
+	switch( color ){
+	case SABER_RED:
+		VectorSet( rgb, 1.0f, 0.2f, 0.2f );
+		break;
+	case SABER_ORANGE:
+		VectorSet( rgb, 1.0f, 0.5f, 0.1f );
+		break;
+	case SABER_YELLOW:
+		VectorSet( rgb, 1.0f, 1.0f, 0.2f );
+		break;
+	case SABER_GREEN:
+		VectorSet( rgb, 0.2f, 1.0f, 0.2f );
+		break;
+	case SABER_BLUE:
+		VectorSet( rgb, 0.2f, 0.4f, 1.0f );
+		break;
+	case SABER_PURPLE:
+		VectorSet( rgb, 0.9f, 0.2f, 1.0f );
 			break;
-		case SABER_ORANGE:
-			VectorSet( rgb, 1.0f, 0.5f, 0.1f );
-			break;
-		case SABER_YELLOW:
-			VectorSet( rgb, 1.0f, 1.0f, 0.2f );
-			break;
-		case SABER_GREEN:
-			VectorSet( rgb, 0.2f, 1.0f, 0.2f );
-			break;
-		case SABER_BLUE:
-			VectorSet( rgb, 0.2f, 0.4f, 1.0f );
-			break;
-		case SABER_PURPLE:
-			VectorSet( rgb, 0.9f, 0.2f, 1.0f );
-			break;
-		default:
-			break;
+	case SABER_BLACK:
+		VectorSet( rgb, 0.0f, 0.0f, 0.0f );
+		break;
+	case SABER_WHITE:
+		VectorSet( rgb, 1.0f, 1.0f, 1.0f );
+		break;
+	default:
+		break;
 	}
 }
 
@@ -5355,36 +5360,43 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, float
 	// Find the midpoint of the saber for lighting purposes
 	VectorMA( origin, length * 0.5f, dir, mid );
 
-	switch( color )
-	{
-		case SABER_RED:
-			glow = cgs.media.redSaberGlowShader;
-			blade = cgs.media.redSaberCoreShader;
-			break;
-		case SABER_ORANGE:
-			glow = cgs.media.orangeSaberGlowShader;
-			blade = cgs.media.orangeSaberCoreShader;
-			break;
-		case SABER_YELLOW:
-			glow = cgs.media.yellowSaberGlowShader;
-			blade = cgs.media.yellowSaberCoreShader;
-			break;
-		case SABER_GREEN:
-			glow = cgs.media.greenSaberGlowShader;
-			blade = cgs.media.greenSaberCoreShader;
-			break;
-		case SABER_BLUE:
-			glow = cgs.media.blueSaberGlowShader;
-			blade = cgs.media.blueSaberCoreShader;
-			break;
-		case SABER_PURPLE:
-			glow = cgs.media.purpleSaberGlowShader;
-			blade = cgs.media.purpleSaberCoreShader;
-			break;
-		default:
-			glow = cgs.media.blueSaberGlowShader;
-			blade = cgs.media.blueSaberCoreShader;
-			break;
+	switch( color ) {
+	case SABER_RED:
+		glow = cgs.media.redSaberGlowShader;
+		blade = cgs.media.redSaberCoreShader;
+		break;
+	case SABER_ORANGE:
+		glow = cgs.media.orangeSaberGlowShader;
+		blade = cgs.media.orangeSaberCoreShader;
+		break;
+	case SABER_YELLOW:
+		glow = cgs.media.yellowSaberGlowShader;
+		blade = cgs.media.yellowSaberCoreShader;
+		break;
+	case SABER_GREEN:
+		glow = cgs.media.greenSaberGlowShader;
+		blade = cgs.media.greenSaberCoreShader;
+		break;
+	case SABER_BLUE:
+		glow = cgs.media.blueSaberGlowShader;
+		blade = cgs.media.blueSaberCoreShader;
+		break;
+	case SABER_PURPLE:
+		glow = cgs.media.purpleSaberGlowShader;
+		blade = cgs.media.purpleSaberCoreShader;
+		break;
+	case SABER_BLACK:
+		glow = cgs.media.purpleSaberGlowShader;
+		blade = cgs.media.purpleSaberCoreShader;
+		break;
+	case SABER_WHITE:
+		glow = cgs.media.yellowSaberGlowShader;
+		blade = cgs.media.yellowSaberCoreShader;
+		break;
+	default:
+		glow = cgs.media.blueSaberGlowShader;
+		blade = cgs.media.blueSaberCoreShader;
+		break;
 	}
 
 	if (doLight)
@@ -6349,29 +6361,34 @@ CheckTrail:
 				{
 					vec3_t	rgb1={255.0f,255.0f,255.0f};
 
-					switch( scolor )
-					{
-						case SABER_RED:
-							VectorSet( rgb1, 255.0f, 0.0f, 0.0f );
-							break;
-						case SABER_ORANGE:
-							VectorSet( rgb1, 255.0f, 64.0f, 0.0f );
-							break;
-						case SABER_YELLOW:
-							VectorSet( rgb1, 255.0f, 255.0f, 0.0f );
-							break;
-						case SABER_GREEN:
-							VectorSet( rgb1, 0.0f, 255.0f, 0.0f );
-							break;
-						case SABER_BLUE:
-							VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
-							break;
-						case SABER_PURPLE:
-							VectorSet( rgb1, 220.0f, 0.0f, 255.0f );
-							break;
-						default:
-							VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
-							break;
+					switch( scolor ) {
+					case SABER_RED:
+						VectorSet( rgb1, 255.0f, 0.0f, 0.0f );
+						break;
+					case SABER_ORANGE:
+						VectorSet( rgb1, 255.0f, 64.0f, 0.0f );
+						break;
+					case SABER_YELLOW:
+						VectorSet( rgb1, 255.0f, 255.0f, 0.0f );
+						break;
+					case SABER_GREEN:
+						VectorSet( rgb1, 0.0f, 255.0f, 0.0f );
+						break;
+					case SABER_BLUE:
+						VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
+						break;
+					case SABER_PURPLE:
+						VectorSet( rgb1, 220.0f, 0.0f, 255.0f );
+						break;
+					case SABER_BLACK:
+						VectorSet( rgb1, 0.0f, 0.0f, 0.0f );
+						break;
+					case SABER_WHITE:
+						VectorSet( rgb1, 255.0f, 255.0f, 255.0f );
+						break;
+					default:
+						VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
+						break;
 					}
 
 					//Here we will use the happy process of filling a struct in with arguments and passing it to a trap function
@@ -10236,7 +10253,8 @@ stillDoSaber:
 				bladeAngles[ROLL] = 0;
 
 				if ( ci->saber[0].numBlades > 1//staff
-					&& cent->currentState.saberHolstered == 1 )//extra blades off
+					&& cent->currentState.saberHolstered == 1 //extra blades off
+					&& !(ci->saber[0].saberFlags2 & SFL2_IGNORE_EXTRA_BLADES)) //pretend extra blades don't exist?
 				{//only first blade should be on
 					BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 					BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);
@@ -10320,7 +10338,8 @@ stillDoSaber:
 		else
 		{
 			if ( ci->saber[0].numBlades > 1//staff
-				&& cent->currentState.saberHolstered == 1 )//extra blades off
+				&& cent->currentState.saberHolstered == 1//extra blades off
+				&& !(ci->saber[0].saberFlags2 & SFL2_IGNORE_EXTRA_BLADES)) //pretend extra blades don't exist?
 			{//only first blade should be on
 				BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 				BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);

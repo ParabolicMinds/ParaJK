@@ -6,7 +6,9 @@
 //================================
 //G_Mono API Methods
 //================================
-qboolean G_Mono_Initialize();
+qboolean G_MonoApi_Initialize();
+void G_MonoApi_Shutdown();
+void G_MonoApi_Frame();
 //================================
 //////////////////////////////////
 //================================

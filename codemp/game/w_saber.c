@@ -498,7 +498,7 @@ static QINLINE void SetSaberBoxSize(gentity_t *saberent)
 				{//not the first blade
 					if ( !dualSabers )
 					{//using a single saber
-						if ( owner->client->saber[j].numBlades > 1 )
+						if ( owner->client->saber[j].numBlades > 1  && !(owner->client->saber[j].saberFlags2 & SFL2_IGNORE_EXTRA_BLADES))
 						{//with multiple blades
 							if( owner->client->ps.saberHolstered == 1 )
 							{//all blades after the first one are off
@@ -2762,27 +2762,33 @@ int WPDEBUG_SaberColor( saber_colors_t saberColor )
 {
 	switch( (int)(saberColor) )
 	{
-		case SABER_RED:
-			return 0x000000ff;
-			break;
-		case SABER_ORANGE:
-			return 0x000088ff;
-			break;
-		case SABER_YELLOW:
-			return 0x0000ffff;
-			break;
-		case SABER_GREEN:
-			return 0x0000ff00;
-			break;
-		case SABER_BLUE:
-			return 0x00ff0000;
-			break;
-		case SABER_PURPLE:
-			return 0x00ff00ff;
-			break;
-		default:
-			return 0x00ffffff;//white
-			break;
+	case SABER_RED:
+		return 0x000000ff;
+		break;
+	case SABER_ORANGE:
+		return 0x000088ff;
+		break;
+	case SABER_YELLOW:
+		return 0x0000ffff;
+		break;
+	case SABER_GREEN:
+		return 0x0000ff00;
+		break;
+	case SABER_BLUE:
+		return 0x00ff0000;
+		break;
+	case SABER_PURPLE:
+		return 0x00ff00ff;
+		break;
+	case SABER_BLACK:
+		return 0x00000000;
+		break;
+	case SABER_WHITE:
+		return 0x00ffffff;
+		break;
+	default:
+		return 0x00ffffff;//white
+		break;
 	}
 }
 /*
@@ -8417,7 +8423,8 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 			if ( (self->client->saber[0].saberFlags&SFL_SINGLE_BLADE_THROWABLE) )
 			{//but can throw it if only have 1 blade on
 				if ( self->client->saber[0].numBlades > 1
-					&& self->client->ps.saberHolstered == 1 )
+					&& self->client->ps.saberHolstered == 1
+					&& !(self->client->saber[0].saberFlags2 & SFL2_IGNORE_EXTRA_BLADES))
 				{//have multiple blades and only one blade on
 					self->client->ps.saberCanThrow = qtrue;//qfalse;
 					//huh? want to be able to throw then right?
@@ -8814,7 +8821,8 @@ nextStep:
 				if ( rBladeNum > 0 //more than one blade
 					&& (!self->client->saber[1].model[0])//not using dual blades
 					&& self->client->saber[rSaberNum].numBlades > 1//using a multi-bladed saber
-					&& self->client->ps.saberHolstered == 1 )//
+					&& self->client->ps.saberHolstered == 1 //
+					&& !(self->client->saber[rSaberNum].saberFlags2 & SFL2_IGNORE_EXTRA_BLADES))
 				{ //don't to extra blades if they're off
 					break;
 				}

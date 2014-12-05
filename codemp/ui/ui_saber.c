@@ -73,9 +73,9 @@ int UI_SaberNumBladesForSaber( const char *saberName )
 	{
 		numBlades = 1;
 	}
-	else if ( numBlades > 8 )
+	else if ( numBlades > MAX_BLADES )
 	{
-		numBlades = 8;
+		numBlades = MAX_BLADES;
 	}
 	return numBlades;
 }
@@ -240,38 +240,48 @@ void UI_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, float
 
 	switch( color )
 	{
-		case SABER_RED:
-			glow = redSaberGlowShader;
-			blade = redSaberCoreShader;
-			VectorSet( rgb, 1.0f, 0.2f, 0.2f );
-			break;
-		case SABER_ORANGE:
-			glow = orangeSaberGlowShader;
-			blade = orangeSaberCoreShader;
-			VectorSet( rgb, 1.0f, 0.5f, 0.1f );
-			break;
-		case SABER_YELLOW:
-			glow = yellowSaberGlowShader;
-			blade = yellowSaberCoreShader;
-			VectorSet( rgb, 1.0f, 1.0f, 0.2f );
-			break;
-		case SABER_GREEN:
-			glow = greenSaberGlowShader;
-			blade = greenSaberCoreShader;
-			VectorSet( rgb, 0.2f, 1.0f, 0.2f );
-			break;
-		case SABER_BLUE:
-			glow = blueSaberGlowShader;
-			blade = blueSaberCoreShader;
-			VectorSet( rgb, 0.2f, 0.4f, 1.0f );
-			break;
-		case SABER_PURPLE:
-			glow = purpleSaberGlowShader;
-			blade = purpleSaberCoreShader;
-			VectorSet( rgb, 0.9f, 0.2f, 1.0f );
-			break;
-		default:
-			break;
+	case SABER_RED:
+		glow = redSaberGlowShader;
+		blade = redSaberCoreShader;
+		VectorSet( rgb, 1.0f, 0.2f, 0.2f );
+		break;
+	case SABER_ORANGE:
+		glow = orangeSaberGlowShader;
+		blade = orangeSaberCoreShader;
+		VectorSet( rgb, 1.0f, 0.5f, 0.1f );
+		break;
+	case SABER_YELLOW:
+		glow = yellowSaberGlowShader;
+		blade = yellowSaberCoreShader;
+		VectorSet( rgb, 1.0f, 1.0f, 0.2f );
+		break;
+	case SABER_GREEN:
+		glow = greenSaberGlowShader;
+		blade = greenSaberCoreShader;
+		VectorSet( rgb, 0.2f, 1.0f, 0.2f );
+		break;
+	case SABER_BLUE:
+		glow = blueSaberGlowShader;
+		blade = blueSaberCoreShader;
+		VectorSet( rgb, 0.2f, 0.4f, 1.0f );
+		break;
+	case SABER_PURPLE:
+		glow = purpleSaberGlowShader;
+		blade = purpleSaberCoreShader;
+		VectorSet( rgb, 0.9f, 0.2f, 1.0f );
+		break;
+	case SABER_BLACK:
+		glow = purpleSaberGlowShader;
+		blade = purpleSaberCoreShader;
+		VectorSet( rgb, 0.0f, 0.0f, 0.0f );
+		break;
+	case SABER_WHITE:
+		glow = yellowSaberGlowShader;
+		blade = yellowSaberCoreShader;
+		VectorSet( rgb, 1.0f, 1.0f, 1.0f );
+		break;
+	default:
+		break;
 	}
 
 	memset( &saber, 0, sizeof( refEntity_t ));

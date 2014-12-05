@@ -1187,6 +1187,7 @@ void G_ExplodeMissile( gentity_t *ent );
 
 void WP_FireBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire );
 
+void Use_BinaryMover_Go( gentity_t *ent );
 
 //
 // g_mover.c
@@ -1237,6 +1238,7 @@ int TAG_GetRadius( const char *owner, const char *name );
 int TAG_GetFlags( const char *owner, const char *name );
 
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
+void TransposeEntity( gentity_t *player, vec3_t origin, vec3_t angles );
 
 //
 // g_weapon.c

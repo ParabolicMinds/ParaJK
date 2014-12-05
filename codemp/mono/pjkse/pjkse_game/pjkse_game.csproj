@@ -33,9 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="G_INTERNAL.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="G_EXTERNAL.cs" />
+    <Compile Include="GameExport.cs" />
+    <Compile Include="GameImport.cs" />
+    <Compile Include="GameInterim.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

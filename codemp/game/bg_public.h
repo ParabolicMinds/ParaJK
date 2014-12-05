@@ -1568,6 +1568,8 @@ typedef enum saber_styles_e {
 #define SFL2_ALWAYS_BLOCK2			(1<<15)//if set, the blades will always be blocking (good for things like shields that should always block)
 #define SFL2_NO_MANUAL_DEACTIVATE2	(1<<16)//if set, the blades cannot manually be toggled on and off
 #define SFL2_TRANSITION_DAMAGE2		(1<<17)//if set, the blade does damage in start, transition and return anims (like strong style does)
+//ParaJK
+#define SFL2_IGNORE_EXTRA_BLADES	(1<<18)//if set, the saber will be treated as if it had one blade in the code, even if it has more.
 
 #define SABER_NAME_LENGTH (64)
 typedef struct saberInfo_s {

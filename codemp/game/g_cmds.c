@@ -2829,7 +2829,7 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 			return;
 		}
 	}
-	else if (ent->client->saber[0].numBlades > 1
+	else if (ent->client->saber[0].numBlades > 1 && !(ent->client->saber[0].saberFlags2 & SFL2_IGNORE_EXTRA_BLADES)
 		&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] ) )
 	{ //use staff stance then.
 		if ( ent->client->ps.saberHolstered == 1 )
@@ -3471,7 +3471,6 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 #include "g_mono.h"
 
 static void Cmd_Monotest_f (gentity_t * ent) {
-	G_Mono_Initialize();
 	G_MonoApi_TestMono(ent);
 }
 

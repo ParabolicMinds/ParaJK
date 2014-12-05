@@ -19,6 +19,7 @@ TODO: Not leak memory when things fail.
 
 //Returns a handle to the initialized domain. you need to keep this until shutdown. Returns NULL on failure.
 monoapihandle_t *	MonoAPI_Initialize(char const * assemblyFileName);
+void				MonoAPI_ShutdownAPIHandle(monoapihandle_t * apih);
 
 //Gets a typedef'd void pointer to a MonoClass instance.
 mono_class *		MonoAPI_GetClassData(monoapihandle_t * mapi, char const * _namespace, char const * name);
@@ -42,6 +43,7 @@ char *				MonoAPI_GetNewCharsFromString(mono_string * str);
 void				MonoAPI_FreeMonoObject(void * mono_obj);
 
 monoImport_t *		MonoAPI_CreateVMImport();
+void				MonoAPI_FreeVMImport(monoImport_t * import);
 
 #ifdef __cplusplus
 }

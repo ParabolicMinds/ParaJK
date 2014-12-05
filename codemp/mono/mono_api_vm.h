@@ -12,6 +12,7 @@ typedef struct monoapihandle_s {
 
 typedef struct monoImport_s {
 	monoapihandle_t *		(*Initialize) (char const * file_name);
+	void					(*ShutdownAPIHandle)(monoapihandle_t * apih);
 	mono_class *			(*GetClassData) (monoapihandle_t * mapi, char const * _namespace, char const * name);
 	void *					(*GetMethodPtr) (mono_class * _class, char const * method_name, int param_count);
 	void					(*RegisterCMethod) (char const * internalMethod, void const * cFunc);
@@ -20,6 +21,7 @@ typedef struct monoImport_s {
 	mono_string *			(*CharPtrToString)(char const * data);
 	char *					(*GetNewCharsFromString)(mono_string * str);
 	void					(*FreeMonoObject)(void * mono_obj);
+	void					(*FreeVMImport)(struct monoImport_s * import);
 } monoImport_t;
 
 

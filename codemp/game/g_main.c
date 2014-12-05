@@ -7,6 +7,7 @@
 #include "bg_saga.h"
 #include "b_local.h"
 #include "g_para.h"
+#include "g_mono.h"
 
 level_locals_t	level;
 
@@ -395,6 +396,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 			SP_info_jedimaster_start( ent );
 		}
 	}
+
+	G_MonoApi_Initialize();
 }
 
 
@@ -407,6 +410,8 @@ G_ShutdownGame
 void G_ShutdownGame( int restart ) {
 	int i = 0;
 	gentity_t *ent;
+
+	G_MonoApi_Shutdown();
 
 //	trap->Print ("==== ShutdownGame ====\n");
 
@@ -3424,6 +3429,8 @@ void G_RunFrame( int levelTime ) {
 		iTimer_GameChecks,
 		iTimer_Queues);
 #endif
+
+	G_MonoApi_Frame();
 
 	g_LastFrameTime = level.time;
 }

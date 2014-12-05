@@ -25,6 +25,10 @@ monoapihandle_t * MonoAPI_Initialize(const char * assemblyFileName) {
 	return mapi;
 }
 
+void MonoAPI_ShutdownAPIHandle(monoapihandle_t * apih) {
+	//TODO
+}
+
 mono_class * MonoAPI_GetClassData(monoapihandle_t * mapi, char const * _namespace, char const * name) {
 	if (!mapi) return NULL;
 	return mono_class_from_name(mapi->imageHandle, _namespace, name);
@@ -86,11 +90,18 @@ monoImport_t * MonoAPI_CreateVMImport() {
 	mi->GetClassData = MonoAPI_GetClassData;
 	mi->GetMethodPtr = MonoAPI_GetMethodPtr;
 	mi->Initialize = MonoAPI_Initialize;
+	mi->ShutdownAPIHandle = MonoAPI_ShutdownAPIHandle;
 	mi->RegisterCMethod = MonoAPI_RegisterCMethod;
 	mi->GetStaticMethod = MonoAPI_GetStaticMethod;
 	mi->InvokeStaticMethod = MonoAPI_InvokeStaticMethod;
 	mi->CharPtrToString = MonoAPI_CharPtrToString;
 	mi->GetNewCharsFromString = MonoAPI_GetNewCharsFromString;
 	mi->FreeMonoObject = MonoAPI_FreeMonoObject;
+	mi->FreeVMImport = MonoAPI_FreeVMImport;
 	return mi;
+}
+
+void MonoAPI_FreeVMImport(monoImport_t * import) {
+	if (import)
+		free(import);
 }

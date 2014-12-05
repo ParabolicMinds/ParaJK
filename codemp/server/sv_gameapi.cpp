@@ -2851,6 +2851,8 @@ void SV_InitGame( qboolean restart ) {
 	int i=0;
 	client_t *cl = NULL;
 
+	Cvar_Set("timescale", "1.0"); //No cross-map timescale keeping...
+
 	// clear level pointers
 	sv.entityParsePoint = CM_EntityString();
 	for ( i=0, cl=svs.clients; i<sv_maxclients->integer; i++, cl++ )

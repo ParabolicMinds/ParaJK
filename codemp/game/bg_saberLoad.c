@@ -158,6 +158,10 @@ saber_colors_t TranslateSaberColor( const char *name ) {
 		return SABER_BLUE;
 	if ( !Q_stricmp( name, "purple" ) )
 		return SABER_PURPLE;
+	if ( !Q_stricmp( name, "black" ) )
+		return SABER_BLACK;
+	if ( !Q_stricmp( name, "white" ) )
+		return SABER_WHITE;
 	if ( !Q_stricmp( name, "random" ) )
 		return (saber_colors_t)Q_irand( SABER_ORANGE, SABER_PURPLE );
 
@@ -171,6 +175,8 @@ const char *SaberColorToString( saber_colors_t color ) {
 	if ( color == SABER_GREEN )		return "green";
 	if ( color == SABER_BLUE )		return "blue";
 	if ( color == SABER_PURPLE )	return "purple";
+	if ( color == SABER_BLACK )		return "black";
+	if ( color == SABER_WHITE )		return "white";
 
 	return NULL;
 }
@@ -251,7 +257,7 @@ qboolean WP_UseFirstValidSaberStyle( saberInfo_t *saber1, saberInfo_t *saber2, i
 		if ( !saber1 || !saber1->model[0] )
 			saber1Active = qfalse;
 		//staff
-		else if ( saber1->numBlades > 1 ) {
+		else if ( saber1->numBlades > 1 && !(saber1->saberFlags2 & SFL2_IGNORE_EXTRA_BLADES)) {
 			if ( saberHolstered > 1 )
 				saber1Active = qfalse;
 			else
@@ -330,7 +336,7 @@ qboolean WP_SaberStyleValidForSaber( saberInfo_t *saber1, saberInfo_t *saber2, i
 			saber1Active = qfalse;
 
 		//staff
-		else if ( saber1->numBlades > 1 )
+		else if ( saber1->numBlades > 1  && !(saber1->saberFlags2 & SFL2_IGNORE_EXTRA_BLADES))
 			saber1Active = (saberHolstered>1) ? qfalse : qtrue;
 
 		//single
@@ -365,7 +371,7 @@ qboolean WP_SaberStyleValidForSaber( saberInfo_t *saber1, saberInfo_t *saber2, i
 }
 
 qboolean WP_SaberCanTurnOffSomeBlades( saberInfo_t *saber ) {
-	if ( saber->bladeStyle2Start > 0 && saber->numBlades > saber->bladeStyle2Start ) {
+	if ( saber->bladeStyle2Start > 0 && ((saber->saberFlags2 & SFL2_IGNORE_EXTRA_BLADES) ? 1 : saber->numBlades) > saber->bladeStyle2Start ) {
 		// check if all blades are always on
 		if ( (saber->saberFlags2 & SFL2_NO_MANUAL_DEACTIVATE) && (saber->saberFlags2 & SFL2_NO_MANUAL_DEACTIVATE2) )
 			return qfalse;
@@ -1784,6 +1790,15 @@ static void Saber_ParseNoClashFlare2( saberInfo_t *saber, const char **p ) {
 	if ( n )
 		saber->saberFlags2 |= SFL2_NO_CLASH_FLARE2;
 }
+static void Saber_ParseIgnoreExtraBlades( saberInfo_t *saber, const char **p ) {
+	int n;
+	if ( COM_ParseInt( p, &n ) ) {
+		SkipRestOfLine( p );
+		return;
+	}
+	if ( n )
+		saber->saberFlags2 |= SFL2_IGNORE_EXTRA_BLADES;
+}
 
 
 /*
@@ -1984,6 +1999,7 @@ static keywordHash_t saberParseKeywords[] = {
 	{ "bladeEffect2",			Saber_ParseBladeEffect2,		NULL	},
 	{ "noClashFlare",			Saber_ParseNoClashFlare,		NULL	},
 	{ "noClashFlare2",			Saber_ParseNoClashFlare2,		NULL	},
+	{ "ignoreExtraBlades",		Saber_ParseIgnoreExtraBlades,	NULL	},
 	{ NULL,						NULL,							NULL	}
 };
 static keywordHash_t *saberParseKeywordHash[KEYWORDHASH_SIZE];

@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
+#include "g_mono.h"
 
 //==========================================================
 
@@ -892,6 +893,53 @@ void SP_target_scriptrunner( gentity_t *self )
 
 	G_SetOrigin( self, self->s.origin );
 	self->use = target_scriptrunner_use;
+}
+
+void csentry_run (gentity_t *self) {
+	if (self->behaviorSet[BSET_USE]) {
+		if ( !self->activator ) {
+			if (developer.integer) {
+				Com_Printf("target_scriptrunner tried to run on invalid entity!\n");
+			}
+			return;
+		}
+		G_MonoApi_MapEntry(self->activator, self->behaviorSet[BSET_USE]);
+	}
+	if ( self->wait ) {
+		self->nextthink = level.time + self->wait;
+	}
+}
+
+void target_csentry_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+{
+	if ( self->nextthink > level.time )
+	{
+		return;
+	}
+
+	self->activator = activator;
+	self->enemy = other;
+	if ( self->delay )
+	{//delay before firing scriptrunner
+		self->think = csentry_run;
+		self->nextthink = level.time + self->delay;
+	}
+	else
+	{
+		csentry_run (self);
+	}
+}
+
+void SP_target_csentry( gentity_t *self )
+{
+	float v;
+	v = 0.0f;
+	G_SpawnFloat( "delay", "0", &v );
+	self->delay = v * 1000;//sec to ms
+	self->wait *= 1000;//sec to ms
+
+	G_SetOrigin( self, self->s.origin );
+	self->use = target_csentry_use;
 }
 
 void G_SetActiveState(char *targetstring, qboolean actState)

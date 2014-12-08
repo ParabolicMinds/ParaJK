@@ -3471,7 +3471,6 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 #include "g_mono.h"
 
 static void Cmd_Monotest_f (gentity_t * ent) {
-	G_MonoApi_TestMono(ent);
 }
 
 /*

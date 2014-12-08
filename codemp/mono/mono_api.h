@@ -35,12 +35,15 @@ void *				MonoAPI_InvokeStaticMethod(mono_method * method, void ** params, char 
 
 void				MonoAPI_RegisterCMethod(char const * internalMethod, void const * cFunc);
 mono_string *		MonoAPI_CharPtrToString(char const * data);
+mono_string *		MonoAPI_CharPtrToStringTemporary(char const * data); //Same as the last method, but the return will automatically be freed on the next call.
 char *				MonoAPI_GetNewCharsFromString(mono_string * str);
 
 //To put it simply, if ANY of the functions in this header return a pointer, there needs to be one of these further down the line.
 //Exception 1: MonoAPI_Initialize's "monoapihandle_t", there will be a shutdown method for these in the future. DO NOT PASS THEM TO THIS FUNCTION.
 //Exception 2: MonoAPI_CreateVMImport's "monoImport_t", just call regular free() on this.
 void				MonoAPI_FreeMonoObject(void * mono_obj);
+
+void *				MonoAPI_UnboxMonoObject(mono_object * obj);
 
 monoImport_t *		MonoAPI_CreateVMImport();
 void				MonoAPI_FreeVMImport(monoImport_t * import);

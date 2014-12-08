@@ -39,8 +39,9 @@ static void HandleMonoException() {
 */
 
 static mono_method * Init_M;
-void G_MonoApi_Internal_Init(void) {
-	void * params[] = { };
+void G_MonoApi_Internal_Initialize(char const * name) {
+	mono_string * packname = mono->CharPtrToString(name);
+	void * params[] = { packname };
 	mono->InvokeStaticMethod(Init_M, params, &mono_exception);
 	HandleMonoException();
 }
@@ -59,10 +60,11 @@ void G_MonoApi_Internal_Shutdown(void) {
 	HandleMonoException();
 }
 
-static mono_method * TestMono_M;
-void G_MonoApi_TestMono(gentity_t * ent) {
-	void * params[] = { ent };
-	mono->InvokeStaticMethod(TestMono_M, params, &mono_exception);
+static mono_method * Entity_M;
+void G_MonoApi_Internal_EntityEntry(gentity_t * ent, char const * tag) {
+	mono_string * mtag = mono->CharPtrToString(tag);
+	void * params[] = { ent, mtag };
+	mono->InvokeStaticMethod(Entity_M, params, &mono_exception);
 	HandleMonoException();
 }
 
@@ -159,6 +161,18 @@ static void G_Mono_Trap_Print(mono_string * str) {
 	trap->Print(prnt);
 	mono->FreeMonoObject(prnt);
 }
+static int G_Mono_OpenRead(mono_string * path, void * handle) {
+	char * pathc = mono->GetNewCharsFromString(path);
+	int len = trap->FS_Open(pathc, handle, FS_READ);
+	mono->FreeMonoObject(pathc);
+	return len;
+}
+static int G_Mono_Read(char * buffer, int buflen, int32_t fs_handle) {
+	return trap->FS_Read(buffer, buflen, fs_handle);
+}
+static void G_Mono_CloseFile(int32_t fs_handle) {
+	trap->FS_Close(fs_handle);
+}
 
 /*
 ================================================================================================
@@ -170,7 +184,7 @@ qboolean G_MonoApi_Initialize() {
 		mono = trap->MonoCreateImport();
 
 	if (!mapi)
-		mapi = mono->Initialize("para/PJKSE_G.dll");
+		mapi = mono->Initialize("para/pjkse_game.dll");
 	if (!mapi) goto critfail;
 
 	if (!mcl)
@@ -180,10 +194,10 @@ qboolean G_MonoApi_Initialize() {
 	//Nothing below here should fail.
 
 	//Setup C# Imports
-	Init_M = mono->GetStaticMethod(mcl, "GMono_Init", 0);
+	Init_M = mono->GetStaticMethod(mcl, "GMono_Initialize", 1);
 	Frame_M = mono->GetStaticMethod(mcl, "GMono_Frame", 1);
 	Shutdown_M = mono->GetStaticMethod(mcl, "GMono_Shutdown", 0);
-	TestMono_M = mono->GetStaticMethod(mcl, "Test", 1);
+	Entity_M = mono->GetStaticMethod(mcl, "GMono_EntityEntry", 2);
 
 	//Setup C# Exports
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Spawn", G_Mono_Spawn);
@@ -199,10 +213,12 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHealth", G_Mono_GetHealth);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetHealth", G_Mono_SetHealth);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Open", G_Mono_OpenRead);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Read", G_Mono_Read);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Close", G_Mono_CloseFile);
 
 	//Done
 	initialized = qtrue;
-	G_MonoApi_Internal_Init();
 	return qtrue;
 
 
@@ -214,12 +230,20 @@ qboolean G_MonoApi_Initialize() {
 
 void G_MonoApi_Shutdown() {
 	G_MonoApi_Internal_Shutdown();
-	mono->FreeMonoObject(mcl);
-	mcl = NULL;
 	mono->ShutdownAPIHandle(mapi);
 	mono->FreeVMImport(mono);
 }
 
 void G_MonoApi_Frame() {
 	G_MonoApi_Internal_Frame();
+}
+
+#define CSPACK_BUFLEN 65535
+
+void G_MonoApi_LoadMapCSPack(char const * packname) {
+	G_MonoApi_Internal_Initialize(packname);
+}
+
+void G_MonoApi_MapEntry(gentity_t * activator, char const * entrytag) {
+	G_MonoApi_Internal_EntityEntry(activator, entrytag);
 }

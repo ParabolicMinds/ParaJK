@@ -2,6 +2,7 @@
 //
 
 #include "g_local.h"
+#include "g_mono.h"
 
 qboolean	G_SpawnString( const char *key, const char *defaultString, char **out ) {
 	int		i;
@@ -121,6 +122,7 @@ field_t fields[] = {
 	{ "delayscript",			FOFS( behaviorSet[BSET_DELAYED] ),		F_STRING },//name of script to run
 	{ "delayscripttime",		FOFS( delayScriptTime ),				F_INT },//name of script to run
 	{ "dmg",					FOFS( damage ),							F_INT },
+	{ "entrypoint",				FOFS( behaviorSet[BSET_USE]),			F_STRING },//Entry point on CS scripts.
 	{ "ffdeathscript",			FOFS( behaviorSet[BSET_FFDEATH] ),		F_STRING },//name of script to run
 	{ "ffirescript",			FOFS( behaviorSet[BSET_FFIRE] ),		F_STRING },//name of script to run
 	{ "fleescript",				FOFS( behaviorSet[BSET_FLEE] ),			F_STRING },//name of script to run
@@ -281,6 +283,7 @@ void SP_target_position (gentity_t *ent);
 void SP_target_location (gentity_t *ent);
 void SP_target_counter (gentity_t *self);
 void SP_target_random (gentity_t *self);
+void SP_target_csentry( gentity_t *self );
 void SP_target_scriptrunner( gentity_t *self );
 void SP_target_interest (gentity_t *self);
 void SP_target_activate (gentity_t *self);
@@ -641,6 +644,7 @@ spawn_t	spawns[] = {
 	{ "shooter_blaster",					SP_shooter_blaster },
 	{ "target_activate",					SP_target_activate },
 	{ "target_counter",						SP_target_counter },
+	{ "target_csrunner",					SP_target_csentry },
 	{ "target_deactivate",					SP_target_deactivate },
 	{ "target_delay",						SP_target_delay },
 	{ "target_escapetrig",					SP_target_escapetrig },
@@ -1488,6 +1492,11 @@ void SP_worldspawn( void )
 
 	G_SpawnString( "soundSet", "default", &text );
 	trap->SetConfigstring( CS_GLOBAL_AMBIENT_SET, text );
+
+	G_SpawnString( "cspack", "", &text );
+	if (strlen(text) > 0) {
+		G_MonoApi_LoadMapCSPack(text);
+	}
 
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
 	g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;

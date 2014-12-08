@@ -3,7 +3,7 @@
 
 #include "qcommon/q_shared.h"
 
-typedef void mono_class, mono_method, mono_string;
+typedef void mono_class, mono_method, mono_string, mono_object;
 
 typedef struct monoapihandle_s {
 	void * assemblyHandle;
@@ -19,9 +19,11 @@ typedef struct monoImport_s {
 	mono_method *			(*GetStaticMethod)(mono_class * _class, char const * method_name, int param_count);
 	void *					(*InvokeStaticMethod)(mono_method * method, void ** params, char ** exception);
 	mono_string *			(*CharPtrToString)(char const * data);
+	mono_string *			(*CharPtrToStringTemporary)(char const * data);
 	char *					(*GetNewCharsFromString)(mono_string * str);
 	void					(*FreeMonoObject)(void * mono_obj);
 	void					(*FreeVMImport)(struct monoImport_s * import);
+	void *					(*UnboxMonoObject)(mono_object * obj);
 } monoImport_t;
 
 

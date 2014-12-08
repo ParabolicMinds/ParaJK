@@ -17,6 +17,69 @@ public class Vec3 {
 	public Vec3 Transposed(float xm, float ym, float zm) {
 		return new Vec3(X + xm, Y + ym, Z + zm);
 	}
+	public void Normalize() {
+		float max = this.X;
+		max = Math.Max(max, this.Y);
+		max = Math.Max(max, this.Z);
+		this.X /= max;
+		this.Y /= max;
+		this.Z /= max;
+	}
+	public Vec3 Normalized() {
+		Vec3 nv = new Vec3(X, Y, Z);
+		nv.Normalize();
+		return nv;
+	}
+	public static float Distance(Vec3 A, Vec3 B) {
+		return (float)Math.Abs(Math.Sqrt(Math.Pow(A.X - B.X, 2)+Math.Pow(A.Y - B.Y, 2)+Math.Pow(A.Z - B.Z, 2)));
+	}
+	public float Length() {
+		return (float)Math.Abs(Math.Sqrt(Math.Pow(X, 2)+Math.Pow(Y, 2)+Math.Pow(Z, 2)));
+	}
+	public static Vec3 operator-(Vec3 A, Vec3 B) {
+		return new Vec3(A.X - B.X, A.Y - B.Y, A.Z - B.Z);
+	}
+	public static Vec3 operator+(Vec3 A, Vec3 B) {
+		return new Vec3(A.X + B.X, A.Y + B.Y, A.Z + B.Z);
+	}
+	public static Vec3 operator*(Vec3 A, float B) {
+		return new Vec3(A.X * B, A.Y * B, A.Z * B);
+	}
+	public static Vec3 operator/(Vec3 A, float B) {
+		return new Vec3(A.X / B, A.Y / B, A.Z / B);
+	}
+}
+
+public class GameFile {
+	Int32 handle;
+	public GameFile(string path) {
+		IntPtr newHandle = Marshal.AllocHGlobal(4);
+		bool exists = (GAME_INTERNAL_EXPORT.GMono_FS_Open(path, newHandle) != -1);
+		if (!exists) {
+			throw new Exception(String.Format("Error: failed to find and/or open: \"{0}\"", path));
+		}
+		handle = Marshal.ReadInt32(newHandle);
+		Marshal.FreeHGlobal(newHandle);
+	}
+	public byte[] Read() {
+		int buflen = 65535;
+		IntPtr buffer = Marshal.AllocHGlobal(buflen);
+		int len = GAME_INTERNAL_EXPORT.GMono_FS_Read(buffer, buflen, handle);
+		if (len < 0) {
+			Marshal.FreeHGlobal(buffer);
+			throw new Exception("FATAL: File read returned <0 length.");
+		}
+		byte[] rbuf = new byte[len];
+		Marshal.Copy(buffer, rbuf, 0, len);
+		Marshal.FreeHGlobal(buffer);
+		return rbuf;
+	}
+	public void Close() {
+		GAME_INTERNAL_EXPORT.GMono_FS_Close(handle);
+	}
+	public bool isReady() {
+		return handle != 0;
+	}
 }
 
 public class Entity { 
@@ -36,6 +99,7 @@ public class Entity {
 	Construction/Destruction
 	================================================================
 	*/
+	public Entity () {}
 	private Entity(IntPtr ent) {
 		this.ent = ent;
 	}

@@ -287,6 +287,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	navCalculatePaths	= ( trap->Nav_Load( mapname.string, ckSum.integer ) == qfalse );
 
+	G_MonoApi_Initialize();
+
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString(qfalse);
 
@@ -396,8 +398,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 			SP_info_jedimaster_start( ent );
 		}
 	}
-
-	G_MonoApi_Initialize();
 }
 
 

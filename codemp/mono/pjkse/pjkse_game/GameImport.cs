@@ -1,22 +1,27 @@
 ﻿using System;
 
 static class GAME_INTERNAL_IMPORT {
-	static Entity curPlayer;
 
-	public static void GMono_Init() {
-		Entity testEnt = G.EntityRegistry.Register("Test Ent");
-		testEnt.Model = "/models/items/a_pwr_converter.md3";
-		testEnt.SetOrigin(0, 0, 0);
+	public static void GMono_Initialize(string name) {
+		try {
+			MapCSBridge.BridgeInitialize(name);
+		} catch (Exception e) {
+			Console.WriteLine("Exception occured during loading or compilation:");
+			G.PrintLine(e.ToString());
+		}
 	}
+
 	public static void GMono_Frame(int levelTime) {
-		G.PrintLine("Frame Test");
-		if (curPlayer != null)
-			G.EntityRegistry["Test Ent"].SetOrigin(curPlayer.Origin);
+		MapCSBridge.BridgeFrame(levelTime);
 	}
+
 	public static void GMono_Shutdown() {
+		MapCSBridge.BridgeShutdown();
 		G.EntityRegistry.Clear();
 	}
-	unsafe public static void Test(void * ent) {
-		curPlayer = Entity.FromPtr((IntPtr)ent);
+
+	unsafe public static void GMono_EntityEntry(void * entPtr, string tag) {
+		Entity ent = Entity.FromPtr(new IntPtr(entPtr));
+		MapCSBridge.BridgeEntity(ent, tag);
 	}
 }

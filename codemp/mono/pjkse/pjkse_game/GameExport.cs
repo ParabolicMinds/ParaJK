@@ -37,5 +37,12 @@ public static class GAME_INTERNAL_EXPORT {
 	//SERVER
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_Print ( string str );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_FS_Open ( string path, IntPtr empty_int32_handle );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_FS_Read ( IntPtr buffer, int buflen, Int32 handle );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_FS_Close ( Int32 handle );
+
 }
 

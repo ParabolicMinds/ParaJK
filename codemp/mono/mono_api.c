@@ -1,6 +1,7 @@
 #include "mono_api.h"
 
 #include "mono/jit/jit.h"
+#include "mono/metadata/mono-config.h"
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/image.h"
 
@@ -8,7 +9,8 @@ static MonoDomain * homeDomain;
 
 monoapihandle_t * MonoAPI_Initialize(const char * assemblyFileName) {
 	if (!homeDomain) {
-		homeDomain = mono_jit_init("PJKSE");
+		mono_config_parse (NULL);
+		homeDomain = mono_jit_init_version("PJKSE", "v4.0");
 		if (!homeDomain)
 			return NULL;
 	}
@@ -74,6 +76,17 @@ mono_string * MonoAPI_CharPtrToString(char const * data) {
 
 }
 
+static MonoString * tempStr;
+mono_string * MonoAPI_CharPtrToStringTemporary(char const * data) {
+	if (tempStr) {
+		mono_free(tempStr);
+		tempStr = NULL;
+	}
+	tempStr = mono_string_new(homeDomain, data);
+	return tempStr;
+
+}
+
 char * MonoAPI_GetNewCharsFromString(mono_string * str) {
 	if (!str) return NULL;
 	return mono_string_to_utf8(str);
@@ -82,6 +95,10 @@ char * MonoAPI_GetNewCharsFromString(mono_string * str) {
 void MonoAPI_FreeMonoObject(void * mono_obj) {
 	if (!mono_obj) return;
 	mono_free(mono_obj);
+}
+
+void * MonoAPI_UnboxMonoObject(mono_object * obj) {
+	return mono_object_unbox(obj);
 }
 
 monoImport_t * MonoAPI_CreateVMImport() {
@@ -95,9 +112,11 @@ monoImport_t * MonoAPI_CreateVMImport() {
 	mi->GetStaticMethod = MonoAPI_GetStaticMethod;
 	mi->InvokeStaticMethod = MonoAPI_InvokeStaticMethod;
 	mi->CharPtrToString = MonoAPI_CharPtrToString;
+	mi->CharPtrToStringTemporary = MonoAPI_CharPtrToStringTemporary;
 	mi->GetNewCharsFromString = MonoAPI_GetNewCharsFromString;
 	mi->FreeMonoObject = MonoAPI_FreeMonoObject;
 	mi->FreeVMImport = MonoAPI_FreeVMImport;
+	mi->UnboxMonoObject = MonoAPI_UnboxMonoObject;
 	return mi;
 }
 

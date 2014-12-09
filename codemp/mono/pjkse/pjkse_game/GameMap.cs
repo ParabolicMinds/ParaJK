@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Linq;
 using System.IO;
 
-public static class MapCSBridge {
+internal static class MapCSBridge {
 	private static List<string> cssources = new List<string>();
 
 	private static List<MethodInfo> initEntries = new List<MethodInfo>();
@@ -23,12 +23,12 @@ public static class MapCSBridge {
 	}
 
 	public static void BridgeFrame(int levelTime) {
-		foreach(MethodInfo m in initEntries)
+		foreach(MethodInfo m in frameEntries)
 			m.Invoke(null, new object[] {levelTime});
 	}
 
 	public static void BridgeShutdown() {
-		foreach(MethodInfo m in initEntries)
+		foreach(MethodInfo m in shutdownEntries)
 			m.Invoke(null, new object[0]);
 		initEntries.Clear();
 		frameEntries.Clear();
@@ -37,7 +37,7 @@ public static class MapCSBridge {
 		cssources.Clear();
 	}
 
-	public static void BridgeEntity(Entity ent, string tag) {
+	public static void BridgeEntity(EntityPack ent, string tag) {
 		if (!entityEntries.ContainsKey(tag)) throw new Exception(String.Format("C# tag not found: \"{0}\"", tag));
 		foreach(MethodInfo m in entityEntries[tag])
 			m.Invoke(null, new object[] {ent});
@@ -110,29 +110,28 @@ public static class MapCSBridge {
 					if (attr.GetType() == typeof(ParaJKEntryInit)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Init Entry methods MUST be static.", m.Name));
 						if (m.GetParameters().Length > 0) throw new Exception(String.Format("FATAL ({0}): ParaJK Init Entry methods MUST not have any arguments.", m.Name));
-						if (m.ReturnParameter.GetType() != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Init Entry has a return value, it will be ignored.", m.Name));
+						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Init Entry has a return value, it will be ignored.", m.Name));
 						initEntries.Add(m);
 					}
 					if (attr.GetType() == typeof(ParaJKEntryShutdown)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Shutdown Entry methods MUST be static.", m.Name));
 						if (m.GetParameters().Length > 0) throw new Exception(String.Format("FATAL ({0}): ParaJK Shutdown Entry methods MUST not have any arguments.", m.Name));
-						if (m.ReturnParameter.GetType() != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Shutdown Entry has a return value, it will be ignored.", m.Name));
+						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Shutdown Entry has a return value, it will be ignored.", m.Name));
 						shutdownEntries.Add(m);
 					}
 					if (attr.GetType() == typeof(ParaJKEntryFrame)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Frame Entry methods MUST be static.", m.Name));
 						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Frame Entry methods MUST have ONE argument. (Integer, Level Time in milliseconds)", m.Name));
 						if (m.GetParameters()[0].ParameterType != typeof(int)) throw new Exception(String.Format("FATAL ({0}): ParaJK Frame Entry method's argument MUST be an integer.", m.Name));
-						if (m.ReturnParameter.GetType() != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Frame Entry has a return value, it will be ignored.", m.Name));
+						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Frame Entry has a return value, it will be ignored.", m.Name));
 						frameEntries.Add(m);
 					}
 					if (attr.GetType() == typeof(ParaJKEntryEntity)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Entity Entry methods MUST be static.", m.Name));
-						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Entity Entry methods MUST have ONE argument. (Entity)", m.Name));
-						if (m.GetParameters()[0].ParameterType != typeof(Entity)) throw new Exception(String.Format("FATAL ({0}): ParaJK Frame Entry method's argument MUST be an Entity.", m.Name));
-						if (m.ReturnParameter.ParameterType.ReflectedType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Entity Entry has a return value, it will be ignored.", m.Name));
+						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Entity Entry methods MUST have ONE argument. (EntityPack)", m.Name));
+						if (m.GetParameters()[0].ParameterType != typeof(EntityPack)) throw new Exception(String.Format("FATAL ({0}): ParaJK Frame Entry method's argument MUST be an EntityPack.", m.Name));
+						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Entity Entry has a return value, it will be ignored.", m.Name));
 						foreach(string tag in ((ParaJKEntryEntity)attr).maptags) {
-							G.PrintLine(tag);
 							if (!entityEntries.ContainsKey(tag)) entityEntries[tag] = new List<MethodInfo>();
 							entityEntries[tag].Add(m);
 						}

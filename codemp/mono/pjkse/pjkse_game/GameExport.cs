@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-public static class GAME_INTERNAL_EXPORT {
-
-	//YOU, yes YOU, map maker. Try not to use these directly.
-
+internal static class GAME_INTERNAL_EXPORT {
 
 	//ENTITY MANAGEMENT
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -12,7 +9,7 @@ public static class GAME_INTERNAL_EXPORT {
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_Free ( IntPtr ent );
 
-	//NPC/PLAYER
+	//Entity
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_Kill ( IntPtr ent );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -33,6 +30,10 @@ public static class GAME_INTERNAL_EXPORT {
 	public static extern string GMono_GetModel ( IntPtr ent );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetModel ( IntPtr ent, string newName );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_UseTarget ( IntPtr self, IntPtr activator, string target );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_UseEntity ( IntPtr self, IntPtr other, IntPtr activator );
 
 	//SERVER
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]

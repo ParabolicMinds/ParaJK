@@ -61,9 +61,17 @@ void G_MonoApi_Internal_Shutdown(void) {
 }
 
 static mono_method * Entity_M;
-void G_MonoApi_Internal_EntityEntry(gentity_t * ent, char const * tag) {
-	mono_string * mtag = mono->CharPtrToString(tag);
-	void * params[] = { ent, mtag };
+void G_MonoApi_Internal_EntityEntry(
+		const char * entrytag,
+		gentity_t * self,
+		gentity_t * activator,
+		mono_entitypass_t targets,
+		mono_entitypass_t targets2,
+		mono_entitypass_t targets3,
+		mono_entitypass_t targets4) {
+
+	mono_string * mtag = mono->CharPtrToString(entrytag);
+	void * params[] = { mtag, self, activator, &targets.count, targets.ptrarry, &targets2.count, targets2.ptrarry, &targets3.count, targets3.ptrarry, &targets4.count, targets4.ptrarry};
 	mono->InvokeStaticMethod(Entity_M, params, &mono_exception);
 	HandleMonoException();
 }
@@ -126,13 +134,20 @@ static void G_Mono_MoveTo(gentity_t * ent, float X, float Y, float Z, float time
 }
 
 static mono_string * G_Mono_GetModelName(gentity_t * ent) {
-	return mono->CharPtrToString(ent->model);
+	if (ent->model)
+		return mono->CharPtrToString(ent->model);
+	else return NULL;
 }
 static void G_Mono_SetModelName(gentity_t * ent, mono_string * str) {
 	char * model = mono->GetNewCharsFromString(str);
 	ent->model = strdup(model);
 	mono->FreeMonoObject(model);
 	ent->s.modelindex = G_ModelIndex(ent->model);
+}
+static void G_Mono_UseTarget(gentity_t * self, gentity_t * activator, mono_string * mtarget) {
+	char * target = mono->GetNewCharsFromString(mtarget);
+	G_UseTargets2(self, activator, target);
+	mono->FreeMonoObject(target);
 }
 
 //NPC/PLAYER
@@ -167,12 +182,6 @@ static int G_Mono_OpenRead(mono_string * path, void * handle) {
 	mono->FreeMonoObject(pathc);
 	return len;
 }
-static int G_Mono_Read(char * buffer, int buflen, int32_t fs_handle) {
-	return trap->FS_Read(buffer, buflen, fs_handle);
-}
-static void G_Mono_CloseFile(int32_t fs_handle) {
-	trap->FS_Close(fs_handle);
-}
 
 /*
 ================================================================================================
@@ -197,7 +206,7 @@ qboolean G_MonoApi_Initialize() {
 	Init_M = mono->GetStaticMethod(mcl, "GMono_Initialize", 1);
 	Frame_M = mono->GetStaticMethod(mcl, "GMono_Frame", 1);
 	Shutdown_M = mono->GetStaticMethod(mcl, "GMono_Shutdown", 0);
-	Entity_M = mono->GetStaticMethod(mcl, "GMono_EntityEntry", 2);
+	Entity_M = mono->GetStaticMethod(mcl, "GMono_EntityEntry", 11);
 
 	//Setup C# Exports
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Spawn", G_Mono_Spawn);
@@ -207,6 +216,8 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_MoveTo", G_Mono_MoveTo);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModel", G_Mono_GetModelName);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetModel", G_Mono_SetModelName);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_UseTarget", G_Mono_UseTarget);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_UseEntity", GlobalUse);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Kill", G_Mono_Kill);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_IsNPC", G_Mono_IsNPC);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_IsPlayer", G_Mono_IsPlayer);
@@ -214,8 +225,8 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetHealth", G_Mono_SetHealth);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Open", G_Mono_OpenRead);
-	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Read", G_Mono_Read);
-	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Close", G_Mono_CloseFile);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Read", trap->FS_Read);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Close", trap->FS_Close);
 
 	//Done
 	initialized = qtrue;
@@ -244,6 +255,14 @@ void G_MonoApi_LoadMapCSPack(char const * packname) {
 	G_MonoApi_Internal_Initialize(packname);
 }
 
-void G_MonoApi_MapEntry(gentity_t * activator, char const * entrytag) {
-	G_MonoApi_Internal_EntityEntry(activator, entrytag);
+void G_MonoApi_MapEntry(
+		const char * entrytag,
+		gentity_t * self,
+		gentity_t * activator,
+		mono_entitypass_t targets,
+		mono_entitypass_t targets2,
+		mono_entitypass_t targets3,
+		mono_entitypass_t targets4) {
+
+	G_MonoApi_Internal_EntityEntry(entrytag, self, activator, targets, targets2, targets3, targets4);
 }

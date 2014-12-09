@@ -895,16 +895,62 @@ void SP_target_scriptrunner( gentity_t *self )
 	self->use = target_scriptrunner_use;
 }
 
+#define MAX_TARGETHITS 64
+
 void csentry_run (gentity_t *self) {
-	if (self->behaviorSet[BSET_USE]) {
-		if ( !self->activator ) {
-			if (developer.integer) {
-				Com_Printf("target_scriptrunner tried to run on invalid entity!\n");
-			}
-			return;
-		}
-		G_MonoApi_MapEntry(self->activator, self->behaviorSet[BSET_USE]);
+	if (!self || !self->activator) {
+		Com_Printf("C# Entry Failed: Either the entity or the entity's activator was not valid.");
+		return;
 	}
+	if (!self->behaviorSet[BSET_USE]) {
+		Com_Printf("C# Entry Failed: No 'entrypoint' defined.");
+		return;
+	}
+
+	gentity_t * t1a[MAX_TARGETHITS];
+	gentity_t * t2a[MAX_TARGETHITS];
+	gentity_t * t3a[MAX_TARGETHITS];
+	gentity_t * t4a[MAX_TARGETHITS];
+	mono_entitypass_t t1 = {0, t1a};
+	mono_entitypass_t t2 = {0, t2a};
+	mono_entitypass_t t3 = {0, t3a};
+	mono_entitypass_t t4 = {0, t4a};
+	gentity_t	*target = NULL;
+
+	if (self->target) {
+		while( NULL != (target = G_Find(target, FOFS(targetname), self->target)) )
+		{
+			t1a[t1.count] = target;
+			t1.count++;
+			if (t1.count == MAX_TARGETHITS) break;
+		}
+	}
+	if (self->target2) {
+		while( NULL != (target = G_Find(target, FOFS(targetname), self->target2)) )
+		{
+			t2a[t2.count] = target;
+			t2.count++;
+			if (t2.count == MAX_TARGETHITS) break;
+		}
+	}
+	if (self->target3) {
+		while( NULL != (target = G_Find(target, FOFS(targetname), self->target3)) )
+		{
+			t3a[t3.count] = target;
+			t3.count++;
+			if (t3.count == MAX_TARGETHITS) break;
+		}
+	}
+	if (self->target4) {
+		while( NULL != (target = G_Find(target, FOFS(targetname), self->target4)) )
+		{
+			t4a[t4.count] = target;
+			t4.count++;
+			if (t4.count == MAX_TARGETHITS) break;
+		}
+	}
+	G_MonoApi_MapEntry(self->behaviorSet[BSET_USE], self, self->activator, t1, t2, t3, t4);
+
 	if ( self->wait ) {
 		self->nextthink = level.time + self->wait;
 	}

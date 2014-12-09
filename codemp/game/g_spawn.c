@@ -644,7 +644,7 @@ spawn_t	spawns[] = {
 	{ "shooter_blaster",					SP_shooter_blaster },
 	{ "target_activate",					SP_target_activate },
 	{ "target_counter",						SP_target_counter },
-	{ "target_csrunner",					SP_target_csentry },
+	{ "target_csexec",						SP_target_csentry },
 	{ "target_deactivate",					SP_target_deactivate },
 	{ "target_delay",						SP_target_delay },
 	{ "target_escapetrig",					SP_target_escapetrig },

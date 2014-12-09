@@ -165,6 +165,9 @@ public class Entity {
 		if (!this.IsPlayer()) throw new Exception("Can only kill players, will add NPC support later.");
 		GAME_INTERNAL_EXPORT.GMono_Kill (ent);
 	}
+	public void Use(EntityPack user) {
+		GAME_INTERNAL_EXPORT.GMono_UseEntity(user.Self.GetPtr(), this.ent, user.Activator.GetPtr());
+	}
 	public void SetOrigin(float X, float Y, float Z) {
 		if (this.IsPlayer()) throw new Exception("Cannot set origin on players for now, use Teleport()");
 		GAME_INTERNAL_EXPORT.GMono_SetOrigin(ent, X, Y, Z);
@@ -182,4 +185,21 @@ public class Entity {
 	/*
 		================================================================
 		*/
+}
+
+public class EntityPack {
+	public Entity Self;
+	public Entity Activator;
+	public Entity[] TargetsOne;
+	public Entity[] TargetsTwo;
+	public Entity[] TargetsThree;
+	public Entity[] TargetsFour;
+	public EntityPack(Entity Self, Entity Activator, Entity[] T1, Entity[] T2, Entity[] T3, Entity[] T4) {
+		this.Self = Self;
+		this.Activator = Activator;
+		this.TargetsOne = T1;
+		this.TargetsTwo = T2;
+		this.TargetsThree = T3;
+		this.TargetsFour = T4;
+	}
 }

@@ -15,12 +15,18 @@ internal static class GAME_INTERNAL_IMPORT {
 	}
 
 	public static void GMono_Frame(int levelTime) {
+		G.FutureEvents.RunFrame(levelTime);
 		MapCSBridge.BridgeFrame(levelTime);
 	}
 
 	public static void GMono_Shutdown() {
 		MapCSBridge.BridgeShutdown();
 		G.EntityRegistry.Clear();
+	}
+
+	public static void GMono_Reset() {
+		G.CenterPrintGlobal("C# Scripts Reloading...\nExpect massive lag on complex maps or slow servers.", false);
+		G.FutureEvents.AddSimpleEvent(1000, MapCSBridge.Reload);
 	}
 
 	unsafe public static void GMono_EntityEntry(string tag, void * self, void * activator, int count1, void * entptr1, int count2, void * entptr2, int count3, void * entptr3, int count4, void * entptr4) {

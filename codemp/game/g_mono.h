@@ -16,6 +16,7 @@ qboolean G_MonoApi_Initialize();
 void G_MonoApi_Shutdown();
 void G_MonoApi_Frame();
 void G_MonoApi_LoadMapCSPack(char const * packname);
+void G_Monoapi_Reset();
 //================================
 //////////////////////////////////
 //================================

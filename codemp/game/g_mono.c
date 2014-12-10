@@ -6,12 +6,6 @@ static mono_class * mcl;
 
 qboolean initialized = qfalse;
 
-void G_Mono_FinishMove(gentity_t * ent) {
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);
-	VectorClear(ent->s.pos.trDelta);
-	ent->s.pos.trType = TR_STATIONARY;
-}
-
 /*
 ================================================================================================
 G_Mono Import Methods
@@ -57,6 +51,13 @@ static mono_method * Shutdown_M;
 void G_MonoApi_Internal_Shutdown(void) {
 	void * params[] = { };
 	mono->InvokeStaticMethod(Shutdown_M, params, &mono_exception);
+	HandleMonoException();
+}
+
+static mono_method * Reset_M;
+void G_MonoApi_Internal_Reset(void) {
+	void * params[] = { };
+	mono->InvokeStaticMethod(Reset_M, params, &mono_exception);
 	HandleMonoException();
 }
 
@@ -109,11 +110,14 @@ static void G_Mono_SetOrigin(gentity_t * ent, float X, float Y, float Z) {
 	vec3_t newPos = {X, Y, Z};
 	VectorCopy(newPos, ent->s.origin);
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
+	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 	VectorClear(ent->s.pos.trDelta);
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->think = 0;
-	ent->nextthink = 0;
+	ent->nextthink = level.time;
+	trap->UnlinkEntity((sharedEntity_t *)ent);
+	trap->LinkEntity((sharedEntity_t *)ent);
 }
 static void G_Mono_MoveTo(gentity_t * ent, float X, float Y, float Z, float timespan) {
 	vec3_t newPos = {X, Y, Z};
@@ -128,9 +132,11 @@ static void G_Mono_MoveTo(gentity_t * ent, float X, float Y, float Z, float time
 	ent->s.pos.trType = TR_LINEAR;
 
 	VectorCopy(newPos, ent->s.origin);
-
-	ent->think = G_Mono_FinishMove;
-	ent->nextthink = level.time + timespan;
+}
+static void G_Mono_MoveStop(gentity_t * ent) {
+	VectorCopy(ent->s.origin, ent->s.pos.trBase);
+	VectorClear(ent->s.pos.trDelta);
+	ent->s.pos.trType = TR_STATIONARY;
 }
 
 static mono_string * G_Mono_GetModelName(gentity_t * ent) {
@@ -170,6 +176,24 @@ static void G_Mono_SetHealth(gentity_t * ent, int newHealth) {
 	ent->health = newHealth;
 	if (ent->client) ent->client->ps.stats[STAT_HEALTH] = newHealth;
 }
+static int G_Mono_GetType(gentity_t * ent) {
+	return ent->s.eType;
+}
+static void G_Mono_SetType(gentity_t * ent, int newtype) {
+	ent->s.eType = newtype;
+}
+static void G_Mono_CenterPrint(mono_string * message, int clinum, int svprnt) {
+	char * msg = mono->GetNewCharsFromString(message);
+	if (svprnt)
+		trap->SendServerCommand( clinum, va("cps \"%s\"", msg ));
+	else
+		trap->SendServerCommand( clinum, va("cp \"%s\"", msg ));
+	mono->FreeMonoObject(msg);
+}
+static int G_Mono_GetClientNum(gentity_t * cli) {
+	return cli->playerState ? cli->playerState->clientNum : -1;
+}
+
 //SERVER
 static void G_Mono_Trap_Print(mono_string * str) {
 	char * prnt = mono->GetNewCharsFromString(str);
@@ -207,6 +231,7 @@ qboolean G_MonoApi_Initialize() {
 	Frame_M = mono->GetStaticMethod(mcl, "GMono_Frame", 1);
 	Shutdown_M = mono->GetStaticMethod(mcl, "GMono_Shutdown", 0);
 	Entity_M = mono->GetStaticMethod(mcl, "GMono_EntityEntry", 11);
+	Reset_M = mono->GetStaticMethod(mcl, "GMono_Reset", 0);
 
 	//Setup C# Exports
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Spawn", G_Mono_Spawn);
@@ -214,6 +239,7 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetOriginPtr", G_Mono_GetPositionPtr);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetOrigin", G_Mono_SetOrigin);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_MoveTo", G_Mono_MoveTo);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_MoveStop", G_Mono_MoveStop);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModel", G_Mono_GetModelName);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetModel", G_Mono_SetModelName);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_UseTarget", G_Mono_UseTarget);
@@ -223,7 +249,11 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_IsPlayer", G_Mono_IsPlayer);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHealth", G_Mono_GetHealth);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetHealth", G_Mono_SetHealth);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetEntityType", G_Mono_GetType);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetEntityType", G_Mono_SetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_CenterPrint", G_Mono_CenterPrint);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetClientNum", G_Mono_GetClientNum);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Open", G_Mono_OpenRead);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Read", trap->FS_Read);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Close", trap->FS_Close);
@@ -265,4 +295,8 @@ void G_MonoApi_MapEntry(
 		mono_entitypass_t targets4) {
 
 	G_MonoApi_Internal_EntityEntry(entrytag, self, activator, targets, targets2, targets3, targets4);
+}
+
+void G_Monoapi_Reset() {
+	G_MonoApi_Internal_Reset();
 }

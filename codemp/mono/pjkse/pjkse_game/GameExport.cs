@@ -27,6 +27,8 @@ internal static class GAME_INTERNAL_EXPORT {
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_MoveTo ( IntPtr ent, float X, float Y, float Z, float timespan );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_MoveStop ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern string GMono_GetModel ( IntPtr ent );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetModel ( IntPtr ent, string newName );
@@ -34,10 +36,18 @@ internal static class GAME_INTERNAL_EXPORT {
 	public static extern void GMono_UseTarget ( IntPtr self, IntPtr activator, string target );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_UseEntity ( IntPtr self, IntPtr other, IntPtr activator );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_GetEntityType ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetEntityType ( IntPtr ent, int t );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_GetClientNum ( IntPtr ent );
 
 	//SERVER
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_Print ( string str );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_CenterPrint ( string msg, int clinum, int svprnt );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern int GMono_FS_Open ( string path, IntPtr empty_int32_handle );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]

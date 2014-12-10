@@ -3470,7 +3470,8 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 
 #include "g_mono.h"
 
-static void Cmd_Monotest_f (gentity_t * ent) {
+static void Cmd_MonoReset_f (gentity_t * ent) {
+	G_Monoapi_Reset();
 }
 
 /*
@@ -3522,7 +3523,7 @@ command_t commands[] = {
 //	{ "kylesmash",			TryGrapple,					0 },
 	{ "levelshot",			Cmd_LevelShot_f,			CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "maplist",			Cmd_MapList_f,				CMD_NOINTERMISSION },
-	{ "mono_g",				Cmd_Monotest_f,				0 },
+	{ "mono_reset",			Cmd_MonoReset_f,			0 },
 	{ "noclip",				Cmd_Noclip_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "notarget",			Cmd_Notarget_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "npc",				Cmd_NPC_f,					CMD_CHEAT|CMD_ALIVE },

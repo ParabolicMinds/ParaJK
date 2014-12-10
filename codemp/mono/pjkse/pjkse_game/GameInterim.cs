@@ -85,14 +85,14 @@ public class GameFile {
 public class Entity { 
 
 	/*
-		================================================================
-		Private/Protected Fields
-		================================================================
-		*/
+	================================================================
+	Private/Protected Fields
+	================================================================
+	*/
 	protected IntPtr ent;
 	/*
-		================================================================
-		*/
+	================================================================
+	*/
 
 	/*
 	================================================================
@@ -108,8 +108,8 @@ public class Entity {
 	}
 	public IntPtr GetPtr() {return ent;}
 	/*
-		================================================================
-		*/
+	================================================================
+	*/
 
 	/*
 	================================================================
@@ -123,8 +123,8 @@ public class Entity {
 		return GAME_INTERNAL_EXPORT.GMono_IsPlayer (ent) != 0;
 	}
 	/*
-		================================================================
-		*/
+	================================================================
+	*/
 
 	/*
 	================================================================
@@ -152,9 +152,23 @@ public class Entity {
 			GAME_INTERNAL_EXPORT.GMono_SetModel(ent, value);
 		}
 	}
+	public EntityType Type {
+		get {
+			return (EntityType)GAME_INTERNAL_EXPORT.GMono_GetEntityType(ent);
+		}
+		set {
+			GAME_INTERNAL_EXPORT.GMono_SetEntityType(ent, (int)value);
+		}
+	}
+	public int clientNum {
+		get {
+			if (!IsPlayer()) throw new Exception("Attempted to retreive the client number of a non-player entity.");
+			return GAME_INTERNAL_EXPORT.GMono_GetClientNum(ent);
+		}
+	}
 	/*
-		================================================================
-		*/
+	================================================================
+	*/
 
 	/*
 	================================================================
@@ -177,14 +191,61 @@ public class Entity {
 	}
 	public void MoveTo(Vec3 location, int timespan_msec) {
 		if (this.IsPlayer()) throw new Exception("Cannot move players for now, use Teleport()");
+		G.FutureEvents.RemoveSimpleEntityEvents(this, this.MoveStop);
 		GAME_INTERNAL_EXPORT.GMono_MoveTo(ent, location.X, location.Y, location.Z, (float)timespan_msec);
+		G.FutureEvents.AddSimpleEntityEvent(timespan_msec, this, this.MoveStop);
+	}
+	public void MoveStop() {
+		GAME_INTERNAL_EXPORT.GMono_MoveStop(ent);
 	}
 	public void Move(Vec3 offset, int timespan_msec) {
 		this.MoveTo(this.Origin.Transposed(offset.X, offset.Y, offset.Z), timespan_msec);
 	}
 	/*
-		================================================================
-		*/
+	================================================================
+	*/
+
+	/*
+	================================================================
+	Operation
+	================================================================
+	*/
+	public override bool Equals (object obj) {
+		Entity ent2 = (Entity)obj;
+		if (ent2 == null) return false;
+		return ent == ent2.ent;
+	}
+	public override int GetHashCode () {
+		return ent.ToInt32();
+	}
+	public override string ToString () {
+		return string.Format ("[Entity: Pointer={0}, Origin={1}, Type={2}]", ent.ToString(), Origin, Type);
+	}
+	/*
+	================================================================
+	*/
+}
+
+public enum EntityType {
+	General,
+	Player,
+	Item,
+	Missile,
+	Special,
+	Holocron,
+	Mover,
+	Beam,
+	Portal,
+	Speaker,
+	PushTrigger,
+	TeleportTrigger,
+	Invisible,
+	NPC,
+	Team,
+	Body,
+	Terrain,
+	FX,
+	Event
 }
 
 public class EntityPack {

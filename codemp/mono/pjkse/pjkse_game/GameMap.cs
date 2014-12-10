@@ -6,14 +6,21 @@ using System.Reflection;
 using System.Linq;
 using System.IO;
 
+
+
 internal static class MapCSBridge {
+	private const string globalStr = "<GLOBAL>";
 	private static List<string> cssources = new List<string>();
+
+	private static string lastLoad = String.Empty;
 
 	private static List<MethodInfo> initEntries = new List<MethodInfo>();
 	private static List<MethodInfo> frameEntries = new List<MethodInfo>();
 	private static List<MethodInfo> shutdownEntries = new List<MethodInfo>();
+	private static List<MethodInfo> chatEntries = new List<MethodInfo>();
 
 	private static Dictionary<string, List<MethodInfo>> entityEntries = new Dictionary<string, List<MethodInfo>>();
+	private static Dictionary<string, List<MethodInfo>> cmdEntries = new Dictionary<string, List<MethodInfo>>();
 
 	public static void BridgeInitialize(string name) {
 		Load(name);
@@ -33,17 +40,41 @@ internal static class MapCSBridge {
 		initEntries.Clear();
 		frameEntries.Clear();
 		shutdownEntries.Clear();
+		chatEntries.Clear();
 		entityEntries.Clear();
-		cssources.Clear();
+		cmdEntries.Clear();
+	}
+
+	public static void BridgeChat(Entity player, string message) {
+		foreach(MethodInfo m in chatEntries)
+			m.Invoke(null, new object[] {player, message});
 	}
 
 	public static void BridgeEntity(EntityPack ent, string tag) {
 		if (!entityEntries.ContainsKey(tag)) throw new Exception(String.Format("C# tag not found: \"{0}\"", tag));
+		if (entityEntries.ContainsKey(globalStr))
+			foreach(MethodInfo m in entityEntries[globalStr])
+				m.Invoke(null, new object[] {ent});
 		foreach(MethodInfo m in entityEntries[tag])
 			m.Invoke(null, new object[] {ent});
 	}
 
+	public static void BridgeCmd(string cmd) {
+		if (!entityEntries.ContainsKey(cmd)) throw new Exception(String.Format("C# tag not found: \"{0}\"", cmd));
+		if (entityEntries.ContainsKey(globalStr))
+			foreach(MethodInfo m in entityEntries[globalStr])
+				m.Invoke(null, new object[0]);
+		foreach(MethodInfo m in entityEntries[cmd])
+			m.Invoke(null, new object[0]);
+	}
+
+	internal static void Reload() {
+		BridgeShutdown();
+		BridgeInitialize(lastLoad);
+	}
+
 	private static void Load(string name) {
+		lastLoad = name;
 		cssources.Clear();
 		try {
 			GameFile pack;
@@ -126,14 +157,41 @@ internal static class MapCSBridge {
 						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Frame Entry has a return value, it will be ignored.", m.Name));
 						frameEntries.Add(m);
 					}
+					if (attr.GetType() == typeof(ParaJKEntryChat)) {
+						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry methods MUST be static.", m.Name));
+						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry methods MUST have TWO arguments. (Player (Entity), and Message (String))", m.Name));
+						if (m.GetParameters()[0].ParameterType != typeof(int)) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry method's arguments MUST be an Entity and a String.", m.Name));
+						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Chat Entry has a return value, it will be ignored.", m.Name));
+						chatEntries.Add(m);
+					}
 					if (attr.GetType() == typeof(ParaJKEntryEntity)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Entity Entry methods MUST be static.", m.Name));
 						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Entity Entry methods MUST have ONE argument. (EntityPack)", m.Name));
-						if (m.GetParameters()[0].ParameterType != typeof(EntityPack)) throw new Exception(String.Format("FATAL ({0}): ParaJK Frame Entry method's argument MUST be an EntityPack.", m.Name));
+						if (m.GetParameters()[0].ParameterType != typeof(EntityPack)) throw new Exception(String.Format("FATAL ({0}): ParaJK Entity Entry method's argument MUST be an EntityPack.", m.Name));
 						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Entity Entry has a return value, it will be ignored.", m.Name));
-						foreach(string tag in ((ParaJKEntryEntity)attr).maptags) {
-							if (!entityEntries.ContainsKey(tag)) entityEntries[tag] = new List<MethodInfo>();
-							entityEntries[tag].Add(m);
+						string[] tags = ((ParaJKEntryEntity)attr).maptags;
+						if (tags.Length == 0) {
+							if (!entityEntries.ContainsKey(globalStr)) entityEntries[globalStr] = new List<MethodInfo>();
+							entityEntries[globalStr].Add(m);
+						} else {
+							foreach(string tag in tags) {
+								if (!entityEntries.ContainsKey(tag)) entityEntries[tag] = new List<MethodInfo>();
+								entityEntries[tag].Add(m);
+							}
+						}
+					}
+					if (attr.GetType() == typeof(ParaJKEntryCmd)) {
+						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry methods MUST be static.", m.Name));
+						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry methods MUST have ONE argument. (String)", m.Name));
+						if (m.GetParameters()[0].ParameterType != typeof(EntityPack)) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry method's argument MUST be a String.", m.Name));
+						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Cmd Entry has a return value, it will be ignored.", m.Name));
+						string cmd = ((ParaJKEntryCmd)attr).trig;
+						if (cmd.Length == 0) {
+							if (!cmdEntries.ContainsKey(globalStr)) cmdEntries[globalStr] = new List<MethodInfo>();
+							cmdEntries[globalStr].Add(m);
+						} else {
+							if (!cmdEntries.ContainsKey(cmd)) cmdEntries[cmd] = new List<MethodInfo>();
+							cmdEntries[cmd].Add(m);
 						}
 					}
 				}
@@ -158,3 +216,10 @@ public class ParaJKEntryInit : Attribute {}
 public class ParaJKEntryShutdown : Attribute {}
 [AttributeUsage(AttributeTargets.Method)]
 public class ParaJKEntryFrame : Attribute {}
+[AttributeUsage(AttributeTargets.Method)]
+public class ParaJKEntryChat : Attribute {}
+[AttributeUsage(AttributeTargets.Method)]
+public class ParaJKEntryCmd : Attribute {
+	public readonly string trig;
+	public ParaJKEntryCmd(string trigger) { trig = trigger;}
+}

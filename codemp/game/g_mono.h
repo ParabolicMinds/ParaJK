@@ -14,14 +14,15 @@ typedef struct mono_entitypass_s {
 //================================
 qboolean G_MonoApi_Initialize();
 void G_MonoApi_Shutdown();
-void G_MonoApi_Frame();
-void G_MonoApi_LoadMapCSPack(char const * packname);
-void G_Monoapi_Reset();
 //================================
 //////////////////////////////////
 //================================
 //G_Mono Export Methods
 //================================
+void G_MonoApi_Frame();
+void G_MonoApi_Internal_Initialize(char const * packname);
+void G_MonoApi_Reset();
+void G_MonoApi_ChatEvent(gentity_t * sender, char const * msg);
 void G_MonoApi_MapEntry(
 		const char * entrytag,
 		gentity_t * self,

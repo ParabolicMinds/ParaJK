@@ -159,8 +159,9 @@ internal static class MapCSBridge {
 					}
 					if (attr.GetType() == typeof(ParaJKEntryChat)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry methods MUST be static.", m.Name));
-						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry methods MUST have TWO arguments. (Player (Entity), and Message (String))", m.Name));
-						if (m.GetParameters()[0].ParameterType != typeof(int)) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry method's arguments MUST be an Entity and a String.", m.Name));
+						if (m.GetParameters().Length != 2) throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry methods MUST have TWO arguments. (Player (Entity), and Message (String))", m.Name));
+						if (m.GetParameters()[0].ParameterType != typeof(Entity) || m.GetParameters()[1].ParameterType != typeof(string)) 
+							throw new Exception(String.Format("FATAL ({0}): ParaJK Chat Entry method's arguments MUST be an Entity and a String.", m.Name));
 						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Chat Entry has a return value, it will be ignored.", m.Name));
 						chatEntries.Add(m);
 					}
@@ -183,7 +184,7 @@ internal static class MapCSBridge {
 					if (attr.GetType() == typeof(ParaJKEntryCmd)) {
 						if (!m.IsStatic) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry methods MUST be static.", m.Name));
 						if (m.GetParameters().Length != 1) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry methods MUST have ONE argument. (String)", m.Name));
-						if (m.GetParameters()[0].ParameterType != typeof(EntityPack)) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry method's argument MUST be a String.", m.Name));
+						if (m.GetParameters()[0].ParameterType != typeof(string)) throw new Exception(String.Format("FATAL ({0}): ParaJK Cmd Entry method's argument MUST be a String.", m.Name));
 						if (m.ReturnParameter.ParameterType != typeof(void)) G.PrintLine(String.Format("WARNING ({0}): ParaJK Cmd Entry has a return value, it will be ignored.", m.Name));
 						string cmd = ((ParaJKEntryCmd)attr).trig;
 						if (cmd.Length == 0) {

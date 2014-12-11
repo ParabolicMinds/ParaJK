@@ -1495,7 +1495,7 @@ void SP_worldspawn( void )
 
 	G_SpawnString( "cspack", "", &text );
 	if (strlen(text) > 0) {
-		G_MonoApi_LoadMapCSPack(text);
+		G_MonoApi_Internal_Initialize(text);
 	}
 
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;

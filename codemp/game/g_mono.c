@@ -41,7 +41,7 @@ void G_MonoApi_Internal_Initialize(char const * name) {
 }
 
 static mono_method * Frame_M;
-void G_MonoApi_Internal_Frame(void) {
+void G_MonoApi_Frame(void) {
 	void * params[] = { &level.time };
 	mono->InvokeStaticMethod(Frame_M, params, &mono_exception);
 	HandleMonoException();
@@ -55,9 +55,17 @@ void G_MonoApi_Internal_Shutdown(void) {
 }
 
 static mono_method * Reset_M;
-void G_MonoApi_Internal_Reset(void) {
+void G_MonoApi_Reset(void) {
 	void * params[] = { };
 	mono->InvokeStaticMethod(Reset_M, params, &mono_exception);
+	HandleMonoException();
+}
+
+static mono_method * ChatE_M;
+void G_MonoApi_ChatEvent(gentity_t * sender, char const * msg) {
+	mono_string * msgm = mono->CharPtrToString(msg);
+	void * params[] = { sender, msgm };
+	mono->InvokeStaticMethod(ChatE_M, params, &mono_exception);
 	HandleMonoException();
 }
 
@@ -110,7 +118,7 @@ static void G_Mono_SetOrigin(gentity_t * ent, float X, float Y, float Z) {
 	vec3_t newPos = {X, Y, Z};
 	VectorCopy(newPos, ent->s.origin);
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	//VectorCopy( ent->s.origin, ent->r.currentOrigin );
 	VectorClear(ent->s.pos.trDelta);
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_STATIONARY;
@@ -232,6 +240,7 @@ qboolean G_MonoApi_Initialize() {
 	Shutdown_M = mono->GetStaticMethod(mcl, "GMono_Shutdown", 0);
 	Entity_M = mono->GetStaticMethod(mcl, "GMono_EntityEntry", 11);
 	Reset_M = mono->GetStaticMethod(mcl, "GMono_Reset", 0);
+	ChatE_M = mono->GetStaticMethod(mcl, "GMono_ChatEvent", 2);
 
 	//Setup C# Exports
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Spawn", G_Mono_Spawn);
@@ -275,15 +284,8 @@ void G_MonoApi_Shutdown() {
 	mono->FreeVMImport(mono);
 }
 
-void G_MonoApi_Frame() {
-	G_MonoApi_Internal_Frame();
-}
-
 #define CSPACK_BUFLEN 65535
 
-void G_MonoApi_LoadMapCSPack(char const * packname) {
-	G_MonoApi_Internal_Initialize(packname);
-}
 
 void G_MonoApi_MapEntry(
 		const char * entrytag,
@@ -295,8 +297,4 @@ void G_MonoApi_MapEntry(
 		mono_entitypass_t targets4) {
 
 	G_MonoApi_Internal_EntityEntry(entrytag, self, activator, targets, targets2, targets3, targets4);
-}
-
-void G_Monoapi_Reset() {
-	G_MonoApi_Internal_Reset();
 }

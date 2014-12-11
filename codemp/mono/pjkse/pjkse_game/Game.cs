@@ -68,28 +68,32 @@ public class FutureEvents {
 
 	/*
 	================================================================
-	Simple Event
+	Simple Event (Event With No Arguments)
 	================================================================
 	*/
-	SortedDictionary<int, List<Action>> simpleEvents = new SortedDictionary<int, List<Action>>();
+	SortedList<int, Action> simpleEvents = new SortedList<int, Action>();
 	public void AddSimpleEvent(int future_msec, Action act) {
 		int ftime = lastFrame + future_msec;
-		if (!simpleEvents.ContainsKey(ftime)) simpleEvents[ftime] = new List<Action>();
-		simpleEvents[ftime].Add(act);
+		simpleEvents.Add(ftime, act);
 	}
 	public void RemoveSimpleEvents(Action e) {
-		foreach (KeyValuePair<int, List<Action>> KVP in simpleEvents) {
-			KVP.Value.Remove(e);
+		for (int i = simpleEvents.Count - 1; i >= 0; i--) {
+			if (simpleEvents.ElementAt(i).Value.Equals(e)) simpleEvents.RemoveAt(i);
 		}
 	}
 	protected void RunSimpleEvents() {
-		foreach (KeyValuePair<int, List<Action>> KVP in simpleEvents) {
-			if (lastFrame > KVP.Key) {
-				KVP.Value.ForEach(x => x.Invoke());
-				rmTimes.Add(KVP.Key);
+		for (int i = simpleEvents.Count - 1; i >= 0; i--) {
+			KeyValuePair<int, Action> cur = simpleEvents.ElementAt(i);
+			if (cur.Key <= lastFrame) {
+				try {
+					cur.Value.Invoke();
+				} catch (Exception e) {
+					G.PrintLine(e.ToString());
+				} finally {
+					simpleEvents.RemoveAt(i);
+				}
 			}
 		}
-		rmTimes.ForEach(x => simpleEvents.Remove(x));
 	}
 	/*
 	================================================================
@@ -97,7 +101,7 @@ public class FutureEvents {
 
 	/*
 	================================================================
-	Simple Event
+	Complex Event (Event With Arguments)
 	================================================================
 	*/
 	SortedList<int, Tuple<Action, object[]>> complexEvents;

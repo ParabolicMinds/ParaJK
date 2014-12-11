@@ -1664,6 +1664,8 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		other = &g_entities[j];
 		G_SayTo( ent, other, mode, color, name, text, locMsg );
 	}
+
+	if (mode == SAY_ALL) G_MonoApi_ChatEvent(ent, chatText);
 }
 
 
@@ -3471,7 +3473,7 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 #include "g_mono.h"
 
 static void Cmd_MonoReset_f (gentity_t * ent) {
-	G_Monoapi_Reset();
+	G_MonoApi_Reset();
 }
 
 /*

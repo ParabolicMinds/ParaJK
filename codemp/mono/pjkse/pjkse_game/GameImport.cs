@@ -26,7 +26,8 @@ internal static class GAME_INTERNAL_IMPORT {
 
 	public static void GMono_Reset() {
 		G.CenterPrintGlobal("C# Scripts Reloading...\nExpect massive lag on complex maps or slow servers.", false);
-		G.FutureEvents.AddSimpleEvent(1000, MapCSBridge.Reload);
+		MapCSBridge.Reload();
+		//G.FutureEvents.AddSimpleEvent(1000, MapCSBridge.Reload);
 	}
 
 	unsafe public static void GMono_EntityEntry(string tag, void * self, void * activator, int count1, void * entptr1, int count2, void * entptr2, int count3, void * entptr3, int count4, void * entptr4) {
@@ -70,5 +71,11 @@ internal static class GAME_INTERNAL_IMPORT {
 		}
 		EntityPack ep = new EntityPack (Self, Activator, TargetsOne, TargetsTwo, TargetsThree, TargetsFour);
 		MapCSBridge.BridgeEntity(ep, tag);
+	}
+
+	unsafe public static void GMono_ChatEvent(void * sender, string msg) {
+		IntPtr entPtr = new IntPtr(sender);
+		Entity ent = Entity.FromPtr(entPtr);
+		MapCSBridge.BridgeChat(ent, msg);
 	}
 }

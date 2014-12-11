@@ -2379,3 +2379,7 @@ enum {
 };
 
 void NET_AddrToString( char *out, size_t size, void *addr );
+
+qboolean Q_InBitflags( const uint32_t *bits, int index, uint32_t bitsPerByte );
+void Q_AddToBitflags( uint32_t *bits, int index, uint32_t bitsPerByte );
+void Q_RemoveFromBitflags( uint32_t *bits, int index, uint32_t bitsPerByte );

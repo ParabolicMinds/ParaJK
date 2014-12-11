@@ -7017,6 +7017,10 @@ static void UI_RunMenuScript(char **args)
 		{
 			UI_ClampMaxPlayers();
 		}
+		else if ( Q_stricmp( name, "LaunchSP" ) == 0 )
+		{
+			// TODO for MAC_PORT
+		}
 		else
 		{
 			Com_Printf("unknown UI script %s\n", name);
@@ -8452,7 +8456,7 @@ static qhandle_t UI_FeederItemImage(float feederID, int index) {
 	}
 	else if (feederID == FEEDER_Q3HEADS)
 	{
-		int actual;
+		int actual = 0;
 		UI_SelectedTeamHead(index, &actual);
 		index = actual;
 
@@ -8708,7 +8712,7 @@ qboolean UI_FeederSelection(float feederFloat, int index, itemDef_t *item)
 
 	if (feederID == FEEDER_Q3HEADS)
 	{
-		int actual;
+		int actual = 0;
 		UI_SelectedTeamHead(index, &actual);
 		uiInfo.q3SelectedHead = index;
 		trap->Cvar_Set("ui_selectedModelIndex", va("%i", index));

@@ -243,6 +243,84 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 	return NULL;
 }
 
+/*
+=============
+G_SubstringFind
+
+Searches all active entities for the next one that contains
+the matching string at fieldofs (use the FOFS() macro) in the structure.
+
+Searches beginning at the entity after from, or the beginning if NULL
+NULL will be returned if the end of the list is reached.
+
+Note: This operation is significantly more expensive than G_Find.
+
+=============
+*/
+gentity_t *G_SubstringFind (gentity_t *from, int fieldofs, const char *match)
+{
+	char	*s;
+
+	if (!from)
+		from = g_entities;
+	else
+		from++;
+
+	for ( ; from < &g_entities[level.num_entities] ; from++)
+	{
+		if (!from->inuse)
+			continue;
+		s = *(char **) ((byte *)from + fieldofs);
+		if (!s)
+			continue;
+		if (strstr (s, match))
+			return from;
+	}
+
+	return NULL;
+}
+
+/*
+=============
+G_MultiFind
+
+Searches all active entities for the next one that contains one of
+the matching strings at fieldofs (use the FOFS() macro) in the structure.
+
+Searches beginning at the entity after from, or the beginning if NULL
+NULL will be returned if the end of the list is reached.
+
+Note:
+
+=============
+*/
+gentity_t *G_MultiFind (gentity_t *from, int fieldofs, const char * * matches, int matchcount)
+{
+	char		*s;
+	char const	**cm;
+	int			i;
+
+	if (!from)
+		from = g_entities;
+	else
+		from++;
+
+	for ( ; from < &g_entities[level.num_entities] ; from++)
+	{
+		if (!from->inuse)
+			continue;
+		s = *(char **) ((byte *)from + fieldofs);
+		if (!s)
+			continue;
+		for (i=0,cm=matches;i<matchcount;i++,cm++) {
+			if (!*cm) continue;
+			if (!Q_stricmp (s, *cm))
+				return from;
+		}
+	}
+
+	return NULL;
+}
 
 
 /*

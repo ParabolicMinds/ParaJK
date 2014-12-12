@@ -40,6 +40,13 @@ void G_MonoApi_Internal_Initialize(char const * name) {
 	HandleMonoException();
 }
 
+static mono_method * MapInit_M;
+void G_MonoApi_Internal_MapInitialize() {
+	void * params[] = {};
+	mono->InvokeStaticMethod(MapInit_M, params, &mono_exception);
+	HandleMonoException();
+}
+
 static mono_method * Frame_M;
 void G_MonoApi_Frame(void) {
 	void * params[] = { &level.time };
@@ -102,6 +109,7 @@ static void * G_Mono_Spawn() {
 	gentity_t * ent = G_Spawn();
 	ent->s.eType = ET_MOVER;
 	ent->r.svFlags = SVF_BROADCAST;
+	VectorSet(ent->modelScale, 5, 5, 5);
 	trap->LinkEntity((sharedEntity_t *)ent);
 	return ent;
 }
@@ -118,7 +126,7 @@ static void G_Mono_SetOrigin(gentity_t * ent, float X, float Y, float Z) {
 	vec3_t newPos = {X, Y, Z};
 	VectorCopy(newPos, ent->s.origin);
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	//VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 	VectorClear(ent->s.pos.trDelta);
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_STATIONARY;
@@ -143,6 +151,7 @@ static void G_Mono_MoveTo(gentity_t * ent, float X, float Y, float Z, float time
 }
 static void G_Mono_MoveStop(gentity_t * ent) {
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
+	VectorCopy(ent->s.origin, ent->r.currentOrigin);
 	VectorClear(ent->s.pos.trDelta);
 	ent->s.pos.trType = TR_STATIONARY;
 }
@@ -157,11 +166,40 @@ static void G_Mono_SetModelName(gentity_t * ent, mono_string * str) {
 	ent->model = strdup(model);
 	mono->FreeMonoObject(model);
 	ent->s.modelindex = G_ModelIndex(ent->model);
+	VectorSet(ent->modelScale, 10, 10, 10);
+}
+static mono_string * G_Mono_GetTargetname(gentity_t * ent) {
+	if (ent->targetname)
+		return mono->CharPtrToString(ent->targetname);
+	else return NULL;
+}
+static void G_Mono_SetTargetname(gentity_t * ent, mono_string * str) {
+	char * tname = mono->GetNewCharsFromString(str);
+	ent->targetname = strdup(tname);
+	mono->FreeMonoObject(tname);
 }
 static void G_Mono_UseTarget(gentity_t * self, gentity_t * activator, mono_string * mtarget) {
 	char * target = mono->GetNewCharsFromString(mtarget);
 	G_UseTargets2(self, activator, target);
 	mono->FreeMonoObject(target);
+}
+static int G_Mono_GetEntitiesByName(mono_string * mtarget, gentity_t * * buffer, int bufptrlen, int substring) {
+	char * targetn = mono->GetNewCharsFromString(mtarget);
+	gentity_t * t = NULL;
+	int c = 0;
+	if (substring) {
+		while ((t = G_SubstringFind(t, FOFS(targetname), targetn)) != NULL && c < bufptrlen) {
+			buffer[c] = t;
+			c++;
+		}
+	} else {
+		while ((t = G_Find(t, FOFS(targetname), targetn)) != NULL && c < bufptrlen) {
+			buffer[c] = t;
+			c++;
+		}
+	}
+	mono->FreeMonoObject(targetn);
+	return c;
 }
 
 //NPC/PLAYER
@@ -236,6 +274,7 @@ qboolean G_MonoApi_Initialize() {
 
 	//Setup C# Imports
 	Init_M = mono->GetStaticMethod(mcl, "GMono_Initialize", 1);
+	MapInit_M = mono->GetStaticMethod(mcl, "GMono_MapInit", 0);
 	Frame_M = mono->GetStaticMethod(mcl, "GMono_Frame", 1);
 	Shutdown_M = mono->GetStaticMethod(mcl, "GMono_Shutdown", 0);
 	Entity_M = mono->GetStaticMethod(mcl, "GMono_EntityEntry", 11);
@@ -251,6 +290,8 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_MoveStop", G_Mono_MoveStop);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModel", G_Mono_GetModelName);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetModel", G_Mono_SetModelName);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetTargetname", G_Mono_GetTargetname);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetTargetname", G_Mono_SetTargetname);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_UseTarget", G_Mono_UseTarget);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_UseEntity", GlobalUse);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Kill", G_Mono_Kill);
@@ -263,6 +304,7 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_CenterPrint", G_Mono_CenterPrint);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetClientNum", G_Mono_GetClientNum);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetEntitiesByName", G_Mono_GetEntitiesByName);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Open", G_Mono_OpenRead);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Read", trap->FS_Read);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Close", trap->FS_Close);

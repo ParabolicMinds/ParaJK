@@ -915,8 +915,9 @@ void csentry_run (gentity_t *self) {
 	mono_entitypass_t t2 = {0, t2a};
 	mono_entitypass_t t3 = {0, t3a};
 	mono_entitypass_t t4 = {0, t4a};
-	gentity_t	*target = NULL;
+	gentity_t	*target;
 
+	target = NULL;
 	if (self->target) {
 		while( NULL != (target = G_Find(target, FOFS(targetname), self->target)) )
 		{
@@ -925,6 +926,7 @@ void csentry_run (gentity_t *self) {
 			if (t1.count == MAX_TARGETHITS) break;
 		}
 	}
+	target = NULL;
 	if (self->target2) {
 		while( NULL != (target = G_Find(target, FOFS(targetname), self->target2)) )
 		{
@@ -933,6 +935,7 @@ void csentry_run (gentity_t *self) {
 			if (t2.count == MAX_TARGETHITS) break;
 		}
 	}
+	target = NULL;
 	if (self->target3) {
 		while( NULL != (target = G_Find(target, FOFS(targetname), self->target3)) )
 		{
@@ -941,6 +944,7 @@ void csentry_run (gentity_t *self) {
 			if (t3.count == MAX_TARGETHITS) break;
 		}
 	}
+	target = NULL;
 	if (self->target4) {
 		while( NULL != (target = G_Find(target, FOFS(targetname), self->target4)) )
 		{

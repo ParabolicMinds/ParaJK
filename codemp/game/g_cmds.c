@@ -6,6 +6,7 @@
 #include "ui/menudef.h"			// for the voice chats
 
 #include "g_para.h"
+#include "g_mono.h"
 
 //rww - for getting bot commands...
 int AcceptBotCommand(char *cmd, gentity_t *pl);

@@ -295,6 +295,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// general initialization
 	G_FindTeams();
 
+	G_MonoApi_Internal_MapInitialize();
+
 	// make sure we have flags for CTF, etc
 	if( level.gametype >= GT_TEAM ) {
 		G_CheckTeamItems();

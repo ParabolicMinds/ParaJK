@@ -21,6 +21,7 @@ void G_MonoApi_Shutdown();
 //================================
 void G_MonoApi_Frame();
 void G_MonoApi_Internal_Initialize(char const * packname);
+void G_MonoApi_Internal_MapInitialize();
 void G_MonoApi_Reset();
 void G_MonoApi_ChatEvent(gentity_t * sender, char const * msg);
 void G_MonoApi_MapEntry(

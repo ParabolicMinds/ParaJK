@@ -33,6 +33,10 @@ internal static class GAME_INTERNAL_EXPORT {
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetModel ( IntPtr ent, string newName );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern string GMono_GetTargetname ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetTargetname ( IntPtr ent, string newName );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_UseTarget ( IntPtr self, IntPtr activator, string target );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_UseEntity ( IntPtr self, IntPtr other, IntPtr activator );
@@ -42,6 +46,8 @@ internal static class GAME_INTERNAL_EXPORT {
 	public static extern void GMono_SetEntityType ( IntPtr ent, int t );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern int GMono_GetClientNum ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_GetEntitiesByName(string targetname, IntPtr buffer, int bufptrlen, int substr);
 
 	//SERVER
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]

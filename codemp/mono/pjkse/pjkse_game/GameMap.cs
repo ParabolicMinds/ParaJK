@@ -25,6 +25,9 @@ internal static class MapCSBridge {
 	public static void BridgeInitialize(string name) {
 		Load(name);
 		CompileAndAssemble();
+	}
+
+	public static void BridgeMapInitialize() {
 		foreach(MethodInfo m in initEntries)
 			m.Invoke(null, new object[0]);
 	}
@@ -71,6 +74,7 @@ internal static class MapCSBridge {
 	internal static void Reload() {
 		BridgeShutdown();
 		BridgeInitialize(lastLoad);
+		BridgeMapInitialize();
 	}
 
 	private static void Load(string name) {

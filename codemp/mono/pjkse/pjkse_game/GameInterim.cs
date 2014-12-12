@@ -48,6 +48,9 @@ public class Vec3 {
 	public static Vec3 operator/(Vec3 A, float B) {
 		return new Vec3(A.X / B, A.Y / B, A.Z / B);
 	}
+	public override string ToString () {
+		return string.Format ("({0}, {1}, {2})", X, Y, Z);
+	}
 }
 
 public class GameFile {
@@ -146,10 +149,20 @@ public class Entity {
 	}
 	public string Model {
 		get {
-			return GAME_INTERNAL_EXPORT.GMono_GetModel(ent);
+			string m = GAME_INTERNAL_EXPORT.GMono_GetModel(ent);
+			return m == null ? String.Empty : m;
 		}
 		set {
 			GAME_INTERNAL_EXPORT.GMono_SetModel(ent, value);
+		}
+	}
+	public string Targetname {
+		get {
+			string m = GAME_INTERNAL_EXPORT.GMono_GetTargetname(ent);
+			return m == null ? String.Empty : m;
+		}
+		set {
+			GAME_INTERNAL_EXPORT.GMono_SetTargetname(ent, value);
 		}
 	}
 	public EntityType Type {
@@ -219,7 +232,7 @@ public class Entity {
 		return ent.ToInt32();
 	}
 	public override string ToString () {
-		return string.Format ("[Entity: Pointer={0}, Origin={1}, Type={2}]", ent.ToString(), Origin, Type);
+		return string.Format ("[Entity: Pointer={0}, Targetname=\"{3}\", Origin={1}, Type={2}]", ent.ToString(), Origin, Type, Targetname);
 	}
 	/*
 	================================================================

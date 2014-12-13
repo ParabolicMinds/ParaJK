@@ -2190,17 +2190,9 @@ typedef struct entityState_s {
 	//If non-0, this is the index of the vehicle a player/NPC is riding.
 	int		m_iVehicleNum;
 
-	//rww - spare values specifically for use by mod authors.
-	//See netf_overrides.txt if you want to increase the send
-	//amount of any of these above 1 bit.
-	int			userInt1;
-	int			userInt2;
-	int			userInt3;
-	float		userFloat1;
-	float		userFloat2;
-	float		userFloat3;
-	vec3_t		userVec1;
-	vec3_t		userVec2;
+	//ParaJK Shared Entity Variables
+	int			modelSkinIndex;
+	vec3_t		modelScale;
 } entityState_t;
 
 typedef enum {

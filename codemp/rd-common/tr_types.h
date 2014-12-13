@@ -246,6 +246,7 @@ Ghoul2 Insert Start
 */
 	vec3_t		angles;				// rotation angles - used for Ghoul2
 
+	qboolean	shouldScale;
 	vec3_t		modelScale;			// axis scale for models
 //	CGhoul2Info_v	*ghoul2;  		// has to be at the end of the ref-ent in order for it to be created properly
 	void		*ghoul2;  		// has to be at the end of the ref-ent in order for it to be created properly

@@ -335,6 +335,7 @@ void R_AddMD3Surfaces( trRefEntity_t *ent ) {
 	// draw all surfaces
 	//
 	surface = (md3Surface_t *)( (byte *)header + header->ofsSurfaces );
+
 	for ( i = 0 ; i < header->numSurfaces ; i++ ) {
 
 		if ( ent->e.customShader ) {

@@ -2577,6 +2577,10 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 
+	if (s1->modelScale[0] || s1->modelScale[1] || s1->modelScale[2]) {
+		VectorCopy(s1->modelScale, ent.modelScale);
+	}
+
 	// flicker between two skins
 	ent.skinNum = cg.clientFrame & 1;
 	ent.renderfx = /*weapon->missileRenderfx | */RF_NOSHADOW;
@@ -2856,16 +2860,26 @@ static void CG_Mover( centity_t *cent ) {
 	AnglesToAxis( cent->lerpAngles, ent.axis );
 
 	ent.renderfx = RF_NOSHADOW;
+
+
+
 /*
 Ghoul2 Insert Start
 */
-
 	CG_SetGhoul2Info(&ent, cent);
 /*
 Ghoul2 Insert End
 */
+
+	if (s1->modelScale[0] || s1->modelScale[1] || s1->modelScale[2]) {
+		VectorCopy(s1->modelScale, ent.modelScale);
+	}
+
 	// flicker between two skins (FIXME?)
-	ent.skinNum = ( cg.time >> 6 ) & 1;
+	// No, don't do that you idiot. What a stupid thing to do.
+	//ent.skinNum = ( cg.time >> 6 ) & 1;
+
+	ent.skinNum = s1->modelSkinIndex;
 
 	// get the model, either as a bmodel or a modelindex
 	if ( s1->solid == SOLID_BMODEL )
@@ -2892,11 +2906,6 @@ Ghoul2 Insert End
 	{
 		ent.skinNum = 0;
 		ent.hModel = cgs.gameModels[s1->modelindex2];
-		if (s1->iModelScale)
-		{ //custom model2 scale
-			ent.modelScale[0] = ent.modelScale[1] = ent.modelScale[2] = s1->iModelScale/100.0f;
-			ScaleModelAxis(&ent);
-		}
 		trap->R_AddRefEntityToScene(&ent);
 	}
 

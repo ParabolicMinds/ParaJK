@@ -30,6 +30,14 @@ public class Vec3 {
 		nv.Normalize();
 		return nv;
 	}
+	public void Scale(float x, float y, float z) {
+		X *= x; Y *= y; Z *= z;
+	}
+	public Vec3 Scaled(float x, float y, float z) {
+		Vec3 nv = new Vec3(X, Y, Z);
+		nv.Scale(x, y, z);
+		return nv;
+	}
 	public static float Distance(Vec3 A, Vec3 B) {
 		return (float)Math.Abs(Math.Sqrt(Math.Pow(A.X - B.X, 2)+Math.Pow(A.Y - B.Y, 2)+Math.Pow(A.Z - B.Z, 2)));
 	}
@@ -140,6 +148,22 @@ public class Entity {
 		}
 		set {
 			GAME_INTERNAL_EXPORT.GMono_SetHealth(ent, value);
+		}
+	}
+	public int SkinIndex {
+		get {
+			return GAME_INTERNAL_EXPORT.GMono_GetSkinIndex(ent);
+		}
+		set {
+			GAME_INTERNAL_EXPORT.GMono_SetSkinIndex(ent, value);
+		}
+	}
+	public Vec3 Scale {
+		get {
+			return new Vec3(GAME_INTERNAL_EXPORT.GMono_GetModelScale(ent));
+		}
+		set {
+			GAME_INTERNAL_EXPORT.GMono_SetModelScale(ent, value.X, value.Y, value.Z);
 		}
 	}
 	public Vec3 Origin {

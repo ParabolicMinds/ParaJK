@@ -21,6 +21,14 @@ internal static class GAME_INTERNAL_EXPORT {
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetHealth ( IntPtr ent, int newHealth );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_GetSkinIndex ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetSkinIndex ( IntPtr ent, int newIndex );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern IntPtr GMono_GetModelScale ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetModelScale ( IntPtr ent, float X, float Y, float Z );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern IntPtr GMono_GetOriginPtr ( IntPtr ent );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetOrigin ( IntPtr ent, float X, float Y, float Z );

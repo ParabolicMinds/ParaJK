@@ -109,7 +109,6 @@ static void * G_Mono_Spawn() {
 	gentity_t * ent = G_Spawn();
 	ent->s.eType = ET_MOVER;
 	ent->r.svFlags = SVF_BROADCAST;
-	VectorSet(ent->modelScale, 5, 5, 5);
 	trap->LinkEntity((sharedEntity_t *)ent);
 	return ent;
 }
@@ -166,7 +165,6 @@ static void G_Mono_SetModelName(gentity_t * ent, mono_string * str) {
 	ent->model = strdup(model);
 	mono->FreeMonoObject(model);
 	ent->s.modelindex = G_ModelIndex(ent->model);
-	VectorSet(ent->modelScale, 10, 10, 10);
 }
 static mono_string * G_Mono_GetTargetname(gentity_t * ent) {
 	if (ent->targetname)
@@ -201,8 +199,18 @@ static int G_Mono_GetEntitiesByName(mono_string * mtarget, gentity_t * * buffer,
 	mono->FreeMonoObject(targetn);
 	return c;
 }
-
-//NPC/PLAYER
+static int G_Mono_GetSkinIndex(gentity_t * ent) {
+	return ent->s.modelSkinIndex;
+}
+static void G_Mono_SetSkinIndex(gentity_t * ent, int newIndex) {
+	ent->s.modelSkinIndex = newIndex;
+}
+static void * G_Mono_GetModelScale(gentity_t * ent) {
+	return ent->s.modelScale;
+}
+static void G_Mono_SetModelScale(gentity_t * ent, float X, float Y, float Z) {
+	VectorSet(ent->s.modelScale, X, Y, Z);
+}
 static void G_Mono_Kill(gentity_t * ent) {
 	if (!ent || !ent->client) return;
 	G_Kill(ent);
@@ -299,6 +307,10 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_IsPlayer", G_Mono_IsPlayer);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHealth", G_Mono_GetHealth);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetHealth", G_Mono_SetHealth);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetSkinIndex", G_Mono_GetSkinIndex);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetSkinIndex", G_Mono_SetSkinIndex);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModelScale", G_Mono_GetModelScale);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetModelScale", G_Mono_SetModelScale);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetEntityType", G_Mono_GetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetEntityType", G_Mono_SetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);

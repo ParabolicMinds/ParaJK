@@ -279,7 +279,7 @@ Called by both the front end and the back end
 =================
 */
 void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms,
-					   orientationr_t *ori ) {
+					   orientationr_t *ori) {
 //	float	glMatrix[16];
 	vec3_t	delta;
 	float	axisLength;
@@ -1233,6 +1233,8 @@ void R_AddEntitySurfaces (void) {
 			} else {
 				switch ( tr.currentModel->type ) {
 				case MOD_MESH:
+					if (ent->e.modelScale[0] || ent->e.modelScale[1] || ent->e.modelScale[2])
+						ent->e.shouldScale = qtrue;
 					R_AddMD3Surfaces( ent );
 					break;
 				case MOD_BRUSH:

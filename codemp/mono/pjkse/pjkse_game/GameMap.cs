@@ -73,6 +73,7 @@ internal static class MapCSBridge {
 
 	internal static void Reload() {
 		BridgeShutdown();
+		G.EntityRegistry.Clear();
 		BridgeInitialize(lastLoad);
 		BridgeMapInitialize();
 	}
@@ -125,9 +126,10 @@ internal static class MapCSBridge {
 				G.PrintLine(o);
 			}
 		}
-		if (results.Errors.Count > 0) {
+		if (results.Errors.HasErrors) {
 			G.PrintLine("C# compile errors:");
 			foreach(CompilerError o in results.Errors) {
+				if (o.IsWarning) continue;
 				G.PrintLine(o.ToString());
 			}
 			throw new Exception("C# Script compilation has errors... Cannot continue.");

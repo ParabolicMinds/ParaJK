@@ -1950,7 +1950,7 @@ static void WP_FireRocket( gentity_t *ent, qboolean altFire )
 	// Make it easier to hit things
 	float rSize = pjkGCvarFloatValue(PJK_GAME_ROCKETSIZE_CVAR);
 	VectorSet( missile->r.maxs, rSize, rSize, rSize );
-	VectorSet( missile->modelScale, rSize/3.0f, rSize/3.0f, rSize/3.0f );
+	VectorSet( missile->s.modelScale, rSize/3.0f, rSize/3.0f, rSize/3.0f );
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 
 	missile->damage = damage;
@@ -3398,7 +3398,7 @@ static void WP_FireConcussion( gentity_t *ent )
 	// Make it easier to hit things
 	float rSize = pjkGCvarFloatValue(PJK_GAME_ROCKETSIZE_CVAR);
 	VectorSet( missile->r.maxs, rSize, rSize, rSize );
-	VectorSet( missile->modelScale, rSize/3.0f, rSize/3.0f, rSize/3.0f );
+	VectorSet( missile->s.modelScale, rSize/3.0f, rSize/3.0f, rSize/3.0f );
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 
 	missile->damage = damage;

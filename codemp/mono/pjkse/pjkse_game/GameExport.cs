@@ -56,6 +56,16 @@ internal static class GAME_INTERNAL_EXPORT {
 	public static extern int GMono_GetClientNum ( IntPtr ent );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern int GMono_GetEntitiesByName(string targetname, IntPtr buffer, int bufptrlen, int substr);
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern IntPtr GMono_GetHitboxMin ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern IntPtr GMono_GetHitboxMax ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetHitbox ( IntPtr ent, float Xmin, float Ymin, float Zmin, float Xmax, float Ymax, float Zmax );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern int GMono_GetSolid ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetSolid ( IntPtr ent, int solid );
 
 	//SERVER
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]

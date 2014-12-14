@@ -846,18 +846,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 				// from the wrong frame
 				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 
-				if (backEnd.currentEntity->e.shouldScale) {
-					backEnd.currentEntity->e.axis[0][0] *= backEnd.currentEntity->e.modelScale[0];
-					backEnd.currentEntity->e.axis[0][1] *= backEnd.currentEntity->e.modelScale[0];
-					backEnd.currentEntity->e.axis[0][2] *= backEnd.currentEntity->e.modelScale[0];
-					backEnd.currentEntity->e.axis[1][0] *= backEnd.currentEntity->e.modelScale[1];
-					backEnd.currentEntity->e.axis[1][1] *= backEnd.currentEntity->e.modelScale[1];
-					backEnd.currentEntity->e.axis[1][2] *= backEnd.currentEntity->e.modelScale[1];
-					backEnd.currentEntity->e.axis[2][0] *= backEnd.currentEntity->e.modelScale[2];
-					backEnd.currentEntity->e.axis[2][1] *= backEnd.currentEntity->e.modelScale[2];
-					backEnd.currentEntity->e.axis[2][2] *= backEnd.currentEntity->e.modelScale[2];
-				}
-
 				// set up the transformation matrix
 				R_RotateForEntity( backEnd.currentEntity, &backEnd.viewParms, &backEnd.ori);
 

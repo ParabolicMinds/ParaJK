@@ -15,6 +15,13 @@ Ghoul2 Insert end
 extern qboolean CG_InFighter( void );
 static void CG_Missile( centity_t *cent );
 
+static void SetupCustomScaling(entityState_t * es, refEntity_t * re) {
+	if (es->modelScale[0] || es->modelScale[1] || es->modelScale[2]) {
+		VectorCopy(es->modelScale, re->modelScale);
+	}
+	ScaleModelAxis(re);
+}
+
 /*
 ======================
 CG_PositionEntityOnTag
@@ -1352,6 +1359,9 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
+
+	SetupCustomScaling(s1, &ent);
+
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
 
@@ -2577,10 +2587,6 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 
-	if (s1->modelScale[0] || s1->modelScale[1] || s1->modelScale[2]) {
-		VectorCopy(s1->modelScale, ent.modelScale);
-	}
-
 	// flicker between two skins
 	ent.skinNum = cg.clientFrame & 1;
 	ent.renderfx = /*weapon->missileRenderfx | */RF_NOSHADOW;
@@ -2657,6 +2663,8 @@ Ghoul2 Insert End
 	{
 		ent.radius = s1->g2radius;
 	}
+
+	SetupCustomScaling(s1, &ent);
 
 	// add to refresh list, possibly with quad glow
 	CG_AddRefEntityWithPowerups( &ent, s1, TEAM_FREE );
@@ -2871,9 +2879,7 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 
-	if (s1->modelScale[0] || s1->modelScale[1] || s1->modelScale[2]) {
-		VectorCopy(s1->modelScale, ent.modelScale);
-	}
+	SetupCustomScaling(s1, &ent);
 
 	// flicker between two skins (FIXME?)
 	// No, don't do that you idiot. What a stupid thing to do.

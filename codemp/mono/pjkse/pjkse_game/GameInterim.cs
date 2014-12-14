@@ -61,6 +61,33 @@ public class Vec3 {
 	}
 }
 
+public class Box {
+	public Vec3 Min;
+	public Vec3 Max;
+	public Box(Vec3 Min, Vec3 Max) {
+		this.Min = Min;
+		this.Max = Max;
+	}
+	public Vec3 Difference() {
+		return Max - Min;
+	}
+	public float Height {
+		get {
+			return Max.Y - Min.Y;
+		}
+	}
+	public float WidthX {
+		get {
+			return Max.X - Min.X;
+		}
+	}
+	public float WidthZ {
+		get {
+			return Max.Z - Min.Z;
+		}
+	}
+}
+
 public class GameFile {
 	Int32 handle;
 	public GameFile(string path) {
@@ -195,6 +222,22 @@ public class Entity {
 		}
 		set {
 			GAME_INTERNAL_EXPORT.GMono_SetEntityType(ent, (int)value);
+		}
+	}
+	public Box Hitbox {
+		get {
+			return new Box(new Vec3(GAME_INTERNAL_EXPORT.GMono_GetHitboxMin(ent)), new Vec3(GAME_INTERNAL_EXPORT.GMono_GetHitboxMax(ent)));
+		}
+		set {
+			GAME_INTERNAL_EXPORT.GMono_SetHitbox(ent, value.Min.X, value.Min.Y, value.Min.Z, value.Max.X, value.Max.Y, value.Max.Z);
+		}
+	}
+	public bool Solid {
+		get {
+			return GAME_INTERNAL_EXPORT.GMono_GetSolid(ent) != 0;
+		}
+		set {
+			GAME_INTERNAL_EXPORT.GMono_SetSolid(ent, value?1:0);
 		}
 	}
 	public int clientNum {

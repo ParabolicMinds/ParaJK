@@ -208,6 +208,26 @@ static void G_Mono_SetSkinIndex(gentity_t * ent, int newIndex) {
 static void * G_Mono_GetModelScale(gentity_t * ent) {
 	return ent->s.modelScale;
 }
+static void G_Mono_SetHitbox(gentity_t * ent, float Xmin, float Ymin, float Zmin, float Xmax, float Ymax, float Zmax) {
+	VectorSet(ent->r.mins, Xmin, Ymin, Zmin);
+	VectorSet(ent->r.maxs, Xmax, Ymax, Zmax);
+}
+static void * G_Mono_GetHitboxMin(gentity_t * ent) {
+	return ent->r.mins;
+}
+static void * G_Mono_GetHitboxMax(gentity_t * ent) {
+	return ent->r.maxs;
+}
+static void G_Mono_SetSolid(gentity_t * ent, int solid) {
+	if (solid)
+		ent->r.contents |= (CONTENTS_SOLID | CONTENTS_BODY);
+	else
+		ent->r.contents &= ~(CONTENTS_SOLID | CONTENTS_BODY);
+}
+static int G_Mono_GetSolid(gentity_t * ent) {
+	return (ent->r.contents & CONTENTS_SOLID) && (ent->r.contents & CONTENTS_BODY);
+}
+
 static void G_Mono_SetModelScale(gentity_t * ent, float X, float Y, float Z) {
 	VectorSet(ent->s.modelScale, X, Y, Z);
 }
@@ -311,6 +331,13 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetSkinIndex", G_Mono_SetSkinIndex);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModelScale", G_Mono_GetModelScale);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetModelScale", G_Mono_SetModelScale);
+
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHitboxMin", G_Mono_GetHitboxMin);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHitboxMax", G_Mono_GetHitboxMax);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetHitbox", G_Mono_SetHitbox);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetSolid", G_Mono_GetSolid);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetSolid", G_Mono_SetSolid);
+
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetEntityType", G_Mono_GetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetEntityType", G_Mono_SetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);

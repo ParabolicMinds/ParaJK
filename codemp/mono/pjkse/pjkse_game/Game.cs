@@ -37,6 +37,7 @@ public static class G {
 	
 public class EntityRegistry {
 	protected Dictionary<string, Entity> reg = new Dictionary<string, Entity>();
+	protected List<Entity> reg2 = new List<Entity>();
 
 	internal EntityRegistry() {}
 
@@ -45,7 +46,14 @@ public class EntityRegistry {
 			throw new Exception("Cannot register new entity, key already exists.");
 		}
 		Entity ent = Entity.FromPtr(GAME_INTERNAL_EXPORT.GMono_Spawn());
+		ent.Valid = true;
 		reg[key] = ent;
+		return ent;
+	}
+	public Entity Register() {
+		Entity ent = Entity.FromPtr(GAME_INTERNAL_EXPORT.GMono_Spawn());
+		ent.Valid = true;
+		reg2.Add(ent);
 		return ent;
 	}
 
@@ -60,11 +68,22 @@ public class EntityRegistry {
 	}
 
 	public void Free(string key) {
-		if (!reg.ContainsKey(key)) return;
+		if (!reg.ContainsKey(key)) throw new ArgumentException("An entity with this key was not found.");
 		Entity ent = reg[key];
 		reg.Remove(key);
 		GAME_INTERNAL_EXPORT.GMono_Free(ent.GetPtr());
 		ent = null;
+	}
+
+	public void Free(Entity ent) {
+		for (int i = reg2.Count - 1; i >= 0; i--) {
+			if (reg2.ElementAt(i).Equals(ent)) {
+				GAME_INTERNAL_EXPORT.GMono_Free(ent.GetPtr());
+				reg2.RemoveAt(i);
+				return;
+			}
+		}
+		throw new ArgumentException("Free was attempted on an unregistered entity. If the entity was registered with a key, it must be removed with a key.");
 	}
 
 	public void Clear() {
@@ -72,6 +91,10 @@ public class EntityRegistry {
 			GAME_INTERNAL_EXPORT.GMono_Free(e.GetPtr());
 		}
 		reg.Clear();
+		foreach (Entity e in reg2) {
+			GAME_INTERNAL_EXPORT.GMono_Free(e.GetPtr());
+		}
+		reg2.Clear();
 	}
 }
 
@@ -180,12 +203,45 @@ public class FutureEvents {
 	/*
 	================================================================
 	*/
+	/*
+	================================================================
+	Simple Entity Event
+	================================================================
+	*/
+	SortedList<int, Entity> freeEvents = new SortedList<int, Entity>();
+	public void AddFreeEvent(int future_msec, Entity ent) {
+		int ftime = lastFrame + future_msec;
+		freeEvents.Add(ftime, ent);
+	}
+	public void RemoveFreeEvents(Entity ent) {
+		for (int i = freeEvents.Count - 1; i >= 0; i--) {
+			if (freeEvents.ElementAt(i).Value.Equals(ent)) freeEvents.RemoveAt(i);
+		}
+	}
+	protected void RunFreeEvents() {
+		for (int i = freeEvents.Count - 1; i >= 0; i--) {
+			KeyValuePair<int, Entity> cur = freeEvents.ElementAt(i);
+			if (cur.Key <= lastFrame) {
+				try {
+					G.EntityRegistry.Free(cur.Value);
+				} catch (Exception e) {
+					G.PrintLine(e.ToString());
+				} finally {
+					freeEvents.RemoveAt(i);
+				}
+			}
+		}
+	}
+	/*
+	================================================================
+	*/
 
 	internal void RunFrame(int leveltime) {
 		lastFrame = leveltime;
 		RunSimpleEvents();
 		RunSimpleEntityEvents();
 		RunComplexEvents();
+		RunFreeEvents();
 	}
 	internal FutureEvents() {}
 }

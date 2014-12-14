@@ -165,6 +165,8 @@ static void G_Mono_SetModelName(gentity_t * ent, mono_string * str) {
 	ent->model = strdup(model);
 	mono->FreeMonoObject(model);
 	ent->s.modelindex = G_ModelIndex(ent->model);
+	trap->UnlinkEntity((sharedEntity_t *)ent);
+	trap->LinkEntity((sharedEntity_t *)ent);
 }
 static mono_string * G_Mono_GetTargetname(gentity_t * ent) {
 	if (ent->targetname)
@@ -211,6 +213,8 @@ static void * G_Mono_GetModelScale(gentity_t * ent) {
 static void G_Mono_SetHitbox(gentity_t * ent, float Xmin, float Ymin, float Zmin, float Xmax, float Ymax, float Zmax) {
 	VectorSet(ent->r.mins, Xmin, Ymin, Zmin);
 	VectorSet(ent->r.maxs, Xmax, Ymax, Zmax);
+	trap->UnlinkEntity((sharedEntity_t *)ent);
+	trap->LinkEntity((sharedEntity_t *)ent);
 }
 static void * G_Mono_GetHitboxMin(gentity_t * ent) {
 	return ent->r.mins;
@@ -223,6 +227,8 @@ static void G_Mono_SetSolid(gentity_t * ent, int solid) {
 		ent->r.contents |= (CONTENTS_SOLID | CONTENTS_BODY);
 	else
 		ent->r.contents &= ~(CONTENTS_SOLID | CONTENTS_BODY);
+	trap->UnlinkEntity((sharedEntity_t *)ent);
+	trap->LinkEntity((sharedEntity_t *)ent);
 }
 static int G_Mono_GetSolid(gentity_t * ent) {
 	return (ent->r.contents & CONTENTS_SOLID) && (ent->r.contents & CONTENTS_BODY);
@@ -230,10 +236,16 @@ static int G_Mono_GetSolid(gentity_t * ent) {
 
 static void G_Mono_SetModelScale(gentity_t * ent, float X, float Y, float Z) {
 	VectorSet(ent->s.modelScale, X, Y, Z);
+	trap->UnlinkEntity((sharedEntity_t *)ent);
+	trap->LinkEntity((sharedEntity_t *)ent);
 }
 static void G_Mono_Kill(gentity_t * ent) {
 	if (!ent || !ent->client) return;
-	G_Kill(ent);
+	if (ent->NPC) {
+		ent->health = -999;
+		ent->die(ent, ent, ent, ent->client->pers.maxHealth, MOD_SUICIDE);
+	} else
+		G_Kill(ent);
 }
 static int G_Mono_IsNPC(gentity_t * ent) {
 	if (ent->NPC) return 1;
@@ -331,13 +343,11 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetSkinIndex", G_Mono_SetSkinIndex);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModelScale", G_Mono_GetModelScale);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetModelScale", G_Mono_SetModelScale);
-
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHitboxMin", G_Mono_GetHitboxMin);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetHitboxMax", G_Mono_GetHitboxMax);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetHitbox", G_Mono_SetHitbox);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetSolid", G_Mono_GetSolid);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetSolid", G_Mono_SetSolid);
-
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetEntityType", G_Mono_GetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetEntityType", G_Mono_SetType);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);

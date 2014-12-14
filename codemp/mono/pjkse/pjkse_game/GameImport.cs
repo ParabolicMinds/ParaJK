@@ -35,7 +35,9 @@ internal static class GAME_INTERNAL_IMPORT {
 
 	unsafe public static void GMono_EntityEntry(string tag, void * self, void * activator, int count1, void * entptr1, int count2, void * entptr2, int count3, void * entptr3, int count4, void * entptr4) {
 		Entity Self = Entity.FromPtr(new IntPtr(self));
+		Self.Valid = true;
 		Entity Activator = Entity.FromPtr(new IntPtr(activator));
+		Activator.Valid = true;
 		Entity[] TargetsOne = new Entity[count1];
 		if (TargetsOne.Length > 0) {
 			IntPtr t1start = new IntPtr(entptr1);
@@ -43,6 +45,7 @@ internal static class GAME_INTERNAL_IMPORT {
 			Marshal.Copy(t1start, ents1, 0, count1);
 			for (int i = 0; i < count1; i++) {
 				TargetsOne[i] = Entity.FromPtr(ents1[i]);
+				TargetsOne[i].Valid = true;
 			}
 		}
 		Entity[] TargetsTwo = new Entity[count2];
@@ -52,6 +55,7 @@ internal static class GAME_INTERNAL_IMPORT {
 			Marshal.Copy(t2start, ents2, 0, count2);
 			for (int i = 0; i < count2; i++) {
 				TargetsTwo[i] = Entity.FromPtr(ents2[i]);
+				TargetsTwo[i].Valid = true;
 			}
 		}
 		Entity[] TargetsThree = new Entity[count3];
@@ -61,6 +65,7 @@ internal static class GAME_INTERNAL_IMPORT {
 			Marshal.Copy(t3start, ents3, 0, count3);
 			for (int i = 0; i < count3; i++) {
 				TargetsThree[i] = Entity.FromPtr(ents3[i]);
+				TargetsThree[i].Valid = true;
 			}
 		}
 		Entity[] TargetsFour = new Entity[count4];
@@ -70,6 +75,7 @@ internal static class GAME_INTERNAL_IMPORT {
 			Marshal.Copy(t4start, ents4, 0, count4);
 			for (int i = 0; i < count4; i++) {
 				TargetsFour[i] = Entity.FromPtr(ents4[i]);
+				TargetsFour[i].Valid = true;
 			}
 		}
 		EntityPack ep = new EntityPack (Self, Activator, TargetsOne, TargetsTwo, TargetsThree, TargetsFour);
@@ -79,6 +85,7 @@ internal static class GAME_INTERNAL_IMPORT {
 	unsafe public static void GMono_ChatEvent(void * sender, string msg) {
 		IntPtr entPtr = new IntPtr(sender);
 		Entity ent = Entity.FromPtr(entPtr);
+		ent.Valid = true;
 		MapCSBridge.BridgeChat(ent, msg);
 	}
 }

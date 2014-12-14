@@ -128,6 +128,7 @@ public class Entity {
 	================================================================
 	*/
 	protected IntPtr ent;
+	protected bool valid = false;
 	/*
 	================================================================
 	*/
@@ -137,14 +138,21 @@ public class Entity {
 	Construction/Destruction
 	================================================================
 	*/
-	public Entity () {}
 	private Entity(IntPtr ent) {
 		this.ent = ent;
 	}
 	public static Entity FromPtr(IntPtr ptr) {
 		return new Entity(ptr);
 	}
-	public IntPtr GetPtr() {return ent;}
+	internal IntPtr GetPtr() {return ent;}
+	public bool Valid {
+		get {
+			return valid;
+		}
+		internal set {
+			valid = value;
+		}
+	}
 	/*
 	================================================================
 	*/
@@ -224,7 +232,7 @@ public class Entity {
 			GAME_INTERNAL_EXPORT.GMono_SetEntityType(ent, (int)value);
 		}
 	}
-	public Box Hitbox {
+	public Box Bounds {
 		get {
 			return new Box(new Vec3(GAME_INTERNAL_EXPORT.GMono_GetHitboxMin(ent)), new Vec3(GAME_INTERNAL_EXPORT.GMono_GetHitboxMax(ent)));
 		}
@@ -335,7 +343,7 @@ public class EntityPack {
 	public Entity[] TargetsTwo;
 	public Entity[] TargetsThree;
 	public Entity[] TargetsFour;
-	public EntityPack(Entity Self, Entity Activator, Entity[] T1, Entity[] T2, Entity[] T3, Entity[] T4) {
+	internal EntityPack(Entity Self, Entity Activator, Entity[] T1, Entity[] T2, Entity[] T3, Entity[] T4) {
 		this.Self = Self;
 		this.Activator = Activator;
 		this.TargetsOne = T1;

@@ -6,8 +6,10 @@ if(NOT InOpenJK)
 	message(FATAL_ERROR "Use the top-level cmake script!")
 endif(NOT InOpenJK)
 
-find_package(PkgConfig)
-pkg_check_modules (MONO mono-2)
+if (BuildMono)
+    find_package(PkgConfig)
+    pkg_check_modules (MONO mono-2)
+endif()
 
 set(MPSharedDefines ${SharedDefines})
 

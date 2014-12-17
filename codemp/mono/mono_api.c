@@ -1,3 +1,5 @@
+#ifdef __mono_enable
+
 #include "mono_api.h"
 
 #include "mono/jit/jit.h"
@@ -124,3 +126,5 @@ void MonoAPI_FreeVMImport(monoImport_t * import) {
 	if (import)
 		free(import);
 }
+
+#endif

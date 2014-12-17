@@ -1493,10 +1493,12 @@ void SP_worldspawn( void )
 	G_SpawnString( "soundSet", "default", &text );
 	trap->SetConfigstring( CS_GLOBAL_AMBIENT_SET, text );
 
+#ifdef __mono_enable
 	G_SpawnString( "cspack", "", &text );
 	if (strlen(text) > 0) {
 		G_MonoApi_Internal_Initialize(text);
 	}
+#endif
 
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
 	g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;

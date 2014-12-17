@@ -1248,7 +1248,7 @@ void R_Register( void )
 	r_noportals							= ri->Cvar_Get( "r_noportals",						"0",						CVAR_CHEAT );
 	r_shadows							= ri->Cvar_Get( "cg_shadows",						"1",						CVAR_NONE );
 	r_shadowRange						= ri->Cvar_Get( "r_shadowRange",					"1000",						CVAR_NONE );
-	r_marksOnTriangleMeshes				= ri->Cvar_Get( "r_marksOnTriangleMeshes",			"0",						CVAR_ARCHIVE );
+	r_marksOnTriangleMeshes				= ri->Cvar_Get( "r_marksOnTriangleMeshes",			"1",						CVAR_ARCHIVE );
 	r_maxpolys							= ri->Cvar_Get( "r_maxpolys",						XSTRING( DEFAULT_MAX_POLYS ),		CVAR_NONE );
 	r_maxpolyverts						= ri->Cvar_Get( "r_maxpolyverts",					XSTRING( DEFAULT_MAX_POLYVERTS ),	CVAR_NONE );
 /*

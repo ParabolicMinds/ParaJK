@@ -21,6 +21,8 @@ shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	int i;
 
+	shaderRemapsThisFrame++;
+
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
 			// found it, just update this one
@@ -636,7 +638,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, const char *string ) {
 	if (ent->targetShaderName && ent->targetShaderNewName) {
 		float f = level.time * 0.001;
 		AddRemap(ent->targetShaderName, ent->targetShaderNewName, f);
-		trap->SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+		//trap->SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 
 	if ( !string || !string[0] ) {

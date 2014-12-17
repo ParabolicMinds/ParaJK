@@ -29,7 +29,7 @@ internal static class GAME_INTERNAL_IMPORT {
 	}
 
 	public static void GMono_Reset() {
-		G.CenterPrintGlobal("C# Scripts Reloading...\nExpect massive lag on complex maps or slow servers.", false);
+		G.CenterPrintGlobal("C# Scripts Reloading...\nExpect massive lag on complex maps or slow servers.");
 		G.FutureEvents.AddSimpleEvent(1000, MapCSBridge.Reload);
 	}
 

@@ -66,6 +66,8 @@ internal static class GAME_INTERNAL_EXPORT {
 	public static extern int GMono_GetSolid ( IntPtr ent );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetSolid ( IntPtr ent, int solid );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_RemapShader ( string oldShader, string newShader );
 
 	//SERVER
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]

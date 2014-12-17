@@ -1,5 +1,7 @@
 #include "g_mono.h"
 
+#ifdef __mono_enable
+
 static monoImport_t * mono;
 static monoapihandle_t * mapi;
 static mono_class * mcl;
@@ -279,6 +281,13 @@ static void G_Mono_CenterPrint(mono_string * message, int clinum, int svprnt) {
 static int G_Mono_GetClientNum(gentity_t * cli) {
 	return cli->playerState ? cli->playerState->clientNum : -1;
 }
+static void G_Mono_RemapShader(mono_string * olds, mono_string * news) {
+	char * oldShader = mono->GetNewCharsFromString(olds);
+	char * newShader = mono->GetNewCharsFromString(news);
+	AddRemap(oldShader, newShader, level.time * 0.001);
+	mono->FreeMonoObject(oldShader);
+	mono->FreeMonoObject(newShader);
+}
 
 //SERVER
 static void G_Mono_Trap_Print(mono_string * str) {
@@ -353,6 +362,7 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Print", G_Mono_Trap_Print);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_CenterPrint", G_Mono_CenterPrint);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetClientNum", G_Mono_GetClientNum);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_RemapShader", G_Mono_RemapShader);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetEntitiesByName", G_Mono_GetEntitiesByName);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Open", G_Mono_OpenRead);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_FS_Read", trap->FS_Read);
@@ -389,3 +399,5 @@ void G_MonoApi_MapEntry(
 
 	G_MonoApi_Internal_EntityEntry(entrytag, self, activator, targets, targets2, targets3, targets4);
 }
+
+#endif

@@ -1,6 +1,8 @@
 #ifndef MONO_API_VM_H
 #define MONO_API_VM_H
 
+#ifdef __mono_enable
+
 #include "qcommon/q_shared.h"
 
 typedef void mono_class, mono_method, mono_string, mono_object;
@@ -26,5 +28,6 @@ typedef struct monoImport_s {
 	void *					(*UnboxMonoObject)(mono_object * obj);
 } monoImport_t;
 
+#endif
 
 #endif //MONO_API_VM_H

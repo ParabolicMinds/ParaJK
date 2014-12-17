@@ -262,6 +262,8 @@ void CG_PrintColors(void) {
 	trap->Print("^00^11^22^33^44^55^66^77^88^99\n");
 }
 
+#ifdef __mono_enable
+
 #include "mono/mono_api_vm.h"
 
 static monoImport_t * mono;
@@ -285,6 +287,8 @@ static void CG_Monotest_f (void) {
 	trap->Print("Mono CG Test: CRITICAL FAILURE\n");
 }
 
+#endif
+
 /* This array MUST be sorted correctly by alphabetical name field */
 static consoleCommand_t	commands[] = {
 	{ "+scores",					CG_ScoresDown_f },
@@ -297,7 +301,9 @@ static consoleCommand_t	commands[] = {
 	{ "invnext",					CG_NextInventory_f },
 	{ "invprev",					CG_PrevInventory_f },
 	{ "loaddeferred",				CG_LoadDeferredPlayers },
+#ifdef __mono_enable
 	{ "mono_cg",					CG_Monotest_f },
+#endif
 	{ "nextframe",					CG_TestModelNextFrame_f },
 	{ "nextskin",					CG_TestModelNextSkin_f },
 	{ "prevframe",					CG_TestModelPrevFrame_f },

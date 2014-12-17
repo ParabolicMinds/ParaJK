@@ -898,6 +898,8 @@ void SP_target_scriptrunner( gentity_t *self )
 #define MAX_TARGETHITS 64
 
 void csentry_run (gentity_t *self) {
+
+#ifdef __mono_enable
 	if (!self || !self->activator) {
 		Com_Printf("C# Entry Failed: Either the entity or the entity's activator was not valid.");
 		return;
@@ -954,6 +956,10 @@ void csentry_run (gentity_t *self) {
 		}
 	}
 	G_MonoApi_MapEntry(self->behaviorSet[BSET_USE], self, self->activator, t1, t2, t3, t4);
+
+#else
+	Com_Printf("C# entry cannot be used, This compilation does not support Mono C#");
+#endif
 
 	if ( self->wait ) {
 		self->nextthink = level.time + self->wait;

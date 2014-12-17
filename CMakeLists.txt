@@ -40,6 +40,12 @@ endif()
 
 option(PackageDir "Where to place the installer/package." "${CMAKE_SOURCE_DIR}/package")
 
+option(BuildMono "Whether to build with mono." ON)
+
+if (BuildMono)
+    add_definitions( -D__mono_enable )
+endif()
+
 # Custom CMake Modules needed
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/CMakeModules")
 

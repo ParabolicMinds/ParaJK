@@ -1076,7 +1076,9 @@ typedef struct gameImport_s {
 	void		(*G2API_CleanEntAttachments)			( void );
 	qboolean	(*G2API_OverrideServer)					( void *serverInstance );
 	void		(*G2API_GetSurfaceName)					( void *ghoul2, int surfNumber, int modelIndex, char *fillBuf );
+#ifdef __mono_enable
 	monoImport_t *		(*MonoCreateImport)				( void );
+#endif
 } gameImport_t;
 
 typedef struct gameExport_s {

@@ -287,7 +287,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	navCalculatePaths	= ( trap->Nav_Load( mapname.string, ckSum.integer ) == qfalse );
 
+#ifdef __mono_enable
 	G_MonoApi_Initialize();
+#endif
 
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString(qfalse);
@@ -295,7 +297,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// general initialization
 	G_FindTeams();
 
+#ifdef __mono_enable
 	G_MonoApi_Internal_MapInitialize();
+#endif
 
 	// make sure we have flags for CTF, etc
 	if( level.gametype >= GT_TEAM ) {
@@ -413,7 +417,9 @@ void G_ShutdownGame( int restart ) {
 	int i = 0;
 	gentity_t *ent;
 
+#ifdef __mono_enable
 	G_MonoApi_Shutdown();
+#endif
 
 //	trap->Print ("==== ShutdownGame ====\n");
 
@@ -3341,6 +3347,16 @@ void G_RunFrame( int levelTime ) {
 			ClearNPCGlobals();
 		}
 	}
+
+#ifdef __mono_enable
+	G_MonoApi_Frame();
+#endif
+
+	if (shaderRemapsThisFrame > 0) {
+		trap->SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+		shaderRemapsThisFrame = 0;
+	}
+
 #ifdef _G_FRAME_PERFANAL
 	iTimer_ItemRun = trap->PrecisionTimer_End(timer_ItemRun);
 #endif
@@ -3431,8 +3447,6 @@ void G_RunFrame( int levelTime ) {
 		iTimer_GameChecks,
 		iTimer_Queues);
 #endif
-
-	G_MonoApi_Frame();
 
 	g_LastFrameTime = level.time;
 }

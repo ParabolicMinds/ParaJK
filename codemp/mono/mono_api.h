@@ -1,6 +1,8 @@
 #ifndef MONO_API_H
 #define MONO_API_H
 
+#ifdef __mono_enable
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -50,6 +52,8 @@ void				MonoAPI_FreeVMImport(monoImport_t * import);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif //MONO_API_H

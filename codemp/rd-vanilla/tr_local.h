@@ -456,7 +456,8 @@ typedef struct shader_s {
 	// True if this shader has a stage with glow in it (just an optimization).
 	bool hasGlow;
 
-	struct shader_s *remappedShader;                  // current shader this one is remapped too
+	struct shader_s		*remappedShader;                  // current shader this one is remapped too
+	bool				remapImageOnly;
 	struct	shader_s	*next;
 } shader_t;
 
@@ -1375,6 +1376,7 @@ shader_t	*R_GetShaderByState( int index, long *cycleTime );
 shader_t *R_FindShaderByName( const char *name );
 void		R_InitShaders(qboolean server);
 void		R_ShaderList_f( void );
+void    R_RemapShaderImageDirty(const char *oldShader, const char *newShader);
 void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
 
 //

@@ -11,11 +11,11 @@ public static class G {
 	public static void PrintLine(string str) {
 		GAME_INTERNAL_EXPORT.GMono_Print (str + '\n');
 	}
-	public static void CenterPrintClient(string message, Entity player, bool svlog = true) {
-		GAME_INTERNAL_EXPORT.GMono_CenterPrint(message, player.clientNum, svlog?1:0);
+	public static void CenterPrintClient(string message, Entity player) {
+		GAME_INTERNAL_EXPORT.GMono_CenterPrint(message, player.clientNum, false?1:0);
 	}
-	public static void CenterPrintGlobal(string message, bool svlog = true) {
-		GAME_INTERNAL_EXPORT.GMono_CenterPrint(message, -1, svlog?1:0);
+	public static void CenterPrintGlobal(string message) {
+		GAME_INTERNAL_EXPORT.GMono_CenterPrint(message, -1, false?1:0);
 	}
 	public static void Use(EntityPack ents, string target) {
 		GAME_INTERNAL_EXPORT.GMono_UseTarget(ents.Self.GetPtr(), ents.Activator.GetPtr(), target);
@@ -30,6 +30,9 @@ public static class G {
 		}
 		Marshal.FreeHGlobal(iarry);
 		return ents;
+	}
+	public static void AddShaderRemap(string oldShader, string newShader) {
+		GAME_INTERNAL_EXPORT.GMono_RemapShader(oldShader, newShader);
 	}
 	public static EntityRegistry EntityRegistry = new EntityRegistry();
 	public static FutureEvents FutureEvents = new FutureEvents();
@@ -101,34 +104,59 @@ public class EntityRegistry {
 public class FutureEvents {
 	private int lastFrame;
 
+	private class EventList<Value> : SortedList<int, List<Value>> {
+		public void Add(int msec, Value value) {
+			if (!this.ContainsKey(msec)) {
+				base.Add(msec, new List<Value>() {value});
+			} else {
+				this[msec].Add(value);
+			}
+		}
+		public void RemoveAll(Value v) {
+			for (int i = this.Count - 1; i >= 0; i--) {
+				List<Value> l = this.ElementAt(i).Value;
+				l.RemoveAll(x => x.Equals(v));
+				if (l.Count == 0)
+					base.RemoveAt(i);
+			}
+		}
+		public IEnumerable<KeyValuePair<int, Value>> GetEnumerable() {
+			return this.SelectMany(x => x.Value.Select(y => new KeyValuePair<int, Value>(x.Key, y)));
+		}
+		public IEnumerable<Value> GetExpiredEvents(int curMsec, out IEnumerable<int> hitKeys) {
+			hitKeys = this.Where(x => x.Key <= curMsec).Select(x => x.Key);
+			return this.Where(x => x.Key <= curMsec).SelectMany(x => x.Value);
+		}
+		public void RemoveRange(IEnumerable<int> range) {
+			foreach(int i in range) {
+				this.Remove(i);
+			}
+		}
+	}
+
 	/*
 	================================================================
 	Simple Event (Event With No Arguments)
 	================================================================
 	*/
-	SortedList<int, Action> simpleEvents = new SortedList<int, Action>();
+	EventList<Action> simpleEvents = new EventList<Action>();
 	public void AddSimpleEvent(int future_msec, Action act) {
 		int ftime = lastFrame + future_msec;
 		simpleEvents.Add(ftime, act);
 	}
 	public void RemoveSimpleEvents(Action e) {
-		for (int i = simpleEvents.Count - 1; i >= 0; i--) {
-			if (simpleEvents.ElementAt(i).Value.Equals(e)) simpleEvents.RemoveAt(i);
-		}
+		simpleEvents.RemoveAll(e);
 	}
 	protected void RunSimpleEvents() {
-		for (int i = simpleEvents.Count - 1; i >= 0; i--) {
-			KeyValuePair<int, Action> cur = simpleEvents.ElementAt(i);
-			if (cur.Key <= lastFrame) {
-				try {
-					cur.Value.Invoke();
-				} catch (Exception e) {
-					G.PrintLine(e.ToString());
-				} finally {
-					simpleEvents.RemoveAt(i);
-				}
+		IEnumerable<int> hv;
+		foreach(Action A in simpleEvents.GetExpiredEvents(lastFrame, out hv)) {
+			try {
+				A.Invoke();
+			} catch (Exception e) {
+				G.PrintLine(e.ToString());
 			}
 		}
+		simpleEvents.RemoveRange(hv);
 	}
 	/*
 	================================================================
@@ -139,8 +167,8 @@ public class FutureEvents {
 	Complex Event (Event With Arguments)
 	================================================================
 	*/
-	private struct ComplexGroup {public Object instance; public MethodInfo method; public Object[] parameters;}
-	SortedList<int, ComplexGroup> complexEvents = new SortedList<int, ComplexGroup>();
+	public struct ComplexGroup {public Object instance; public MethodInfo method; public Object[] parameters;}
+	EventList<ComplexGroup> complexEvents = new EventList<ComplexGroup>();
 	public void AddComplexEvent(int future_msec, Type classType, string methodName, object instance, params object[] parameters) {
 		int ftime = lastFrame + future_msec;
 		MethodInfo meth = classType.GetMethod(methodName);
@@ -153,19 +181,19 @@ public class FutureEvents {
 		cg.parameters = parameters;
 		complexEvents.Add(ftime, cg);
 	}
+	public void RemoveComplexEvents(ComplexGroup e) {
+		complexEvents.RemoveAll(e);
+	}
 	protected void RunComplexEvents() {
-		for (int i = complexEvents.Count - 1; i >= 0; i--) {
-			KeyValuePair<int, ComplexGroup> cur = complexEvents.ElementAt(i);
-			if (cur.Key <= lastFrame) {
-				try {
-					cur.Value.method.Invoke(cur.Value.instance, cur.Value.parameters);
-				} catch (Exception e) {
-					G.PrintLine(e.ToString());
-				} finally {
-					complexEvents.RemoveAt(i);
-				}
+		IEnumerable<int> hv;
+		foreach(ComplexGroup cg in complexEvents.GetExpiredEvents(lastFrame, out hv)) {
+			try {
+				cg.method.Invoke(cg.instance, cg.parameters);
+			} catch (Exception e) {
+				G.PrintLine(e.ToString());
 			}
 		}
+		complexEvents.RemoveRange(hv);
 	}
 	/*
 	================================================================
@@ -176,7 +204,7 @@ public class FutureEvents {
 	Simple Entity Event
 	================================================================
 	*/
-	SortedList<int, Tuple<Action, Entity>> simpleEntityEvents = new SortedList<int, Tuple<Action, Entity>>();
+	EventList<Tuple<Action, Entity>> simpleEntityEvents = new EventList<Tuple<Action, Entity>>();
 	public void AddSimpleEntityEvent(int future_msec, Entity ent, Action act) {
 		int ftime = lastFrame + future_msec;
 		simpleEntityEvents.Add(ftime, new Tuple<Action, Entity>(act, ent));
@@ -187,18 +215,15 @@ public class FutureEvents {
 		}
 	}
 	protected void RunSimpleEntityEvents() {
-		for (int i = simpleEntityEvents.Count - 1; i >= 0; i--) {
-			KeyValuePair<int, Tuple<Action, Entity>> cur = simpleEntityEvents.ElementAt(i);
-			if (cur.Key <= lastFrame) {
-				try {
-					cur.Value.Item1.Invoke();
-				} catch (Exception e) {
-					G.PrintLine(e.ToString());
-				} finally {
-					simpleEntityEvents.RemoveAt(i);
-				}
+		IEnumerable<int> hv;
+		foreach(Tuple<Action, Entity> aec in simpleEntityEvents.GetExpiredEvents(lastFrame, out hv)) {
+			try {
+				aec.Item1.Invoke();
+			} catch (Exception e) {
+				G.PrintLine(e.ToString());
 			}
 		}
+		simpleEntityEvents.RemoveRange(hv);
 	}
 	/*
 	================================================================

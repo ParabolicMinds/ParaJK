@@ -15,3 +15,5 @@ extern gentity_t * par_golfBalls[];
 void G_PJK_UpdateSaberLengths ();
 void G_PJK_UpdateJetpackTanks();
 void G_PJK_UpdateThermalGolfMode();
+
+extern int shaderRemapsThisFrame;

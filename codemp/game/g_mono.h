@@ -1,6 +1,8 @@
 #ifndef G_MONO_H
 #define G_MONO_H
 
+#ifdef __mono_enable
+
 #include "g_local.h"
 #include "mono/mono_api_vm.h"
 
@@ -33,5 +35,7 @@ void G_MonoApi_MapEntry(
 		mono_entitypass_t targets3,
 		mono_entitypass_t targets4);
 //================================
+
+#endif
 
 #endif //G_MONO_H

@@ -228,6 +228,8 @@ static qboolean	R_CullSurface( surfaceType_t *surface, shader_t *shader ) {
 }
 
 static int R_DlightFace( srfSurfaceFace_t *face, int dlightBits ) {
+
+	/* Disabling this section of the code for now... It was breaking brush entities with custom origins.
 	float		d;
 	int			i;
 	dlight_t	*dl;
@@ -243,6 +245,7 @@ static int R_DlightFace( srfSurfaceFace_t *face, int dlightBits ) {
 			dlightBits &= ~( 1 << i );
 		}
 	}
+	*/
 
 	if ( !dlightBits ) {
 		tr.pc.c_dlightSurfacesCulled++;

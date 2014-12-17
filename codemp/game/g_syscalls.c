@@ -972,10 +972,11 @@ void trap_Bot_UpdateWaypoints(int wpnum, wpobject_t **wps) {
 void trap_Bot_CalculatePaths(int rmg) {
 	Q_syscall(G_BOT_CALCULATEPATHS, rmg);
 }
+#ifdef __mono_enable
 monoImport_t * trap_CreateMonoImport(void) {
 	return Q_syscall(G_CREATEMONOIMPORT);
 }
-
+#endif
 
 // Translate import table funcptrs to syscalls
 
@@ -1336,5 +1337,7 @@ static void TranslateSyscalls( void ) {
 	trap->G2API_CleanEntAttachments			= trap_G2API_CleanEntAttachments;
 	trap->G2API_OverrideServer				= trap_G2API_OverrideServer;
 	trap->G2API_GetSurfaceName				= trap_G2API_GetSurfaceName;
+#ifdef __mono_enable
 	trap->MonoCreateImport					= trap_CreateMonoImport;
+#endif
 }

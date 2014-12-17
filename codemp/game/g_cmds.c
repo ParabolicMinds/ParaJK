@@ -1665,8 +1665,9 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		other = &g_entities[j];
 		G_SayTo( ent, other, mode, color, name, text, locMsg );
 	}
-
+#ifdef __mono_enable
 	if (mode == SAY_ALL) G_MonoApi_ChatEvent(ent, chatText);
+#endif
 }
 
 
@@ -3382,10 +3383,6 @@ ParaJK Command Functions
 ================
 */
 
-void Cmd_PTest_f( gentity_t *ent ) {
-	trap->Print("^00^11^22^33^44^55^66^77^88^99\n");
-}
-
 void Cmd_Qui_f( gentity_t *ent ) {
 	char sarg[MAX_STRING_CHARS];
 	if (trap->Argc() > 1) {
@@ -3471,11 +3468,11 @@ static void Cmd_QQuote_f( gentity_t *ent ) {
 	q_lindex = index;
 }
 
-#include "g_mono.h"
-
+#ifdef __mono_enable
 static void Cmd_MonoReset_f (gentity_t * ent) {
 	G_MonoApi_Reset();
 }
+#endif
 
 /*
 =================
@@ -3526,7 +3523,9 @@ command_t commands[] = {
 //	{ "kylesmash",			TryGrapple,					0 },
 	{ "levelshot",			Cmd_LevelShot_f,			CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "maplist",			Cmd_MapList_f,				CMD_NOINTERMISSION },
+#ifdef __mono_enable
 	{ "mono_reset",			Cmd_MonoReset_f,			0 },
+#endif
 	{ "noclip",				Cmd_Noclip_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "notarget",			Cmd_Notarget_f,				CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "npc",				Cmd_NPC_f,					CMD_CHEAT|CMD_ALIVE },
@@ -3547,7 +3546,6 @@ command_t commands[] = {
 	{ "vote",				Cmd_Vote_f,					CMD_NOINTERMISSION },
 	{ "where",				Cmd_Where_f,				CMD_NOINTERMISSION },
 	{ "wrists",				Cmd_Kill_f,					CMD_ALIVE|CMD_NOINTERMISSION },
-	{ "zmonotest",			Cmd_PTest_f,				CMD_ALIVE|CMD_NOINTERMISSION },
 };
 static const size_t numCommands = ARRAY_LEN( commands );
 

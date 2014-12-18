@@ -131,8 +131,20 @@ static void G_Mono_SetOrigin(gentity_t * ent, float X, float Y, float Z) {
 	VectorClear(ent->s.pos.trDelta);
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_STATIONARY;
-	ent->think = 0;
-	ent->nextthink = level.time;
+	trap->UnlinkEntity((sharedEntity_t *)ent);
+	trap->LinkEntity((sharedEntity_t *)ent);
+}
+static void * G_Mono_GetAnglesPtr(gentity_t * ent) {
+	return (ent->client && ent->client->sess.sessionTeam != TEAM_SPECTATOR) ? ent->r.currentAngles : ent->s.angles;
+}
+static void G_Mono_SetAngles(gentity_t * ent, float pitch, float yaw, float roll) {
+	vec3_t newAng = {pitch, yaw, roll};
+	VectorCopy(newAng, ent->s.angles);
+	VectorCopy( ent->s.angles, ent->s.apos.trBase );
+	VectorCopy( ent->s.angles, ent->r.currentAngles );
+	VectorClear(ent->s.apos.trDelta);
+	ent->s.apos.trTime = level.time;
+	ent->s.apos.trType = TR_STATIONARY;
 	trap->UnlinkEntity((sharedEntity_t *)ent);
 	trap->LinkEntity((sharedEntity_t *)ent);
 }
@@ -301,6 +313,11 @@ static int G_Mono_OpenRead(mono_string * path, void * handle) {
 	mono->FreeMonoObject(pathc);
 	return len;
 }
+static void G_Mono_PrecacheShader(mono_string * path) {
+	char * pathc = mono->GetNewCharsFromString(path);
+	trap->SendServerCommand(-1, va("%s %s", "prcShader", pathc));
+	mono->FreeMonoObject(pathc);
+}
 
 /*
 ================================================================================================
@@ -335,6 +352,8 @@ qboolean G_MonoApi_Initialize() {
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_Free", G_Mono_Free);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetOriginPtr", G_Mono_GetPositionPtr);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetOrigin", G_Mono_SetOrigin);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetAnglesPtr", G_Mono_GetAnglesPtr);
+	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_SetAngles", G_Mono_SetAngles);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_MoveTo", G_Mono_MoveTo);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_MoveStop", G_Mono_MoveStop);
 	mono->RegisterCMethod("GAME_INTERNAL_EXPORT::GMono_GetModel", G_Mono_GetModelName);

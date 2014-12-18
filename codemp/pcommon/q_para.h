@@ -7,6 +7,26 @@
 extern "C" {
 #endif
 
+/*
+=======================================================================================================================================
+=========================================================== GENERAL DEFINES ===========================================================
+=======================================================================================================================================
+*/
+
+//ParaJK sharedEntity_t flags
+#define		PARAFLAG_BITS		1
+
+#define		PF_LIT				(1<<0) // This entity should have a dyamic light following it. (Uses the customRGBA property)
+
+//ParaFlags associated values
+#define		PFV_LIT				50 // This is how bright entities with the PF_LIT flag will be.
+
+/*
+=======================================================================================================================================
+================================================================ CVARS ================================================================
+=======================================================================================================================================
+*/
+
 /*How2CreateParaJKCvar
  *
  * Step 1:
@@ -47,10 +67,6 @@ typedef struct vmPcvarfunc_s {
 #define PJK_GAME_INFINITE_FORCE_DVAL				"0"
 #define PJK_GAME_INFINITE_FORCE_FLAG				CVAR_SERVERINFO
 
-#define PJK_GAME_THERMAL_GOLF_CVAR					"g_pjk_thermalgolf"
-#define PJK_GAME_THERMAL_GOLF_DVAL					"0"
-#define PJK_GAME_THERMAL_GOLF_FLAG					CVAR_SERVERINFO
-
 #define PJK_GAME_DISRUPTOR_INSTAKILL_CVAR			"g_pjk_ikdisrupt"
 #define PJK_GAME_DISRUPTOR_INSTAKILL_DVAL			"0"
 #define PJK_GAME_DISRUPTOR_INSTAKILL_FLAG			CVAR_SERVERINFO
@@ -67,7 +83,7 @@ typedef struct vmPcvarfunc_s {
 #define PJK_GAME_ROCKETVEL_DVAL						"900.0"
 #define PJK_GAME_ROCKETVEL_FLAG						CVAR_SERVERINFO
 
-#define PJK_GAME_ROCKETSIZE_CVAR					"noni_g_pjk_rocketsize"
+#define PJK_GAME_ROCKETSIZE_CVAR					"g_pjk_rocketsize"
 #define PJK_GAME_ROCKETSIZE_DVAL					"3.0"
 #define PJK_GAME_ROCKETSIZE_FLAG					CVAR_SERVERINFO
 
@@ -120,6 +136,10 @@ BOTH CLIENT AND SERVER GAME
 #define PJK_BGAME_JETPACK_FUEL_DVAL					"100.0"
 #define PJK_BGAME_JETPACK_FUEL_FLAG					CVAR_SYSTEMINFO
 
+#define PJK_BGAME_THERMAL_GOLF_CVAR					"bg_pjk_thermalgolf"
+#define PJK_BGAME_THERMAL_GOLF_DVAL					"0"
+#define PJK_BGAME_THERMAL_GOLF_FLAG					CVAR_SYSTEMINFO
+
 extern const pcvar_t pjk_bg_cvars[];
 extern const size_t pjk_bg_num;
 
@@ -133,6 +153,12 @@ extern const size_t pjk_bg_num;
 
 extern const pcvar_t pjk_sv_cvars[];
 extern const size_t pjk_sv_num;
+
+/*
+=======================================================================================================================================
+================================================================= END =================================================================
+=======================================================================================================================================
+*/
 
 #ifdef __cplusplus
 }

@@ -2,10 +2,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="pjkse_game/Game.cs">
     <Files>
-      <File FileName="pjkse_game/GameImport.cs" Line="13" Column="2" />
-      <File FileName="pjkse_game/GameExport.cs" Line="31" Column="55" />
+      <File FileName="pjkse_game/GameImport.cs" Line="1" Column="1" />
+      <File FileName="pjkse_game/GameExport.cs" Line="1" Column="1" />
       <File FileName="pjkse_game/Game.cs" Line="14" Column="67" />
-      <File FileName="pjkse_game/GameInterim.cs" Line="13" Column="5" />
+      <File FileName="pjkse_game/GameInterim.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

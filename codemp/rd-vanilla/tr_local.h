@@ -457,7 +457,6 @@ typedef struct shader_s {
 	bool hasGlow;
 
 	struct shader_s		*remappedShader;                  // current shader this one is remapped too
-	bool				remapImageOnly;
 	struct	shader_s	*next;
 } shader_t;
 

@@ -136,6 +136,7 @@ void R_RemapShader(const char *shaderName, const char *newShaderName, const char
 		return;
 	}
 
+
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	COM_StripExtension( shaderName, strippedName, sizeof( strippedName ) );

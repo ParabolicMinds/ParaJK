@@ -22,7 +22,7 @@ char * pjkGCvarStringValue(const char * name) {
 vmPcvarfunc_t const vmCvarGFuncs[] = {
 	{ PJK_BGAME_SABER_LENGTH_CVAR,				G_PJK_UpdateSaberLengths },
 	{ PJK_BGAME_JETPACK_FUEL_CVAR,				G_PJK_UpdateJetpackTanks },
-	{ PJK_GAME_THERMAL_GOLF_CVAR,				G_PJK_UpdateThermalGolfMode },
+	{ PJK_BGAME_THERMAL_GOLF_CVAR,				G_PJK_UpdateThermalGolfMode },
 };
 int const vmCvarGFuncsLen = ARRAY_LEN(vmCvarGFuncs);
 

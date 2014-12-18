@@ -6100,7 +6100,6 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 
 		//------------------
 		case WP_THERMAL:
-
 			if ( pm->cmd.buttons & BUTTON_ALT_ATTACK )
 			{
 				altFire = qtrue; // override default of not being an alt-fire

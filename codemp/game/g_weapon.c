@@ -2050,7 +2050,7 @@ void thermalDetonatorExplode( gentity_t *ent )
 void thermalThinkStandard(gentity_t *ent)
 {
 	if (ent->genericValue5 < level.time) {
-		if (pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR)) {
+		if (pjkGCvarIntValue(PJK_BGAME_THERMAL_GOLF_CVAR)) {
 			gentity_t * const * tge;
 			size_t i;
 			for (i = 0, tge = par_golfBalls; i < MAX_CLIENTS; i++, tge++) {
@@ -2077,9 +2077,11 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
 
+	Com_Printf(va("TD Fire: %i", altFire));
+
 	bolt = G_Spawn();
 
-	if (pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR) && ent->client) {
+	if (pjkGCvarIntValue(PJK_BGAME_THERMAL_GOLF_CVAR) && ent->client) {
 		gentity_t * oldBall = par_golfBalls[ent->client->ps.clientNum];
 		if (oldBall) G_FreeEntity(oldBall);
 		par_golfBalls[ent->client->ps.clientNum] = bolt;
@@ -2128,15 +2130,18 @@ gentity_t *WP_FireThermalDetonator( gentity_t *ent, qboolean altFire )
 		bolt->s.pos.trDelta[2] += 120;
 	}
 
-	if ( !altFire || pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR) )
+	if ( !altFire || pjkGCvarIntValue(PJK_BGAME_THERMAL_GOLF_CVAR) )
 	{
 		bolt->flags |= FL_BOUNCE_HALF;
 	}
 
-	if (!pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR))
+	if (!pjkGCvarIntValue(PJK_BGAME_THERMAL_GOLF_CVAR))
 	{
 		bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
 		bolt->s.loopIsSoundset = qfalse;
+	} else {
+		bolt->s.customRGBA[0] = 255;
+		bolt->s.pjkFlags |= PF_LIT;
 	}
 
 	bolt->damage = TD_DAMAGE;
@@ -2319,7 +2324,7 @@ qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, 
 }
 
 void G_PJK_UpdateThermalGolfMode() {
-	int nMode = pjkGCvarIntValue(PJK_GAME_THERMAL_GOLF_CVAR);
+	int nMode = pjkGCvarIntValue(PJK_BGAME_THERMAL_GOLF_CVAR);
 	gentity_t ** e;
 	int i;
 	switch(nMode) {

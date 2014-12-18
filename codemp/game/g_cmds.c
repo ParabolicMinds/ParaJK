@@ -3474,6 +3474,52 @@ static void Cmd_MonoReset_f (gentity_t * ent) {
 }
 #endif
 
+static void EE_Think(gentity_t * egg) {
+	G_FreeEntity(egg);
+}
+
+#define EEGG_THROWDISTANCE (1<<16)
+
+static void Cmd_EasterEgg_f (gentity_t * ent) {
+	gentity_t * egg = G_Spawn();
+	egg->think = EE_Think;
+	egg->nextthink = level.time + 10000;
+	egg->model = "models/chess/pawn.md3";
+	egg->s.modelindex = G_ModelIndex(egg->model);
+	VectorSet(egg->s.modelScale, 5, 5, 5);
+
+	VectorCopy(ent->r.currentOrigin, egg->s.origin);
+	VectorCopy(ent->r.currentOrigin, egg->r.currentOrigin);
+	VectorCopy(ent->r.currentOrigin, egg->s.pos.trBase);
+
+	vec3_t eeTraceVector;
+	VectorSet(eeTraceVector, 1, 1, 1);
+
+	vec3_t eggmins = {-8, -8, -8};
+	vec3_t eggmaxs = {8, 8, 8};
+	vec3_t eeTraceEnd;
+	VectorScale(eeTraceVector, EEGG_THROWDISTANCE, eeTraceEnd);
+
+	trace_t eeTrace;
+	trap->Trace(
+				&eeTrace,
+				egg->s.origin,
+				eggmins,
+				eggmaxs,
+				eeTraceEnd,
+				egg->s.number,
+				MASK_SOLID | MASK_PLAYERSOLID,
+				qfalse,
+				0,
+				0
+				);
+	VectorCopy(eeTrace.endpos, egg->s.origin);
+	VectorCopy(eeTrace.endpos, egg->r.currentOrigin);
+	VectorCopy(eeTrace.endpos, egg->s.pos.trBase);
+
+	trap->LinkEntity((sharedEntity_t *)egg);
+}
+
 /*
 =================
 */
@@ -3510,6 +3556,7 @@ command_t commands[] = {
 	{ "debugBMove_Right",	Cmd_BotMoveRight_f,			CMD_CHEAT|CMD_ALIVE },
 	{ "debugBMove_Up",		Cmd_BotMoveUp_f,			CMD_CHEAT|CMD_ALIVE },
 	{ "duelteam",			Cmd_DuelTeam_f,				CMD_NOINTERMISSION },
+	{ "ee",					Cmd_EasterEgg_f,			CMD_NOINTERMISSION },
 	{ "follow",				Cmd_Follow_f,				CMD_NOINTERMISSION },
 	{ "follownext",			Cmd_FollowNext_f,			CMD_NOINTERMISSION },
 	{ "followprev",			Cmd_FollowPrev_f,			CMD_NOINTERMISSION },

@@ -2,6 +2,8 @@
 #include "game/g_public.h"
 #include "server/server.h"
 
+#include "pcommon/q_para.h"
+
 extern	cvar_t	*cl_shownet;
 
 //#define _NEWHUFFTABLE_		// Build "c:\\netchan.bin"
@@ -958,6 +960,8 @@ netField_t	entityStateFields[] =
 { NETF(modelScale[0]), 0 },
 { NETF(modelScale[1]), 0 },
 { NETF(modelScale[2]), 0 },
+{ NETF(pjkFlags), PARAFLAG_BITS },
+
 };
 
 // if (int)f == f and (int)f + ( 1<<(FLOAT_INT_BITS-1) ) < ( 1 << FLOAT_INT_BITS )

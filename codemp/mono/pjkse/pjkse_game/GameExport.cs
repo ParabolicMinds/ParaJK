@@ -33,6 +33,10 @@ internal static class GAME_INTERNAL_EXPORT {
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_SetOrigin ( IntPtr ent, float X, float Y, float Z );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern IntPtr GMono_GetAnglesPtr ( IntPtr ent );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
+	public static extern void GMono_SetAngles ( IntPtr ent, float pitch, float yaw, float roll );
+	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_MoveTo ( IntPtr ent, float X, float Y, float Z, float timespan );
 	[MethodImplAttribute(MethodImplOptions.InternalCall)]
 	public static extern void GMono_MoveStop ( IntPtr ent );

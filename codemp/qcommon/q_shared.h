@@ -2193,6 +2193,7 @@ typedef struct entityState_s {
 	//ParaJK Shared Entity Variables
 	int			modelSkinIndex;
 	vec3_t		modelScale;
+	int			pjkFlags;
 } entityState_t;
 
 typedef enum {

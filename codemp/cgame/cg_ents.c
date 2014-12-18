@@ -7,6 +7,7 @@
 Ghoul2 Insert Start
 */
 #include "qcommon/q_shared.h"
+#include "pcommon/q_para.h"
 #include "ghoul2/G2.h"
 /*
 Ghoul2 Insert end
@@ -2668,6 +2669,13 @@ Ghoul2 Insert End
 
 	// add to refresh list, possibly with quad glow
 	CG_AddRefEntityWithPowerups( &ent, s1, TEAM_FREE );
+
+	if (cent->currentState.pjkFlags & PF_LIT) {
+		vec3_t lrgb;
+		VectorSet(lrgb, cent->currentState.customRGBA[0], cent->currentState.customRGBA[1], cent->currentState.customRGBA[2]);
+		VectorScale(lrgb, 1.0f/255, lrgb);
+		trap->R_AddLightToScene(ent.origin, PFV_LIT, lrgb[0], lrgb[1], lrgb[2]);
+	}
 
 	if (s1->weapon == WP_SABER && cgs.gametype == GT_JEDIMASTER)
 	{ //in jedimaster always make the saber glow when on the ground

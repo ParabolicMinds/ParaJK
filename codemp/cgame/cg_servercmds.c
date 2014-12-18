@@ -1562,6 +1562,27 @@ static void CG_ClientLevelShot_f( void ) {
 	cg.levelShot = qtrue;
 }
 
+static void CG_Precache_f( void ) {
+	if (trap->Cmd_Argc() != 2) {
+		Com_Printf("WARNING: Received invalid Precache request from server! (Too many arguments.)");
+		return;
+	}
+	char cmd[16];
+	char buffer[MAX_QPATH];
+
+	trap->Cmd_Argv(0, cmd, sizeof(cmd));
+	trap->Cmd_Argv(1, buffer, MAX_QPATH);
+
+	if (!strcmp(cmd, "prcShader")) {
+		trap->R_RegisterShader(buffer);
+	} else {
+		Com_Printf("WARNING: Received invalid Precache request from server! (Unknown Precache type.)");
+		return;
+	}
+
+
+}
+
 typedef struct serverCommand_s {
 	const char	*cmd;
 	void		(*func)(void);
@@ -1587,6 +1608,7 @@ static serverCommand_t	commands[] = {
 	{ "ltchat",				CG_Chat_f },
 	{ "map_restart",		CG_MapRestart },
 	{ "nfr",				CG_NewForceRank_f },
+	{ "prcShader",			CG_Precache_f},
 	{ "print",				CG_Print_f },
 	{ "rcg",				CG_RestoreClientGhoul_f },
 	{ "remapShader",		CG_RemapShader_f },

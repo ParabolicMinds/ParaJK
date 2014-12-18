@@ -206,6 +206,11 @@ public class Entity {
 			return new Vec3(GAME_INTERNAL_EXPORT.GMono_GetOriginPtr(ent));
 		}
 	}
+	public Vec3 Angles {
+		get {
+			return new Vec3(GAME_INTERNAL_EXPORT.GMono_GetAnglesPtr(ent));
+		}
+	}
 	public string Model {
 		get {
 			string m = GAME_INTERNAL_EXPORT.GMono_GetModel(ent);
@@ -274,8 +279,15 @@ public class Entity {
 		if (this.IsPlayer()) throw new Exception("Cannot set origin on players for now, use Teleport()");
 		GAME_INTERNAL_EXPORT.GMono_SetOrigin(ent, X, Y, Z);
 	}
+	public void SetAngles(float Pitch, float Yaw, float Roll) {
+		if (this.IsPlayer()) throw new Exception("Cannot set angles on players.");
+		GAME_INTERNAL_EXPORT.GMono_SetAngles(ent, Pitch, Yaw, Roll);
+	}
 	public void SetOrigin(Vec3 newOrigin) {
 		SetOrigin(newOrigin.X, newOrigin.Y, newOrigin.Z);
+	}
+	public void SetAngles(Vec3 newAngles) {
+		SetAngles(newAngles.X, newAngles.Y, newAngles.Z);
 	}
 	public void MoveTo(Vec3 location, int timespan_msec) {
 		if (this.IsPlayer()) throw new Exception("Cannot move players for now, use Teleport()");

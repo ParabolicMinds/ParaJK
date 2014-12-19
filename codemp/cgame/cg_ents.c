@@ -9,6 +9,8 @@ Ghoul2 Insert Start
 #include "qcommon/q_shared.h"
 #include "pcommon/q_para.h"
 #include "ghoul2/G2.h"
+
+#include "cg_para.h"
 /*
 Ghoul2 Insert end
 */
@@ -2416,10 +2418,14 @@ static void CG_DistortionTrail( centity_t *cent )
 CG_Missile
 ===============
 */
+
 static void CG_Missile( centity_t *cent ) {
 	refEntity_t			ent;
 	entityState_t		*s1;
 	const weaponInfo_t		*weapon;
+
+	int					dlightsize = PFV_LIT;
+	vec3_t				dlightoffset;
 //	int	col;
 
 	s1 = &cent->currentState;
@@ -2596,15 +2602,22 @@ Ghoul2 Insert End
 	{
 		if (s1->weapon != WP_SABER && s1->weapon != G2_MODEL_PART)
 		{
-			//if ( cent->currentState.eFlags | EF_ALT_FIRING )
-			//rww - why was this like this?
-			if ( cent->currentState.eFlags & EF_ALT_FIRING )
-			{
-				ent.hModel = weapon->altMissileModel;
-			}
-			else
-			{
-				ent.hModel = weapon->missileModel;
+			if (s1->weapon == WP_THERMAL && pjkBGCvarIntValue(PJK_BGAME_THERMAL_GOLF_CVAR)) {
+				ent.shaderRGBA[0] = cent->currentState.customRGBA[0];
+				ent.shaderRGBA[1] = cent->currentState.customRGBA[1];
+				ent.shaderRGBA[2] = cent->currentState.customRGBA[2];
+				ent.hModel = cg_pjk_golfball;
+				dlightsize = 75;
+				VectorSet(dlightoffset, 0, 0, 4);
+			} else {
+				if ( cent->currentState.eFlags & EF_ALT_FIRING )
+				{
+					ent.hModel = weapon->altMissileModel;
+				}
+				else
+				{
+					ent.hModel = weapon->missileModel;
+				}
 			}
 		}
 	}
@@ -2674,7 +2687,8 @@ Ghoul2 Insert End
 		vec3_t lrgb;
 		VectorSet(lrgb, cent->currentState.customRGBA[0], cent->currentState.customRGBA[1], cent->currentState.customRGBA[2]);
 		VectorScale(lrgb, 1.0f/255, lrgb);
-		trap->R_AddLightToScene(ent.origin, PFV_LIT, lrgb[0], lrgb[1], lrgb[2]);
+		VectorAdd(ent.origin, dlightoffset, dlightoffset);
+		trap->R_AddLightToScene(dlightoffset, dlightsize, lrgb[0], lrgb[1], lrgb[2]);
 	}
 
 	if (s1->weapon == WP_SABER && cgs.gametype == GT_JEDIMASTER)

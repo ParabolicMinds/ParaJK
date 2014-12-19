@@ -26,6 +26,6 @@ vmPcvarfunc_t const vmCvarGFuncs[] = {
 };
 int const vmCvarGFuncsLen = ARRAY_LEN(vmCvarGFuncs);
 
-gentity_t * par_golfBalls[MAX_CLIENTS];
+gGolfBall_t par_golfBalls[MAX_CLIENTS];
 
 int shaderRemapsThisFrame = 0;

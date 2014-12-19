@@ -1014,7 +1014,9 @@ void G_FreeEntity( gentity_t *ed ) {
 	//Update Golf Balls Array
 	int player;
 	for (player = 0; player < MAX_CLIENTS; player++) {
-		if (par_golfBalls[player] == ed) par_golfBalls[player] = NULL;
+		if (par_golfBalls[player].ent == ed) {
+			par_golfBalls[player].ent = NULL;
+		}
 	}
 
 	//rww - this may seem a bit hackish, but unfortunately we have no access

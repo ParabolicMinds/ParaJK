@@ -4,6 +4,8 @@
 #include "fx_local.h"
 #include "game/bg_para.h"
 
+#include "cg_para.h"
+
 
 /*
 =================
@@ -498,6 +500,8 @@ void CG_RegisterWeapon( int weaponNum) {
 //		weaponInfo->altMissileDlightColor= {0,0,0};
 		weaponInfo->altMissileHitSound	= NULL_SOUND;
 		weaponInfo->altMissileTrailFunc = 0;
+
+		cg_pjk_golfball					= trap->R_RegisterModel( "models/pjk/golfball.md3" );
 
 		cgs.effects.thermalExplosionEffect		= trap->FX_RegisterEffect( "thermal/explosion" );
 		cgs.effects.thermalShockwaveEffect		= trap->FX_RegisterEffect( "thermal/shockwave" );

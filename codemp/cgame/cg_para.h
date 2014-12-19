@@ -15,4 +15,6 @@ extern int const vmCvarCGFuncsLen;
 
 void CG_PJK_UpdateSaberLengths ();
 
+extern qhandle_t cg_pjk_golfball;
+
 #endif

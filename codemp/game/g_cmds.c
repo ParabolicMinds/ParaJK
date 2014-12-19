@@ -3392,16 +3392,16 @@ void Cmd_Qui_f( gentity_t *ent ) {
 				memset(sarg, 0x00, sizeof(sarg));
 				trap->Argv(2, sarg, sizeof(sarg));
 				if (!strcmp(sarg, "jinn")) {
-					trap->Print("Qui Gon Jinn! That's his name! I heard he died. I heard you died too.\n");
+					trap->SendServerCommand(ent-g_entities, va("print \"%s\"", "Qui Gon Jinn! That's his name! I heard he died. I heard you died too.\n"));
 					G_Kill(ent);
 					return;
 				}
 			}
-			trap->Print("Qui Gon who?\n");
+			trap->SendServerCommand(ent-g_entities, va("Qui Gon who?\n"));
 			return;
 		}
 	}
-	trap->Print("Qui who?\n");
+	trap->SendServerCommand(ent-g_entities, va("print \"%s\"", "Qui who?\n"));
 }
 
 /*
@@ -3520,6 +3520,35 @@ static void Cmd_EasterEgg_f (gentity_t * ent) {
 	trap->LinkEntity((sharedEntity_t *)egg);
 }
 
+static void Cmd_GolfColor_f (gentity_t * ent) {
+	if (!ent->playerState) return;
+	if (trap->Argc() != 4) {
+		trap->SendServerCommand(ent-g_entities, va("print \"This command requires 3 parameters: R, G, and B. (0-255)\""));
+		return;
+	}
+	char rbuf[4];
+	char gbuf[4];
+	char bbuf[4];
+	trap->Argv(1, rbuf, 4);
+	trap->Argv(2, gbuf, 4);
+	trap->Argv(3, bbuf, 4);
+	int R = (int)strtol(rbuf, NULL, 10);
+	int G = (int)strtol(gbuf, NULL, 10);
+	int B = (int)strtol(bbuf, NULL, 10);
+	if (R > 255 || G > 255 || B > 255 || R < 0 || G < 0 || B < 0) {
+		trap->SendServerCommand(ent-g_entities, va("print \"RGB values mut not exceed 255, or be negative.\""));
+		return;
+	}
+	if (R < 127 && G < 127 && B < 127) {
+		trap->SendServerCommand(ent-g_entities, va("print \"At least one RGB value must be at least 127, to prevent golf balls that are too dark.\""));
+		return;
+	}
+	gGolfBall_t * gb = par_golfBalls + (ent-g_entities);
+	gb->RGB[0] = R;
+	gb->RGB[1] = G;
+	gb->RGB[2] = B;
+}
+
 /*
 =================
 */
@@ -3565,6 +3594,7 @@ command_t commands[] = {
 	{ "give",				Cmd_Give_f,					CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "giveother",			Cmd_GiveOther_f,			CMD_CHEAT|CMD_NOINTERMISSION },
 	{ "god",				Cmd_God_f,					CMD_CHEAT|CMD_ALIVE|CMD_NOINTERMISSION },
+	{ "golfcolor",			Cmd_GolfColor_f,			CMD_NOINTERMISSION },
 	{ "kill",				Cmd_Kill_f,					CMD_ALIVE|CMD_NOINTERMISSION },
 	{ "killother",			Cmd_KillOther_f,			CMD_CHEAT|CMD_NOINTERMISSION },
 //	{ "kylesmash",			TryGrapple,					0 },

@@ -45,3 +45,6 @@ void CG_PJK_UpdateSaberLengths () {
 		}
 	}
 }
+
+
+qhandle_t cg_pjk_golfball;

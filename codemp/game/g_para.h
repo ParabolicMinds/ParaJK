@@ -10,7 +10,12 @@ char * pjkGCvarStringValue(const char * name);
 extern vmPcvarfunc_t const vmCvarGFuncs[];
 extern int const vmCvarGFuncsLen;
 
-extern gentity_t * par_golfBalls[];
+typedef struct gGolfBall_s {
+	int RGB[3]; //0 - 255
+	gentity_t * ent;
+} gGolfBall_t;
+
+extern gGolfBall_t par_golfBalls[];
 
 void G_PJK_UpdateSaberLengths ();
 void G_PJK_UpdateJetpackTanks();
